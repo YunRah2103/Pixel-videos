@@ -1,0 +1,63 @@
+# Prepared only; no render should be considered final until V5 specialist PRs and proofs land.
+name: Sunset Harbor V5 FINAL — native Remotion + V4 comparison
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - integration/sunset-harbor-v5-final
+    paths:
+      - 'src/scenes/v5/**'
+      - 'src/Root.tsx'
+      - 'scripts/render-v5-final.mjs'
+      - 'assets/v3-chill-part01.b64'
+jobs:
+  render-v5-master:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install render dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: Retrieve verified V4 master for true matched-time comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out/v4-reference
+          gh run download 40110703217 --name sunset-harbor-v4-FINAL-1080p --dir out/v4-reference
+          test -s out/v4-reference/sunset-harbor-v4-FINAL-1080p.mp4
+      - name: Render genuine V5 specialist integration with preserved Day & Night audio
+        run: node scripts/render-v5-final.mjs
+      - name: Validate technical delivery assets
+        run: |
+          test -s out/sunset-harbor-v5-FINAL-1080p.mp4
+          test -s out/v5-final-qa/sunset-harbor-v5-contact-sheet.png
+          test -s out/v5-final-qa/sunset-harbor-v4-v5-comparison-sheet.png
+          test -s out/v5-final-qa/verification.json
+          ffprobe -v error -count_frames -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v5-FINAL-1080p.mp4
+          ffmpeg -v error -xerror -i out/sunset-harbor-v5-FINAL-1080p.mp4 -f null -
+      - name: Upload V5 technical proof for independent artistic approval
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v5-FINAL-1080p-PENDING-ART-QA
+          path: |
+            out/sunset-harbor-v5-FINAL-1080p.mp4
+            out/v5-final-qa/sunset-harbor-v5-contact-sheet.png
+            out/v5-final-qa/sunset-harbor-v4-v5-comparison-sheet.png
+            out/v5-final-qa/frame-*.png
+            out/v5-final-qa/v4-frame-*.png
+            out/v5-final-qa/comparison-frame-*.png
+            out/v5-final-qa/verification.json
+          if-no-files-found: error
+          retention-days: 30
