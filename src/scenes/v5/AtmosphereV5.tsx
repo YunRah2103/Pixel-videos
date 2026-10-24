@@ -127,8 +127,8 @@ function paintClouds(f:number,m:any){
   o+=path(s.mid,pink,.98);
   o+=path('M -19 56 Q 17 46 40 51 Q 70 40 95 53 Q 126 45 154 56 Q 204 43 251 57 L 251 77 L -18 77 Z','#776f95',.68);
   o+=path(s.cavity,'#8e7e9d',.88);
-  o+=stroke(s.rim,'#ffe8c8',2.5,.72*ambient);
-  o+=stroke(s.rim,'#f7c6b9',5,.18);
+  o+=stroke(s.rim,'#f8d5c3',1.8,.57*ambient);
+  o+=stroke(s.rim,'#ffe9d0',3,.12);
   o+=stroke('M 8 40 Q 35 34 64 39 T 124 37','#ffdcc5',2,.46);
   o+=stroke('M 120 25 Q 151 16 183 31 T 224 41','#f6c5b9',3,.53);
   // Hand-laid broken illumination and lavender shadow clusters.
@@ -200,8 +200,8 @@ function paintReflections(f:number,m:any,top:number,bottom:number,sunX:number){
  // Deliberate crest groupings and breaks read as water, not pixel confetti.
  for(let row=0;row<25;row++){
   const z=(row+.32)/25, y=top+5+z*(depth-9);
-  const span=4+Math.pow(z,1.35)*66;
-  const count=2+Math.round(z*3.7);
+  const span=7+Math.pow(z,1.35)*72;
+  const count=3+Math.round(z*4.2);
   for(let j=0;j<count;j++){
     const key=173+row*67+j*37;
     const normalized=count===1?0:(j/(count-1)*2-1);
@@ -209,9 +209,9 @@ function paintReflections(f:number,m:any,top:number,bottom:number,sunX:number){
     const slip=Math.sin(phase*.40+row*.66)*(.65+2.8*z);
     const x=sunX+edge*span+slip;
     const yy=y+Math.sin(phase*.52+row*.37+j*.58)*(.2+z*.73);
-    const w=(3+z*18)*(.58+.56*seed(key+9))*(1-.26*Math.abs(edge));
-    const warm=Math.abs(edge)>.58?'#e9ab87':(j+row)%5===0?'#fff6d6':(j+row)%2===0?'#ffe2a9':'#ffd09a';
-    const alpha=(.34+.27*(1-Math.abs(edge))+.12*z)*light*(.95+.05*Math.sin(phase*.48+row*.2));
+    const w=(5+z*28)*(.68+.52*seed(key+9))*(1-.30*Math.abs(edge));
+    const warm=Math.abs(edge)>.58?'#eeb17f':(j+row)%5===0?'#fff5cd':(j+row)%2===0?'#ffe7aa':'#fbd093';
+    const alpha=(.52+.30*(1-Math.abs(edge))+.08*z)*light*(.95+.05*Math.sin(phase*.48+row*.2));
     o+=stroke(`M ${(x-w*.5).toFixed(2)} ${yy.toFixed(2)}
        q ${(w*.27).toFixed(2)} -.55 ${(w*.52).toFixed(2)} 0
        t ${(w*.48).toFixed(2)} .14`,warm,z>.84&&row%4===0?2:1,alpha);
@@ -222,7 +222,7 @@ function paintReflections(f:number,m:any,top:number,bottom:number,sunX:number){
    const z=(j+.3)/14,y=top+7+z*(depth-8);
    const w=5+z*40, x=sunX-w*.55+Math.sin(phase*.33+j*.72)*z*4;
    o+=stroke(`M ${x.toFixed(2)} ${y.toFixed(2)} q ${(w*.5).toFixed(2)} -1 ${w.toFixed(2)} 0`,
-     j%4===0?'#fff3ca':'#efbd8e',1,.22+.11*light);
+     j%4===0?'#fff3ca':'#f5c28c',1.45,.34+.21*light);
  }
  // Waterfront lights reflect only in localized, correctly positioned ribbons.
  const lamps:[[number,number,string,number],[number,number,string,number],[number,number,string,number]]=[
