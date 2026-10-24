@@ -5,9 +5,14 @@
 import {existsSync, mkdirSync, writeFileSync} from 'node:fs';
 import {dirname} from 'node:path';
 const requirements = [
-  ['#21 car art and renderer', 'src/scenes/countryside/CarLayer.tsx'],
-  ['#22 world assets and renderer', 'src/scenes/countryside/WorldLayers.tsx'],
-  ['#23 shared driving motion', 'src/scenes/countryside/DrivingMotion.ts'],
+  ['#21 original car renderer', 'src/scenes/countryside/CarLayer.tsx'],
+  ['#21 original body sprite', 'public/countryside/car/coupe-body.png'],
+  ['#21 original eight-pose wheel sprite', 'public/countryside/car/coupe-wheels-8.png'],
+  ['#22 world renderer', 'src/scenes/countryside/WorldLayers.tsx'],
+  ['#23 shared motion', 'src/scenes/countryside/DrivingMotion.ts'],
+  ...['sky','farTrees','midTrees','nearTrees','verge','road'].map(
+    name=>['native authored world sprite: '+name,'public/countryside/world/'+name+'.png']
+  ),
 ];
 const missing = requirements.filter(([,path]) => !existsSync(path));
 const status = {ready: missing.length === 0, required: requirements,

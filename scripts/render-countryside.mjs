@@ -20,6 +20,9 @@ const exec=(bin,args)=>{
 const probe=(file)=>JSON.parse(exec('ffprobe',['-v','error','-count_frames',
  '-show_entries','stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames,pix_fmt:format=duration,size',
  '-of','json',file]));
+// Regenerate the original edited native-pixel world from reproducible source
+// in every Actions render, never rely on untracked ephemeral image files.
+exec('node',['studio/countryside/world/build-world-art.mjs']);
 exec('node',['scripts/check-countryside-ready.mjs']);
 const npx=process.platform==='win32'?'npx.cmd':'npx';
 exec(npx,['remotion','render','src/index.ts','CountrysideDrive',NATIVE,

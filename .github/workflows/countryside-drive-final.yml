@@ -32,7 +32,9 @@ jobs:
         run: npm run typecheck:toolkit
       - name: Verify native sprite pipeline and moving toolkit proof
         run: npm run assets:verify
-      - name: Stop if real specialist source modules are absent
+      - name: Generate original native pixel art from editable integration source
+        run: node studio/countryside/world/build-world-art.mjs
+      - name: Stop if actual specialist car/motion and authored world assets are absent
         run: node scripts/check-countryside-ready.mjs
       - name: Render actual integrated Remotion film and verify decoded MP4
         run: node scripts/render-countryside.mjs
@@ -45,6 +47,8 @@ jobs:
             out/countryside-final-qa/verification.json
             out/countryside-final-qa/countryside-contact-sheet.png
             out/countryside-final-qa/frame-*.png
+            public/countryside/world/*.png
+            public/countryside/car/*.png
           if-no-files-found: error
           retention-days: 30
       - name: Upload missing-dependency diagnostics if blocked

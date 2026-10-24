@@ -73,3 +73,32 @@ yuv420p H.264 1080×1920, 30 fps and 12 seconds; it is silent, without unlicense
 - Link the **actual successful** Actions run and its final **MP4 artifact** in
   the draft PR. Do not mark delivered based on workflow definition alone.
 - Merge is forbidden until the owner explicitly approves after watching.
+
+## 24 October integration source audit / scenery recovery
+
+- Agent 1 PR #28: `CarLayer.tsx`, original body PNG and 8-pose wheel PNG
+  imported by blob SHA (no rewritten placeholder). 11.5 native-pixel radius.
+- Agent 3 PR #27: `DrivingMotion.ts` original exported rig imported by SHA.
+  The final composition calls `getCountrysideMotion(frame,WHEEL_RADIUS_PX)`;
+  road moves three native pixels/frame and both wheel sprites use its turns.
+- Agent 2 branch `agent/countryside-world`, commit `2b5b0d1`, did deliver
+  `WorldLayers.tsx`, but **did not commit any of the six PNG sprite images
+  referenced by that component**, nor a successful moving scenery proof/PR
+  at integration time. It would render missing images uncorrected.
+- As Agent 4 recovery, `studio/countryside/world/build-world-art.mjs` now
+  generates *new original native pixel art* rather than pretending missing
+  PNGs were supplied by Agent 2. Code uses hand-authored stepped oak,
+  beech, chestnut and poplar silhouettes with authored leaf clusters and
+  limited hard pixel palette. All sources are editable, owned by this PR.
+  **This is NOT attributed to Agent 2.** Its original world renderer
+  and style contract are retained with updated width constants.
+- World tile widths now far 180, mid 360, near 360, verge 180, road 360
+  native pixels. Each exact width divides its 12-second motion travel
+  (180,360,720,900,1080). Agent 3 is still the only scrolling source.
+- Tyre-contact alignment is fixed: `wheelContactY={495}`,
+  `bobY={0}`, `wheelRotationTurns={m.wheelRotationTurns}`.
+  Applying bobY to the car's entire layer would make *both wheels float*,
+  so body suspension animation is withheld rather than faking contact.
+- The final verification output is still subject to **actual workflow
+  completion and visual review**; build/run success by itself does not
+  certify artistry or user approval.
