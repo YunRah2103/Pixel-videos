@@ -1,0 +1,51 @@
+name: Sunset Harbor V4 — character acting and cinematic story proof
+on:
+  push:
+    branches: [agent/sunset-harbor-v4-story]
+    paths:
+      - 'src/scenes/v4/HarborMotionV4.mjs'
+      - 'src/scenes/v4/HarborLifeV4.mjs'
+      - 'src/scenes/v4/HarborStoryProof.tsx'
+      - 'scripts/render-v4-story.mjs'
+      - '.github/workflows/sunset-harbor-v4-story.yml'
+      - 'docs/V4_STORY_INTEGRATION.md'
+  workflow_dispatch:
+  pull_request:
+    branches: [integration/sunset-harbor-v3-final]
+jobs:
+  render-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install native Remotion renderer
+        run: npm install --no-audit --no-fund
+      - name: Ensure video and audio encoder exists
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Render 360 frames and mix user-provided Day & Night score
+        run: node scripts/render-v4-story.mjs
+      - name: Assert finished H264/AAC movie and QA captures
+        run: |
+          test -s out/sunset-harbor-v4-STORY-1080p.mp4
+          test -s out/v4-story-qa/verification.json
+          for n in opening story meeting ending; do test -s "out/v4-story-qa/$n.png"; done
+          ffprobe -v error -count_frames -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v4-STORY-1080p.mp4
+          ffmpeg -v error -xerror -i out/sunset-harbor-v4-STORY-1080p.mp4 -f null -
+      - name: Upload verified moving MP4 and film-review frames
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v4-STORY-day-night-1080p
+          path: |
+            out/sunset-harbor-v4-STORY-1080p.mp4
+            out/v4-story-qa/opening.png
+            out/v4-story-qa/story.png
+            out/v4-story-qa/meeting.png
+            out/v4-story-qa/ending.png
+            out/v4-story-qa/verification.json
+          if-no-files-found: error
+          retention-days: 30
