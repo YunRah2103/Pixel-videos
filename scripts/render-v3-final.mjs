@@ -33,7 +33,7 @@ if(!v||v.codec_name!=='h264'||v.width!==W||v.height!==H||v.r_frame_rate!=='30/1'
 run('ffmpeg',['-v','error','-i',final,'-f','null','-']);
 for(const [name,frame] of [['opening',20],['middle',180],['ending',330]]){
  run('ffmpeg',['-hide_banner','-loglevel','error','-y',
-   '-i',final,'-vf',`select=eq(n\\,${frame})`,'-vsync','0','-frames:v','1',`out/qa/v3-${name}.png`]);
+   '-i',final,'-vf',`select=eq(n\\,${frame})`,'-vsync','0','-frames:v','1',`out/qa/v3-final-${name}.png`]);
 }
 const proof={verified:true,audioEdit:'user-supplied Day & Night excerpt looped gracefully for 12 seconds',file:final,audio:'user-supplied Day and Night chill clip',frames:FRAMES,fps:FPS,
  resolution:`${W}x${H}`,duration:report.format.duration,audioCodec:a.codec_name,
