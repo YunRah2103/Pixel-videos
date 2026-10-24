@@ -1,0 +1,60 @@
+name: Countryside V2 — Agent 2 original car art and moving proof
+on:
+  push:
+    branches:
+      - agent/countryside-v2-car-art
+  pull_request:
+    paths:
+      - 'studio/countryside/car/**'
+      - 'public/countryside/car/**'
+      - 'src/scenes/countryside/CarLayer.tsx'
+      - 'src/countryside-v2-car-proof.tsx'
+      - 'scripts/render-car-v2-proof.mjs'
+      - 'package.json'
+      - '.github/workflows/countryside-v2-car.yml'
+  workflow_dispatch:
+jobs:
+  pixel-car:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare FFmpeg and FFprobe
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffprobe -version
+      - name: Full Pixel Studio V3 setup and moving toolkit verification
+        run: npm run studio:setup
+      - name: Explicit sprite atlas rebuild
+        run: npm run atlas:build
+      - name: Explicit rig deterministic test
+        run: npm run rigs:test
+      - name: Explicit pixel visual diagnostics
+        run: npm run visual:qa
+      - name: Rebuild original native 192px car from editable source
+        run: npm run car:v2:build
+      - name: Project typecheck
+        run: npm run typecheck
+      - name: Render actual 120-frame car-only Remotion MP4 and decode QA
+        run: npm run car:v2:proof
+      - name: Upload full motion proof, contact sheet and genuine source sprite exports
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v2-agent2-car-art
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            public/countryside/car/coupe-v2-body.png
+            public/countryside/car/coupe-v2-wheels-8.png
+            out/car-v2-proof/coupe-v2-1080x1920.mp4
+            out/car-v2-proof/contact-sheet.png
+            out/car-v2-proof/frame-*.png
+            out/car-v2-proof/verification.json
+            out/studio-v3/contact-sheet.png
+            out/studio-v3/visual-qa.json
