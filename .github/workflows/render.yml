@@ -1,33 +1,41 @@
-name: Render pixel-art demo
+name: Sunset Harbor V2 cinematic render
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
+      - agent/sunset-harbor-v2-upgrade
     paths:
       - 'src/**'
+      - 'assets/**'
       - 'scripts/render.mjs'
       - 'package.json'
       - '.github/workflows/render.yml'
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install JavaScript dependencies
+      - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
-      - name: Render with Remotion and upscale with nearest neighbour
+      - name: Render 12-second Remotion film with user-supplied jazz excerpt
         run: npm run render
-      - name: Verify video
+      - name: Decode and inspect all frames
         run: |
-          ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate,nb_frames -of default=noprint_wrappers=1 out/sunset-harbor-1080p.mp4
+          ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-1080p.mp4
+          ffprobe -v error -select_streams a:0 -show_entries stream=codec_name,sample_rate,channels -of json out/sunset-harbor-1080p.mp4
+          ffmpeg -v error -i out/sunset-harbor-1080p.mp4 -f null -
           test -s out/sunset-harbor-1080p.mp4
-      - uses: actions/upload-artifact@v4
+      - name: Upload final cinematic MP4
+        uses: actions/upload-artifact@v4
         with:
-          name: pixel-studio-sunset-harbor
+          name: sunset-harbor-v2-cinematic-jazz-1080p
           path: out/sunset-harbor-1080p.mp4
+          if-no-files-found: error
+          retention-days: 30

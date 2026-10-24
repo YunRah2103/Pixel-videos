@@ -1,0 +1,1 @@
+export declare function sunsetHarborSvg(frame: number): string;
