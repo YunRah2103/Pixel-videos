@@ -1,0 +1,55 @@
+name: Sunset Harbor V5 — Agent 2 painterly atmosphere proof
+on:
+  push:
+    branches:
+      - agent/sunset-harbor-v5-light-water
+    paths:
+      - 'src/scenes/v5/AtmosphereV5.tsx'
+      - 'src/scenes/v5/AtmosphereV5Proof.tsx'
+      - 'scripts/render-v5-atmosphere.mjs'
+      - '.github/workflows/sunset-harbor-v5-atmosphere.yml'
+      - 'docs/V5_ATMOSPHERE_INTEGRATION.md'
+  workflow_dispatch:
+jobs:
+  v5-atmosphere-native-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Remotion dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Reconstruct approved V4 reference with the owner-provided soundtrack
+        run: node scripts/render-v4-final.mjs
+      - name: Render 12s V5 moving atmosphere and compare nine frames
+        run: node scripts/render-v5-atmosphere.mjs
+      - name: Verify artifact and decode entire film
+        run: |
+          test -s out/sunset-harbor-v5-atmosphere-1080p.mp4
+          test -s out/v5-atmosphere-qa/sunset-harbor-v5-contact-sheet.png
+          test -s out/v5-atmosphere-qa/v4-v5-side-by-side.png
+          test -s out/v5-atmosphere-qa/verification.json
+          test "$(find out/v5-atmosphere-qa -name 'frame-*.png' | wc -l)" -eq 9
+          ffprobe -v error -count_frames -show_entries stream=codec_name,codec_type,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v5-atmosphere-1080p.mp4
+          ffmpeg -v error -xerror -i out/sunset-harbor-v5-atmosphere-1080p.mp4 -f null -
+      - name: Upload playable MP4, key frames and A/B contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v5-agent2-atmosphere-1080x1920
+          path: |
+            out/sunset-harbor-v5-atmosphere-1080p.mp4
+            out/v5-atmosphere-qa/verification.json
+            out/v5-atmosphere-qa/sunset-harbor-v5-contact-sheet.png
+            out/v5-atmosphere-qa/v4-v5-side-by-side.png
+            out/v5-atmosphere-qa/frame-*.png
+            out/v5-atmosphere-qa/comparison-*.png
+          if-no-files-found: error
+          retention-days: 30
