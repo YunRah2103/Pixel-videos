@@ -97,8 +97,8 @@ writeFileSync(PCM,pcmBuffer);
 // Encode from an explicit twelve-second PCM track — no input loop ambiguity.
 exec('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',NATIVE,
  '-f','f32le','-ar',String(SR),'-ac','1','-i',PCM,'-map','0:v:0','-map','1:a:0',
- '-vf','scale='+W+':'+H+':flags=neighbor,format=yuv520p',
- '-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv520p',
+ '-vf','scale='+W+':'+H+':flags=neighbor,format=yuv420p',
+ '-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv420p',
  '-r','30','-c:a','aac','-b:a','160k','-ar',String(SR),'-t',String(SECONDS),
  '-movflags','+faststart',FINAL]);
 
