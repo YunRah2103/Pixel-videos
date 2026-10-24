@@ -22,7 +22,9 @@ const probe=(file)=>JSON.parse(exec('ffprobe',['-v','error','-count_frames',
  '-of','json',file]));
 // Regenerate the original edited native-pixel world from reproducible source
 // in every Actions render, never rely on untracked ephemeral image files.
-exec('node',['studio/countryside/world/build-world-art.mjs']);
+exec('node',['studio/countryside/world/build-world-v2.mjs']);
+exec('node',['studio/countryside/car/build-car-v2.mjs']);
+exec('node',['scripts/qa-countryside-v2.mjs']);
 exec('node',['scripts/check-countryside-ready.mjs']);
 const npx=process.platform==='win32'?'npx.cmd':'npx';
 exec(npx,['remotion','render','src/index.ts','CountrysideDrive',NATIVE,
@@ -87,7 +89,7 @@ const result={
  contactSheet:sheet,
  pendingManualReview:['visual playback at mobile scale','car shape/wheels/ground contact',
   'tree originality/variation','seamless parallax','palette and visible source-pixel grid',
-  'approval of actual Agent 1–3 original assets and proof MP4s']
+  'artistic approval of the new PR #33/#32/#30 integrated footage by owner']
 };
 writeFileSync(DIR+'/verification.json',JSON.stringify(result,null,2)+'\n');
 console.log('COUNTRYSIDE_TECHNICAL_QA_PASS '+JSON.stringify(result));

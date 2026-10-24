@@ -37,10 +37,14 @@ jobs:
           npm run visual:qa
           npm run rigs:test
           npm run typecheck:toolkit
-      - name: Generate original native pixel art from editable integration source
-        run: node studio/countryside/world/build-world-art.mjs
-      - name: Validate V2 native palette, source and tile dimensions
+      - name: Generate authentic original V2 world and car source from PR #33 and PR #32
+        run: |
+          node studio/countryside/world/build-world-v2.mjs
+          node studio/countryside/car/build-car-v2.mjs
+      - name: Validate PR #33 and #32 native palettes, transparency and new sprite geometry
         run: node scripts/qa-countryside-v2.mjs
+      - name: Test the wheel-speed and axle geometry compatibility
+        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs
       - name: Stop if actual specialist car/motion and authored world assets are absent
         run: node scripts/check-countryside-ready.mjs
       - name: Render actual integrated Remotion film and verify decoded MP4
@@ -52,6 +56,7 @@ jobs:
           path: |
             out/countryside-drive-final-1080p.mp4
             out/countryside-final-qa/verification.json
+            out/countryside-final-qa/art-source-qa.json
             out/countryside-final-qa/countryside-contact-sheet.png
             out/countryside-final-qa/frame-*.png
             public/countryside/world/*.png

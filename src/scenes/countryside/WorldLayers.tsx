@@ -1,52 +1,32 @@
 import React from 'react';
-import {Img, staticFile} from 'remotion';
-
-/** Agent 2 public environment contract. Coordinates are native 360 × 640 pixels. */
-export type CountrysideLayer = 'sky' | 'farTrees' | 'midTrees' | 'nearTrees' | 'verge' | 'road';
-export type CountrysideWorldProps = {
-  frame: number;
-  layer: CountrysideLayer;
-  /** Native integer-coordinate translation from Agent 3; NEGATIVE scrolls LEFT. */
-  offsetX?: number;
-};
-export const COUNTRYSIDE_WORLD_TILES = {
-  sky: {width: 360, height: 480, y: 0, scrolling: false},
-  farTrees: {width: 180, height: 240, y: 240, scrolling: true},
-  midTrees: {width: 360, height: 280, y: 200, scrolling: true},
-  nearTrees: {width: 360, height: 340, y: 140, scrolling: true},
-  verge: {width: 180, height: 160, y: 480, scrolling: true},
-  road: {width: 360, height: 160, y: 480, scrolling: true},
+import {Img,staticFile} from 'remotion';
+/** Original 360x640 canvas, no independent animation. The motion agent owns offsets. */
+export type CountrysideLayer='sky'|'farTrees'|'midTrees'|'nearTrees'|'verge'|'road';
+export const COUNTRYSIDE_WORLD_TILES={
+ sky:{width:360,height:480,y:0,scrolling:false},
+ farTrees:{width:720,height:300,y:180,scrolling:true},
+ midTrees:{width:840,height:265,y:215,scrolling:true},
+ nearTrees:{width:960,height:235,y:245,scrolling:true},
+ verge:{width:384,height:160,y:480,scrolling:true},
+ road:{width:384,height:160,y:480,scrolling:true},
 } as const;
-const FRAME_WIDTH = 360;
-const asset = (layer: CountrysideLayer) => staticFile('countryside/world/' + layer + '.png');
-/** Coordinates wrapped in integer space. Never produces subpixel painting or tile gaps. */
-export function wrapWorldOffset(offsetX: number, tileWidth: number): number {
-  if (!Number.isFinite(offsetX)) throw new Error('offsetX must be finite');
-  const dx = Math.round(offsetX);
-  return ((dx % tileWidth) + tileWidth) % tileWidth;
+export type CountrysideWorldProps={frame:number;layer:CountrysideLayer;offsetX?:number};
+export function wrapWorldOffset(offsetX:number,width:number){
+ if(!Number.isFinite(offsetX)||!Number.isInteger(width)||width<=0)throw Error('invalid offset or width');
+ return ((Math.round(offsetX)%width)+width)%width;
 }
-/**
- * Pure pixel-image layer, with no independent clock, internal scrolling or camera.
- * Agent 3 owns offsets; Agent 4 owns z-order and final render.
- */
-export const CountrysideWorldLayer: React.FC<CountrysideWorldProps> = ({frame, layer, offsetX = 0}) => {
-  if (!Number.isInteger(frame) || frame < 0) throw new Error('frame must be a nonnegative integer');
-  const tile = COUNTRYSIDE_WORLD_TILES[layer];
-  const common: React.CSSProperties = {
-    position: 'absolute', top: 0, width: tile.width, height: tile.height,
-    imageRendering: 'pixelated', maxWidth: 'none', pointerEvents: 'none',
-  };
-  if (!tile.scrolling) {
-    return <Img src={asset(layer)} draggable={false} style={{...common, left: 0, top: tile.y}} />;
-  }
-  const shift = wrapWorldOffset(offsetX, tile.width);
-  const firstX = shift - tile.width;
-  // Three copies cover any 360-wide viewport for all tile widths, including 180.
-  return (
-    <div style={{position: 'absolute', left: 0, top: tile.y, width: FRAME_WIDTH,
-      height: tile.height, overflow: 'hidden', pointerEvents: 'none'}}>
-      {[0, 1, 2].map(i => <Img key={i} src={asset(layer)} draggable={false}
-        style={{...common, left: firstX + i * tile.width}} />)}
-    </div>
-  );
+/** Frame-seek safe, clipped PNG tiling at integer native pixel positions. */
+export const CountrysideWorldLayer:React.FC<CountrysideWorldProps>=({frame,layer,offsetX=0})=>{
+ if(!Number.isInteger(frame)||frame<0)throw Error('frame must be nonnegative integer');
+ const t=COUNTRYSIDE_WORLD_TILES[layer];
+ const src=staticFile('countryside/world/'+layer+'.png');
+ const style:React.CSSProperties={position:'absolute',top:0,width:t.width,height:t.height,
+   imageRendering:'pixelated',maxWidth:'none',pointerEvents:'none'};
+ if(!t.scrolling)return <Img src={src} draggable={false} style={{...style,left:0,top:t.y}}/>;
+ const shift=wrapWorldOffset(offsetX,t.width),x=shift-t.width;
+ return <div style={{position:'absolute',top:t.y,left:0,width:360,height:t.height,
+  overflow:'hidden',pointerEvents:'none'}}>
+  {[0,1,2].map(i=><Img key={i} src={src} draggable={false}
+    style={{...style,left:x+i*t.width}}/>)}
+ </div>;
 };
