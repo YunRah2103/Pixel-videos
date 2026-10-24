@@ -1,22 +1,30 @@
 {
   "name": "pixel-videos",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Agent-friendly 2D/2.5D pixel-art animation studio with Remotion, PixiJS and optional tools",
+  "description": "Agent-friendly cinematic pixel art studio (Remotion, PixiJS, Sharp, Pixelorama, Krita, LDtk, Godot)",
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "preview": "remotion still src/index.ts SunsetHarbor out/sunset-harbor.png --frame=90",
     "render:lowres": "remotion render src/index.ts SunsetHarbor out/sunset-harbor-lowres.mp4",
     "render": "node scripts/render.mjs",
     "demo:offline": "python3 scripts/render_demo.py --seconds 6 --out out/sunset-harbor-offline.mp4",
-    "check": "python3 scripts/check_tools.py"
+    "check": "python3 scripts/check_tools.py",
+    "tools:check": "python3 scripts/install_studio_v2.py --check",
+    "tools:install": "python3 scripts/install_studio_v2.py --all",
+    "assets:build": "node scripts/build-pixel-assets.mjs",
+    "assets:proof": "node scripts/render-toolkit-proof.mjs",
+    "assets:qa": "node scripts/qa-toolkit.mjs",
+    "assets:verify": "npm run assets:build && npm run assets:proof && npm run assets:qa",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
     "remotion": "4.0.538",
     "pixi.js": "^8.0.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
