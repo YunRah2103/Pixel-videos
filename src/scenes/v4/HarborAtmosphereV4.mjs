@@ -42,7 +42,7 @@ function sculptCloud(c,offset,energy){
   [[-23,54],[-23,36],[-8,36],[-8,24],[13,24],[13,9],[38,9],[38,-4],[59,-4],[59,-17],[79,-17],[79,-28],[95,-28],[95,-14],[116,-14],[116,-4],[139,-4],[139,11],[164,11],[164,24],[183,24],[183,40],[205,40],[205,57]]
  ];
  const outline=shapes[k];
- const cool=['#566b87','#536f90','#607189','#706f91','#667899','#657492'][k];
+ const cool=['#7586a1','#7486a2','#7b849e','#8885a7','#7e8da8','#7d8ba9'][k];
  const mid=['#ae94b2','#afa3bd','#c4a2bb','#ae9fba','#aa9dbc','#9fa3c0'][k];
  const warm=['#e9b1bc','#efbcb9','#ffccbb','#e7b4c2','#f4b5b9','#dec2c9'][k];
  const gold=['#ffe2b2','#fff0c9','#ffe2b7','#f7d5b6','#ffe8c1','#ffe6c6'][k];
@@ -54,7 +54,7 @@ function sculptCloud(c,offset,energy){
  a+='<g clip-path="url(#'+id+')">';
  a+=pp([[-45,7],[22,-20],[82,-43],[159,-25],[261,3],[261,38],[-45,49]],mid);
  a+=pp([[-47,24],[-13,10],[29,-14],[77,-25],[133,-17],[184,3],[263,22],[263,49],[-47,45]],warm,.94);
- a+=pp([[-39,51],[23,43],[64,51],[113,42],[151,53],[207,42],[252,53],[254,76],[-39,76]],cool,.94);
+ a+=pp([[-39,51],[23,43],[64,51],[113,42],[151,53],[207,42],[252,53],[254,76],[-39,76]],cool,.77);
  a+=pp([[-40,44],[18,33],[63,40],[101,32],[157,39],[194,32],[257,43],[258,51],[214,51],[160,47],[122,50],[76,46],[19,49],[-40,54]],'#8b89a6',.92);
  // Golden crown and cascading stepped rim, oriented towards the sinking sun.
  a+=pp([[8,16],[8,1],[25,1],[25,-13],[48,-13],[48,-28],[68,-28],[68,-34],[82,-34],[82,-25],[101,-25],[101,-12],[119,-12],[119,-7],[92,-7],[92,-13],[68,-13],[68,-7],[49,-7],[49,0],[29,0],[29,10],[12,10],[12,20]],gold,.92);
@@ -108,15 +108,15 @@ function ocean(frame,m,g){
   out+=rr(0,y,360,2,rgb('#5c9ba0','#103c57',Math.pow(z,.84)));
  }
  // Large coherent, phase-locked wave families. Individual streaks advect without jitter.
- for(let j=0;j<72;j++){
-  const z=(j+.5)/72, y=start+4+z*(end-start-7);
+ for(let j=0;j<146;j++){
+  const z=(j+.5)/146, y=start+4+z*(end-start-7);
   const amp=1+z*3.7,wide=4+z*32;
-  for(let i=0;i<5;i++){
+  for(let i=0;i<7;i++){
    const bx=frac(hash(j*17+i*31)*.4+i/5+.08)*410-25;
    const x=bx+Math.sin(phase*.3+j*.43+i*1.7)*amp;
    const yy=y+Math.sin(phase*.53+j*.36+i*2.4)*(.30+z*1.7);
    const shade=(i+j)%7===0?'#9ebbac':(i+j)%3===0?'#64a4a5':(i+j)%3===1?'#2a7283':'#387f89';
-   out+=rr(x,yy,wide*(.26+.73*hash(j*7+i)),z>.77&&i%3===0?2:1,shade,.43+.34*(1-z));
+   out+=rr(x,yy,wide*(.26+.73*hash(j*7+i)),z>.77&&i%3===0?2:1,shade,.53+.32*(1-z));
    if(z>.40&&i%4===0)out+=rr(x+5,yy+2,wide*.29,1,'#143f59',.7);
   }
  }
@@ -133,9 +133,9 @@ function waterLighting(frame,m,g){
  const sunX=g.sunX,light=clamp(finite(m.lightIntensity,.93),.55,1.35);
  let out='';
  // The core stays under the sun, broadening towards the viewer.
- for(let i=0;i<250;i++){
-  const z=(i+.5)/250,y=top+7+z*(depth-9);
-  const span=3+Math.pow(z,1.37)*89;
+ for(let i=0;i<425;i++){
+  const z=(i+.5)/425,y=top+7+z*(depth-9);
+  const span=5+Math.pow(z,1.35)*98;
   const centre=sunX+Math.sin(phase*.22+z*8)*1.4;
   const stripes=1+(i%4===0?1:0);
   for(let s=0;s<stripes;s++){
@@ -143,7 +143,7 @@ function waterLighting(frame,m,g){
    const x=centre+dist*span+Math.sin(phase*.42+z*11+s*2+i*.8)*(1+z*2);
    const len=(2+z*17)*(1-edge*.59)*(0.58+hash(seed+5)*.65);
    const bright=edge<.35?'#fff0bf':edge<.68?'#ffdaa8':'#dba695';
-   const opacity=(.24+.56*(1-edge))*(.80+Math.sin(phase*.3+i*.37)*.08)*light;
+   const opacity=(.32+.53*(1-edge))*(.85+Math.sin(phase*.3+i*.37)*.06)*light;
    out+=rr(x,y,len,z>.78&&i%9===0?2:1,bright,clamp(opacity,.15,.94));
   }
  }
