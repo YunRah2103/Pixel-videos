@@ -42,7 +42,8 @@ export function getHarborMotionV4(frame=0) {
   const coatBreeze=breeze*(0.5+0.5*span(f,80,140))*(1-0.5*stillness);
   const blinking=(!((f+9)%137<4)||f<20)?0:1;
   const catTravel=span(f,87,251);
-  // Walk beside the couple, away from the cafe umbrella and chairs.\n  const catX=lerp(190,174,catTravel);
+  // Walk beside the couple, away from the cafe umbrella and chairs.
+  const catX=lerp(190,174,catTravel);
   const catSit=span(f,248,295);
   const catStep=(f-85)*0.19;
   const catTail=sin(f,69,1.2)*(1-0.72*catSit);
