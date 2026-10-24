@@ -1,0 +1,10 @@
+node_modules/
+.tools/
+out/
+*.log
+.DS_Store
+.env
+*.mp4
+*.webm
+*.mov
+__pycache__/

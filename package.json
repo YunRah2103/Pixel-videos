@@ -1,0 +1,27 @@
+{
+  "name": "pixel-videos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent-friendly 2D/2.5D pixel-art animation studio with Remotion, PixiJS and optional tools",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "preview": "remotion still src/index.ts SunsetHarbor out/sunset-harbor.png --frame=90",
+    "render:lowres": "remotion render src/index.ts SunsetHarbor out/sunset-harbor-lowres.mp4",
+    "render": "node scripts/render.mjs",
+    "demo:offline": "python3 scripts/render_demo.py --seconds 6 --out out/sunset-harbor-offline.mp4",
+    "check": "python3 scripts/check_tools.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.538",
+    "remotion": "4.0.538",
+    "pixi.js": "^8.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.9.0"
+  }
+}
