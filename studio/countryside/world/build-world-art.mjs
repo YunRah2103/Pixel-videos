@@ -50,7 +50,15 @@ const canopy={
            [-43,-34,38,12],[-31,-20,26,12]],
  poplar:[[-161,-8,8,10],[-151,-15,16,16],[-135,-20,20,24],
          [-111,-22,23,23],[-88,-23,22,21],[-67,-18,19,21],
-         [-46,-15,15,19],[-27,-9,11,11]]
+         [-46,-15,15,19],[-27,-9,11,11]],
+ // Tall wind-sculpted country pine: jagged hand-set crown tiers and
+ // intentionally asymmetrical branch ledges, reaching native Y~272.
+ pine:[[-208,-2,4,10],[-198,-7,8,12],[-186,-13,13,10],
+       [-176,-12,15,13],[-163,-19,19,8],[-155,-15,15,14],
+       [-141,-25,23,11],[-130,-18,19,14],[-116,-30,27,11],
+       [-105,-19,20,14],[-91,-32,29,13],[-78,-26,23,13],
+       [-65,-35,31,13],[-52,-29,26,14],[-38,-37,34,13],
+       [-25,-21,24,11]]
 };
 const detail={
  oak:[[-23,-86,20,9],[9,-103,18,7],[-40,-65,15,10],
@@ -61,21 +69,25 @@ const detail={
            [19,-96,18,12],[-48,-67,19,9],[8,-54,25,8],
            [-25,-43,11,6]],
  poplar:[[-13,-138,12,11],[6,-123,8,15],[-22,-100,11,10],
-         [7,-84,13,12],[-16,-62,12,12],[4,-44,10,8]]
+         [7,-84,13,12],[-16,-62,12,12],[4,-44,10,8]],
+ pine:[[-3,-189,4,5],[-9,-164,8,7],[4,-141,10,8],
+       [-16,-114,9,8],[11,-94,9,8],[-24,-69,12,7],
+       [4,-45,13,8],[-17,-32,13,6]]
 };
 const shade={
  oak:[[-31,-54,13,8],[16,-39,24,7]],
  beech:[[1,-52,15,10],[-11,-39,9,9]],
  chestnut:[[-25,-45,25,9],[20,-63,13,9]],
- poplar:[[-9,-33,14,8],[-14,-80,10,10]]
+ poplar:[[-9,-33,14,8],[-14,-80,10,10]],
+ pine:[[-6,-151,9,6],[-11,-81,15,6],[8,-39,13,7]]
 };
 function tree(im,{x,ground,type,depth=1}){
  const main=depth===0?palette.far:depth===1?palette.mid:palette.near;
  const shadow=depth===0?palette.mid:palette.ink;
  const highlight=depth===0?palette.light:depth===1?palette.light:palette.mid;
- const narrow=type==='poplar'||type==='beech';
+ const narrow=type==='poplar'||type==='beech'||type==='pine';
  const trunkW=depth===0?5:narrow?7:9;
- const trunkTop=type==='poplar'?ground-98:ground-71;
+ const trunkTop=type==='pine'?ground-144:type==='poplar'?ground-98:ground-71;
  wrapRect(im,x-Math.floor(trunkW/2),trunkTop,trunkW,ground-trunkTop,palette.trunk);
  wrapRect(im,x-Math.floor(trunkW/2),trunkTop,2,ground-trunkTop,shadow);
  // Faceted natural branch arms; partially obscured by hand-painted foliage.
@@ -100,7 +112,7 @@ const scenes={
            {x:332,ground:240,type:'beech',depth:1}],
  nearTrees:[{x:52,ground:249,type:'oak',depth:2},
             {x:181,ground:250,type:'chestnut',depth:2},
-            {x:318,ground:249,type:'beech',depth:2}]
+            {x:318,ground:249,type:'pine',depth:2}]
 };
 async function make(name){
  const [w,h]=specs[name],im=canv(w,h);
