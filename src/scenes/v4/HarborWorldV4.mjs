@@ -28,16 +28,16 @@ function sky(frame,m){
  }
  // Broad pixel-stepped crepuscular glow, not a blurry overlay.
  for(let j=6;j>=0;j--){
-  const w=45+j*12,cy=268,xx=225;
+  const w=45+j*12,cy=245,xx=225;
   o+=P([[xx-w,cy+12+j*6],[xx-w+20,cy-9-j*3],[xx+w-20,cy-9-j*3],[xx+w,cy+12+j*6]],['#ffd4aa','#f9c4a9','#f6bea8','#f3baa9','#f0b5a7','#edb1aa','#e6abad'][j]);
  }
  // Faceted gold sun and fine tiered rim; silhouettes remain deliberately open.
  for(let radius=29;radius>17;radius-=4){
   let pts=[];
-  for(let y=-radius;y<=radius;y+=2){const w=Math.sqrt(radius*radius-y*y);o+=R(225-w,275+y,2*w,2,radius>25?'#ffd9ad':radius>21?'#ffe1b6':'#ffe9bc');}
+  for(let y=-radius;y<=radius;y+=2){const w=Math.sqrt(radius*radius-y*y);o+=R(225-w,252+y,2*w,2,radius>25?'#ffd9ad':radius>21?'#ffe1b6':'#ffe9bc');}
  }
- for(let y=-16;y<=16;y+=2){let w=Math.sqrt(256-y*y);o+=R(225-w,275+y,2*w,2,'#fff1c7');}
- o+=R(205,273,38,2,'#fff6d4')+R(210,268,29,1,'#fff4d3');
+ for(let y=-16;y<=16;y+=2){let w=Math.sqrt(256-y*y);o+=R(225-w,252+y,2*w,2,'#fff1c7');}
+ o+=R(205,250,38,2,'#fff6d4')+R(210,245,29,1,'#fff4d3');
  // Luminous horizon ribbons leave ample room for independently drawn clouds.
  o+=P([[0,232],[57,230],[101,232],[152,230],[206,234],[253,228],[318,230],[360,225],[360,229],[308,234],[263,233],[219,237],[157,234],[104,237],[56,234],[0,235]],'#e9b0af');
  o+=R(152,315,128,1,'#ffe2bc')+R(168,318,86,1,'#ffd7aa');
@@ -187,6 +187,9 @@ function building(spec){
   for(let i=0;i<8;i++)body+=R(w-12-(i%3)*3,h-17-i*5,8,3,i%2?'#5c937d':'#8eae89');
   body+=R(w-9,h-33,3,2,'#edaf99');
  }
+ // A further tier of handmade 1px cornices and stone arch shadows.
+ body+=R(1,12,w-4,1,'#cda69c')+R(2,h-9,w-5,1,'#efc49e');
+ if(seed%2===0){body+=R(1,h-35,4,22,'#6b7788')+R(w-7,h-35,3,22,'#c79e98');}
  // Put roof last so ridgelines and tiles cover the top of the masonry.
  o+=G(x,top,1,body+roof({w,roof:roofColour,style,chimney:seed%3===1}));
  return o;
@@ -208,6 +211,7 @@ function architecture(frame,m){
   {x:326,top:273,w:39,h:133,wall:'#b0a1af',side:'#61798d',trim:'#edc5b8',roof:'#64738c',style:'hip',seed:8}
  ];
  for(const b of structures)o+=building(b);
+ o+=portArchitecturalDetails(frame);
  // Signature right-facing harbour café terrace, layered curved awning and balcony.
  o+=P([[98,382],[150,382],[146,394],[95,394]],'#344d61');
  o+=R(99,368,50,3,'#e9b9a1');
@@ -409,6 +413,76 @@ function foreground(frame,m){
  * motion: optional cameraX / cameraY / foliageSway, future compatible keys.
  * Agent 2 may replace atmospheric layers without modifying architecture.
  */
+
+/**
+ * Individually painted identity details placed over the house geometry,
+ * never generated as uniform repeated blocks.
+ */
+function portArchitecturalDetails(frame){
+ let o='';
+ // Bell tower octagonal copper lantern room, luminous clock and carved pillars.
+ o+=P([[60,266],[64,259],[69,255],[80,255],[87,262],[89,268]],'#3c4d63');
+ o+=P([[65,261],[71,257],[79,257],[84,263]],'#d8a69f');
+ o+=R(63,267,24,4,'#ffe0ab')+R(64,272,3,11,'#b48086')+R(84,272,3,11,'#9e7784');
+ o+=P([[70,279],[78,279],[82,283],[82,291],[78,295],[70,295],[66,291],[66,283]],'#46566c');
+ o+=P([[71,282],[77,282],[79,284],[79,291],[77,293],[71,293],[69,291],[69,284]],'#ffe0af');
+ o+=R(74,283,1,6,'#46556b')+R(74,288,4,1,'#46556b');
+ o+=R(64,297,23,2,'#ffe3b6');
+ // Roof dormers, stone cornices, tiny chimney caps and asymmetrical shutters.
+ for(const [x,y,c] of [[29,291,'#8b657e'],[98,279,'#b36e7c'],[312,294,'#8e6883'],[339,263,'#66718d']]){
+  o+=P([[x-5,y+5],[x+5,y-5],[x+15,y+5]],'#334761');
+  o+=P([[x-2,y+3],[x+5,y-3],[x+12,y+3]],c);
+  o+=R(x+2,y+5,7,7,'#415a6d')+R(x+3,y+6,5,4,'#ffe1ae');
+  o+=R(x-4,y+13,20,2,'#e8b39b');
+ }
+ // Decorated timber balcony steps, flower cascade and warm café lantern strings.
+ for(const [x,y,w] of [[10,352,48],[92,342,34],[304,351,30]]){
+  o+=R(x,y,w,2,'#f2c29f')+R(x,y+5,w,2,'#42576b');
+  for(let i=0;i<w;i+=5)o+=R(x+i,y-7,2,13,'#4b5669');
+  for(let i=0;i<w;i+=9){
+   o+=R(x+i,y-10,3,5,'#5a947d')+
+      R(x+i-1,y-12,5,3,i%2?'#e9a4aa':'#f8d9a5');
+  }
+ }
+ // Hanging laundry deliberately on the left alley, coloured textiles catching warm light.
+ o+=R(0,336,55,1,'#c9a49d');
+ for(const [x,c,len] of [[5,'#f8c9a4',12],[19,'#8ea7a5',11],[32,'#de9ca6',17],[47,'#b0b3ac',10]]){
+  o+=R(x,335,1,4,'#e4bea5')+R(x,339,9,len,c)+R(x+2,341,5,2,'#ffe0bc');
+ }
+ // Carved arch-and-window shadows on the quay wall, each with its own trim.
+ for(let i=0;i<5;i++){
+  const x=i<3?6+i*28:307+(i-3)*27,y=394;
+  o+=P([[x,y+1],[x,y-9],[x+3,y-13],[x+11,y-13],[x+14,y-9],[x+14,y+2]],'#344b5e');
+  o+=P([[x+2,y+1],[x+2,y-8],[x+5,y-11],[x+9,y-11],[x+12,y-8],[x+12,y+1]],'#dfab96');
+  o+=R(x+5,y-5,5,7,'#fff0bb')+R(x-2,y+3,17,2,'#e4baa0');
+ }
+ // Cafe sign and wooden striped fabric canopy cast a stepped shadow.
+ o+=R(97,363,50,5,'#344c61');
+ for(let i=0;i<8;i++)o+=R(98+i*6,368,4,9,i%2?'#e27f84':'#ffe2ae');
+ o+=R(104,360,29,5,'#ffdbac')+R(108,361,3,3,'#5a6574')+
+    R(116,361,3,3,'#5a6574')+R(124,361,3,3,'#5a6574');
+ o+=R(142,356,2,12,'#445b67')+R(141,358,11,8,'#41596b')+
+    R(143,360,8,3,'#f9c39d');
+ // Delicate bridge stair to lower fishing dock with 3D steps and railing.
+ for(let i=0;i<7;i++){
+  let x=130+i*3,y=400+i*7;
+  o+=R(x,y,26-i*2,4,'#ad8980')+R(x,y-2,24-i*2,2,'#e3b299');
+ }
+ o+=R(129,401,2,49,'#40586b')+R(153,431,2,21,'#40586b');
+ // Hand-set ivy that blooms on the right wall; layered, not random speckles.
+ for(let i=0;i<26;i++){
+  let y=301+i*3.1,x=352-Math.sin(i*.63)*7-(i%5)*2;
+  o+=R(x,y,4+(i%3),3,i%3?'#4c8a77':'#88aa89');
+  if(i%7===0)o+=R(x+1,y-3,3,3,'#f3b6a1');
+ }
+ // Tiny coastal shutters add depth to the formerly plain end façades.
+ for(let [x,y] of [[346,313],[346,339],[277,348],[31,323]]){
+  o+=R(x,y,3,12,'#476274')+R(x+4,y,7,10,'#f8dfa9')+
+      R(x+12,y,3,12,'#536478')+R(x+2,y+12,15,2,'#e5b49b');
+ }
+ return o;
+}
+
 export function renderHarborBaseLayers(frame, motion={}){
  const f=Math.max(0,Math.floor(numb(frame)));
  return {
