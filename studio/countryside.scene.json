@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "name": "Countryside Starter Scene (authored example)",
+  "width": 360,
+  "height": 640,
+  "stageWidth": 480,
+  "camera": {
+    "motion": 20,
+    "frames": 90
+  },
+  "layers": [
+    {
+      "id": "sky",
+      "depth": 0,
+      "color": "#879fa5",
+      "bands": [
+        {
+          "top": 0,
+          "bottom": 120,
+          "color": "#637d98"
+        },
+        {
+          "top": 120,
+          "bottom": 275,
+          "color": "#9db8b1"
+        },
+        {
+          "top": 275,
+          "bottom": 380,
+          "color": "#d8c9a5"
+        }
+      ],
+      "sprites": [
+        {
+          "sprite": "cloud",
+          "x": 40,
+          "y": 180,
+          "scale": 2
+        },
+        {
+          "sprite": "cloud",
+          "x": 300,
+          "y": 205,
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "far-trees",
+      "depth": 0.18,
+      "sprites": [
+        {
+          "sprite": "oak-tree",
+          "x": 25,
+          "y": 350,
+          "scale": 2
+        },
+        {
+          "sprite": "oak-tree",
+          "x": 110,
+          "y": 365,
+          "scale": 2
+        },
+        {
+          "sprite": "oak-tree",
+          "x": 245,
+          "y": 357,
+          "scale": 2
+        },
+        {
+          "sprite": "oak-tree",
+          "x": 375,
+          "y": 360,
+          "scale": 2
+        }
+      ]
+    },
+    {
+      "id": "roadside",
+      "depth": 0.45,
+      "bands": [
+        {
+          "top": 448,
+          "bottom": 520,
+          "color": "#668673"
+        },
+        {
+          "top": 520,
+          "bottom": 640,
+          "color": "#678371"
+        }
+      ],
+      "sprites": [
+        {
+          "sprite": "oak-tree",
+          "x": 12,
+          "y": 435,
+          "scale": 2
+        },
+        {
+          "sprite": "oak-tree",
+          "x": 355,
+          "y": 418,
+          "scale": 2
+        },
+        {
+          "sprite": "grass-tuft",
+          "x": 130,
+          "y": 530,
+          "scale": 2
+        },
+        {
+          "sprite": "grass-tuft",
+          "x": 290,
+          "y": 546,
+          "scale": 2
+        },
+        {
+          "sprite": "bush",
+          "x": 216,
+          "y": 523,
+          "scale": 2
+        }
+      ]
+    },
+    {
+      "id": "road",
+      "depth": 0.68,
+      "bands": [
+        {
+          "top": 548,
+          "bottom": 618,
+          "color": "#575b63"
+        },
+        {
+          "top": 618,
+          "bottom": 640,
+          "color": "#3a4c56"
+        }
+      ],
+      "roadMarkers": {
+        "y": 592,
+        "count": 5,
+        "step": 95,
+        "width": 35,
+        "height": 2,
+        "color": "#e9cc9e"
+      },
+      "sprites": []
+    },
+    {
+      "id": "foreground",
+      "depth": 1,
+      "sprites": [
+        {
+          "sprite": "grass-tuft",
+          "x": 70,
+          "y": 613,
+          "scale": 1
+        },
+        {
+          "sprite": "grass-tuft",
+          "x": 320,
+          "y": 621,
+          "scale": 1
+        }
+      ]
+    }
+  ],
+  "hero": {
+    "sprite": "country-car",
+    "x": 149,
+    "y": 545,
+    "scale": 2,
+    "rig": "car"
+  },
+  "slug": "countryside"
+}
