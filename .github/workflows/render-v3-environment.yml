@@ -1,0 +1,40 @@
+name: Sunset Harbor V3 environment proof
+on:
+  push:
+    branches:
+      - agent/sunset-harbor-v3-environment
+    paths:
+      - 'src/**'
+      - 'scripts/render-v3-environment.mjs'
+      - 'assets/**'
+      - '.github/workflows/render-v3-environment.yml'
+  workflow_dispatch:
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Native Remotion render with existing V2 jazz
+        run: node scripts/render-v3-environment.mjs
+      - name: Capture first, middle and last video frames
+        run: |
+          mkdir -p out/frames-v3
+          ffmpeg -v error -y -i out/sunset-harbor-v3-environment-1080p.mp4 -vf "select='eq(n,0)+eq(n,180)+eq(n,359)'" -vsync 0 out/frames-v3/frame-%02d.png
+          test "$(find out/frames-v3 -name '*.png' | wc -l)" -eq 3
+      - name: Upload moving proof and QA stills
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v3-environment-jazz-1080p
+          path: |
+            out/sunset-harbor-v3-environment-1080p.mp4
+            out/frames-v3/*.png
+          if-no-files-found: error
+          retention-days: 30
