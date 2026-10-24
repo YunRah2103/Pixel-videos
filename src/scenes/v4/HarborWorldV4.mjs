@@ -283,8 +283,7 @@ function harbour(frame,m){
  }
  o+=R(118,408,7,13,'#b07d74')+R(119,409,5,2,'#e3ac8d');
  o+=R(129,407,9,15,'#9d7776')+R(129,409,9,2,'#e7b6a0');
- // One modest bobbing fishing skiff, leaving centre open for Agent 3 story boat.
- o+=boat(147,430,frame,.86);
+ // Leave the open central passage clear for Agent 3's moving sailboat; the\n // earlier moored skiff overlapped the hero vessel near the ending.
  // Separate stationary shore skiff and delicate rigging near the far right.
  o+=boat(300,452,frame,.58);
  o+=R(133,407,2,31,'#495b67')+R(137,409,2,29,'#495b67');
