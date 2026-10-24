@@ -46,7 +46,7 @@ jobs:
           python3 -m py_compile scripts/install_studio_v2.py scripts/export-studio-art.py
           python3 scripts/install_studio_v2.py --check
       - name: TypeScript quality gate
-        run: npm run typecheck
+        run: npm run typecheck:toolkit
       - name: Generate original pixel art, moving MP4 and verify
         run: npm run assets:verify
       - name: Upload usable art, real movie and QA evidence

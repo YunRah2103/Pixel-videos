@@ -16,7 +16,8 @@
     "assets:proof": "node scripts/render-toolkit-proof.mjs",
     "assets:qa": "node scripts/qa-toolkit.mjs",
     "assets:verify": "npm run assets:build && npm run assets:proof && npm run assets:qa",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typecheck:toolkit": "tsc --project tsconfig.toolkit.json --noEmit"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",

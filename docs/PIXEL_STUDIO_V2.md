@@ -21,6 +21,7 @@ Editors are standalone native binaries. They are deliberately **not** committed 
 
     npm install --no-audit --no-fund
     npm run tools:check
+    npm run typecheck:toolkit
     npm run assets:build
     npm run assets:proof
     npm run assets:qa
@@ -77,3 +78,7 @@ Agents 1–3 and V5 integrator have their **own already-created branches**. Thei
 - Studio V2 CI workflow checks generated assets, moving 90-frame proof, MP4 full decode and frame diversity. It does not replace full V5 film QA.
 
 Upstream tools: https://pixelorama.org/user_manual/cli/ ; https://docs.krita.org/en/reference_manual/linux_command_line.html ; https://ldtk.io ; https://docs.godotengine.org/en/stable/tutorials/animation/creating_movies.html ; https://pixijs.com/8.x/guides/components/filters ; https://sharp.pixelplumbing.com/
+
+### Baseline TypeScript warning
+
+The V4 integration branch currently reports missing TypeScript declarations for several legacy V3/V4 .mjs imports under a full-project tsc --noEmit. The isolated toolkit quality gate uses tsconfig.toolkit.json so new toolkit modules are strictly checked without modifying another agent's existing source. The legacy declaration backlog is separate from this tooling PR.
