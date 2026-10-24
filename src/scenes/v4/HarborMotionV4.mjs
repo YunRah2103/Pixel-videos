@@ -18,9 +18,9 @@ export function getHarborMotionV4(frame=0) {
   const opening=(1-reveal), stillness=span(f,275,355);
   // Single continuous move: observe the sun, drift towards the people, finish at rest.
   // The near plane moves ~4x as far as the sky, but scenery never clips the sun.
-  const cameraX=lerp(-3.6,1.4,reveal)+2.35*inhabit-0.75*rest;
-  const cameraY=lerp(1.65,-1.0,reveal)-0.75*inhabit+0.35*rest;
-  const cameraZoom=1.018+0.016*reveal+0.014*inhabit-0.0018*rest;
+  const cameraX=2.7-4.2*reveal-13.4*inhabit+2.5*rest;
+  const cameraY=1.3-1.8*reveal-4.5*inhabit+1.1*rest;
+  const cameraZoom=1.018+0.026*reveal+0.073*inhabit-0.009*rest;
   const clock=f/HARBOR_V4_FPS;
   const breeze=0.68*sin(f,137,0.4)+0.34*sin(f,61,1.3);
   // Each plane has its own deterministic displacement measured in native pixels.
