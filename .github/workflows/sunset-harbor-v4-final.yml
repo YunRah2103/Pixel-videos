@@ -1,0 +1,43 @@
+name: Sunset Harbor V4 FINAL — integrated cinematic movie
+on:
+  push:
+    branches:
+      - integration/sunset-harbor-v4-final
+  workflow_dispatch:
+jobs:
+  render-v4-master:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Ensure FFmpeg
+        run: |
+          ffmpeg -version
+          ffprobe -version
+      - name: Render real Remotion V4 with original user-supplied score
+        run: node scripts/render-v4-final.mjs
+      - name: Verify playable 1080p full movie and contact sheet
+        run: |
+          test -s out/sunset-harbor-v4-FINAL-1080p.mp4
+          test -s out/v4-final-qa/sunset-harbor-v4-contact-sheet.png
+          test -s out/v4-final-qa/verification.json
+          ffprobe -v error -count_frames -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v4-FINAL-1080p.mp4
+          ffmpeg -v error -xerror -i out/sunset-harbor-v4-FINAL-1080p.mp4 -f null -
+      - name: Upload verified V4 master MP4, contact sheet and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v4-FINAL-1080p
+          path: |
+            out/sunset-harbor-v4-FINAL-1080p.mp4
+            out/v4-final-qa/sunset-harbor-v4-contact-sheet.png
+            out/v4-final-qa/frame-*.png
+            out/v4-final-qa/verification.json
+          if-no-files-found: error
+          retention-days: 30
