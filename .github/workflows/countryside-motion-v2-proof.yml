@@ -1,0 +1,55 @@
+name: Countryside Drive V2 — Agent 3 genuine asset motion proof
+on:
+  push:
+    branches:
+      - agent/countryside-motion-v2
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  countryside-motion-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install video encoder and metadata tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Install and verify actual Pixel Studio V3 (atlas, environment, rigs, MP4 QA)
+        run: npm run studio:setup
+      - name: Explicit V3 rig verification
+        run: npm run rigs:test
+      - name: Explicit V3 environment proof
+        run: npm run environment:proof
+      - name: Explicit V3 visual diagnostics
+        run: npm run visual:qa
+      - name: Verify dedicated Agent 3 motion TypeScript
+        run: npx tsc --project tsconfig.countryside-motion.json --noEmit
+      - name: Test wrap seams, scrubbing, contact and calibrated wheel roll
+        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs
+      - name: Build original integrated world PNGs and V3-native contact shadow
+        run: |
+          node studio/countryside/world/build-world-art.mjs
+          node scripts/build-countryside-motion-shadow.mjs
+          node scripts/check-countryside-ready.mjs
+      - name: Install native Remotion Chromium
+        run: npx remotion browser ensure
+      - name: Render genuine 12 second 1080x1920 motion-only proof with visual QA
+        run: node scripts/render-countryside-motion.mjs
+      - name: Publish the actual moving proof and decoded capture sheet
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: countryside-v2-agent3-motion-proof
+          path: |
+            out/countryside-motion/countryside-motion-proof-1080p.mp4
+            out/countryside-motion/motion-contact-sheet.png
+            out/countryside-motion/captures/*.png
+            out/countryside-motion/motion-verification.json
+            public/countryside/motion/contact-shadow.png
+          retention-days: 30
+          if-no-files-found: warn
