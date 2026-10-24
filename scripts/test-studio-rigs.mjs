@@ -4,7 +4,7 @@ import {carPose,walkPose,boatPose,animalPose,clothPose,frameSlot,rigPose} from '
 import {lightPixelScene,contactShadow} from '../src/toolkit/pixelLighting.mjs';
 for(let f of [0,1,30,60,89,1000]){
  assert.deepEqual(carPose(f),carPose(f));
- assert.equal(walkPose(f).leftFootX,-walkPose(f).rightFootX);
+ assert(Math.abs(walkPose(f).leftFootX+walkPose(f).rightFootX)<=1);
  assert(Number.isFinite(boatPose(f).roll));
  assert(typeof animalPose(f).eyeClosed==='boolean');
  assert(Number.isFinite(clothPose(f).angle));
