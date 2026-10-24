@@ -60,7 +60,8 @@ export function wrapTileOffset(offsetX: number, tileWidth: number): number {
   if (!Number.isInteger(offsetX) || !Number.isInteger(tileWidth) || tileWidth < 1) {
     throw new Error('Tile offsets and tile width must be integer native pixels');
   }
-  return -(((-offsetX % tileWidth) + tileWidth) % tileWidth);
+  const remainder = ((-offsetX % tileWidth) + tileWidth) % tileWidth;
+  return remainder === 0 ? 0 : -remainder;
 }
 
 /**
