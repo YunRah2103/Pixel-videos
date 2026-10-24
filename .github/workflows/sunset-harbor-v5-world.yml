@@ -1,0 +1,64 @@
+name: Sunset Harbor V5 — Agent 1 illustrated world, 12s native QA
+on:
+  push:
+    branches: [agent/sunset-harbor-v5-world-art]
+    paths:
+      - 'src/scenes/v5/WorldV5.tsx'
+      - 'src/scenes/v5/WorldV5Proof.tsx'
+      - 'src/scenes/v5/WorldV5ProofRoot.tsx'
+      - 'src/scenes/v5/WorldV5ProofIndex.ts'
+      - 'public/v5/world/**'
+      - 'scripts/generate-v5-world.py'
+      - 'scripts/render-v5-world.mjs'
+      - '.github/workflows/sunset-harbor-v5-world.yml'
+  workflow_dispatch:
+jobs:
+  genuine-moving-pixel-world:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Native renderer and image tools
+        run: |
+          npm install --no-audit --no-fund
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Render and verify 360 genuinely moving frames, H264, AAC
+        run: node scripts/render-v5-world.mjs
+      - name: Download actual V4 film frames for artwork comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p out/v4-reference
+          gh run download 40110703217 --repo ${{ github.repository }} -n sunset-harbor-v4-FINAL-1080p -D out/v4-reference
+          test -s out/v4-reference/v4-final-qa/frame-090.png
+          ffmpeg -v error -y -i out/v4-reference/v4-final-qa/frame-090.png -i out/v5-world-qa/frame-090.png \
+            -filter_complex '[0:v]scale=360:640:flags=neighbor[a];[1:v]scale=360:640:flags=neighbor[b];[a][b]hstack=inputs=2' \
+            -frames:v 1 out/v5-world-qa/v4-v5-side-by-side-090.png
+          test -s out/v5-world-qa/v4-v5-side-by-side-090.png
+      - name: Assert full playable movie, nine frames and decoded audio
+        run: |
+          test -s out/sunset-harbor-v5-WORLD-1080p.mp4
+          test -s out/v5-world-qa/verification.json
+          test -s out/v5-world-qa/sunset-harbor-v5-world-contact-sheet.png
+          test -s out/v5-world-qa/v4-v5-side-by-side-090.png
+          for f in 000 045 090 135 180 225 270 315 359; do test -s "out/v5-world-qa/frame-$f.png"; done
+          ffprobe -v error -count_frames -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v5-WORLD-1080p.mp4
+          ffmpeg -v error -xerror -i out/sunset-harbor-v5-WORLD-1080p.mp4 -f null -
+      - name: Upload full MP4, contact sheet, side-by-side and source artwork
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v5-agent1-world-verified-1080p
+          path: |
+            out/sunset-harbor-v5-WORLD-1080p.mp4
+            out/v5-world-qa/*.png
+            out/v5-world-qa/*.json
+            public/v5/world/world-v5-atlas.png
+          if-no-files-found: error
+          retention-days: 30
