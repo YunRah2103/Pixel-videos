@@ -1,6 +1,6 @@
 {
   "name": "pixel-videos",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Agent-friendly cinematic pixel art studio (Remotion, PixiJS, Sharp, Pixelorama, Krita, LDtk, Godot)",
   "scripts": {
@@ -17,7 +17,16 @@
     "assets:qa": "node scripts/qa-toolkit.mjs",
     "assets:verify": "npm run assets:build && npm run assets:proof && npm run assets:qa",
     "typecheck": "tsc --noEmit",
-    "typecheck:toolkit": "tsc --project tsconfig.toolkit.json --noEmit"
+    "typecheck:toolkit": "tsc --project tsconfig.toolkit.json --noEmit",
+    "studio:setup": "node scripts/setup-agent-studio.mjs",
+    "studio:check": "npm run tools:check",
+    "atlas:build": "node scripts/build-sprite-atlas.mjs",
+    "environment:build": "node scripts/build-environment.mjs",
+    "environment:proof": "node scripts/render-environment-proof.mjs",
+    "visual:qa": "node scripts/qa-visual.mjs",
+    "rigs:test": "node scripts/test-studio-rigs.mjs",
+    "studio:build": "npm run assets:build && npm run atlas:build && npm run environment:build && npm run rigs:test",
+    "studio:verify": "npm run studio:build && npm run environment:proof && npm run visual:qa && npm run typecheck:toolkit"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",

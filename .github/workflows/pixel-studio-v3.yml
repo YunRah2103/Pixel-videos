@@ -1,0 +1,70 @@
+name: Pixel Studio V3 — reusable production tools and genuine MP4 QA
+on:
+  push:
+    branches:
+      - feat/pixel-studio-v3-production
+      - integration/sunset-harbor-v4-final
+    paths:
+      - 'studio/**'
+      - 'src/toolkit/**'
+      - 'scripts/build-pixel-assets.mjs'
+      - 'scripts/build-sprite-atlas.mjs'
+      - 'scripts/build-environment.mjs'
+      - 'scripts/render-environment-proof.mjs'
+      - 'scripts/qa-visual.mjs'
+      - 'scripts/test-studio-rigs.mjs'
+      - 'scripts/setup-agent-studio.mjs'
+      - 'package.json'
+      - 'tsconfig.toolkit.json'
+      - '.github/workflows/pixel-studio-v3.yml'
+  pull_request:
+    paths:
+      - 'studio/**'
+      - 'src/toolkit/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'tsconfig.toolkit.json'
+      - '.github/workflows/pixel-studio-v3.yml'
+  workflow_dispatch:
+jobs:
+  real-studio-toolkit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install native video tooling
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffprobe -version
+      - name: One-command studio installation and proof
+        run: npm run studio:setup
+      - name: Check verifiable outputs exist
+        run: |
+          test -s public/toolkit/atlas/atlas.png
+          test -s public/toolkit/atlas/atlas.json
+          test -s public/toolkit/environments/countryside/scene.json
+          test -s out/studio-v3/countryside-toolkit-proof-1080p.mp4
+          test -s out/studio-v3/contact-sheet.png
+          test -s out/studio-v3/visual-qa.json
+          ffprobe -v error -count_frames -show_entries stream=codec_type,width,height,nb_read_frames -of json out/studio-v3/countryside-toolkit-proof-1080p.mp4
+      - name: Publish real MP4, atlas and 9-frame QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-studio-v3-production-proof
+          path: |
+            public/toolkit/sprites/*.png
+            public/toolkit/atlas/atlas.png
+            public/toolkit/atlas/atlas.json
+            public/toolkit/environments/countryside/*.png
+            public/toolkit/environments/countryside/scene.json
+            out/studio-v3/countryside-toolkit-proof-1080p.mp4
+            out/studio-v3/contact-sheet.png
+            out/studio-v3/visual-qa.json
+          retention-days: 30
+          if-no-files-found: error
