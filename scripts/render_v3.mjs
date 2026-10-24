@@ -10,13 +10,13 @@ const run=(exe,args,opts={})=>{
   return p.stdout||'';
 };
 const npx=process.platform==='win32'?'npx.cmd':'npx';
-const embedded='assets/v3-day-night-chill.opus.b64';
+const embedded='assets/v3-chill-part01.b64';
 if(!existsSync(embedded))throw Error('V3 requested Day & Night soundtrack missing. Do not silently substitute V2 jazz.');
 const audio='out/v3-day-night-chill.opus';
 writeFileSync(audio,Buffer.from(readFileSync(embedded,'utf8').replace(/\s+/g,''),'base64'));
 run(npx,['remotion','render','src/index.ts','SunsetHarborV3','out/v3-360x640.mp4','--codec','h264']);
 run('ffmpeg',['-hide_banner','-loglevel','error','-y',
-  '-i','out/v3-360x640.mp4','-i',audio,'-map','0:v:0','-map','1:a:0',
+  '-i','out/v3-360x640.mp4','-stream_loop','3','-i',audio,'-map','0:v:0','-map','1:a:0',
   '-vf',`scale=${W}:${H}:flags=neighbor,format=yuv420p`,
   '-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv420p',
   '-r',String(FPS),'-c:a','aac','-b:a','160k',
@@ -35,7 +35,7 @@ for(const [name,frame] of [['opening',20],['middle',180],['ending',330]]){
  run('ffmpeg',['-hide_banner','-loglevel','error','-y',
    '-i',final,'-vf',`select=eq(n\\,${frame})`,'-vsync','0','-frames:v','1',`out/qa/v3-${name}.png`]);
 }
-const proof={verified:true,file:final,audio:'user-supplied Day and Night chill clip',frames:FRAMES,fps:FPS,
+const proof={verified:true,audioEdit:'four-second excerpt of supplied melody looped to 12 seconds',,file:final,audio:'user-supplied Day and Night chill clip',frames:FRAMES,fps:FPS,
  resolution:`${W}x${H}`,duration:report.format.duration,audioCodec:a.codec_name,
  audioChannels:a.channels,videoCodec:v.codec_name,sizeBytes:report.format.size,
  screenshots:['out/qa/v3-opening.png','out/qa/v3-middle.png','out/qa/v3-ending.png']};
