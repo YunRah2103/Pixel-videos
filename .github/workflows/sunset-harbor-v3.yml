@@ -5,7 +5,7 @@ on:
       - agent/sunset-harbor-v3-cinematic-motion
     paths:
       - 'src/**'
-      - 'assets/v3-day-night-chill.opus.b64'
+      - 'assets/v3-chill-part01.b64'
       - 'scripts/render_v3.mjs'
       - 'package.json'
       - '.github/workflows/sunset-harbor-v3.yml'
