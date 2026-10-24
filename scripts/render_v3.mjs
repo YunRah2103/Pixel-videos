@@ -35,7 +35,7 @@ for(const [name,frame] of [['opening',20],['middle',180],['ending',330]]){
  run('ffmpeg',['-hide_banner','-loglevel','error','-y',
    '-i',final,'-vf',`select=eq(n\\,${frame})`,'-vsync','0','-frames:v','1',`out/qa/v3-${name}.png`]);
 }
-const proof={verified:true,audioEdit:'four-second excerpt of supplied melody looped to 12 seconds',,file:final,audio:'user-supplied Day and Night chill clip',frames:FRAMES,fps:FPS,
+const proof={verified:true,audioEdit:'four-second excerpt of supplied melody looped to 12 seconds',file:final,audio:'user-supplied Day and Night chill clip',frames:FRAMES,fps:FPS,
  resolution:`${W}x${H}`,duration:report.format.duration,audioCodec:a.codec_name,
  audioChannels:a.channels,videoCodec:v.codec_name,sizeBytes:report.format.size,
  screenshots:['out/qa/v3-opening.png','out/qa/v3-middle.png','out/qa/v3-ending.png']};
