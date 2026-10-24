@@ -1,0 +1,63 @@
+name: Pixel Studio V2 — asset/animation toolkit QA
+on:
+  push:
+    branches:
+      - feat/pixel-studio-v2-toolkit
+      - integration/sunset-harbor-v4-final
+    paths:
+      - 'studio/**'
+      - 'src/toolkit/**'
+      - 'scripts/build-pixel-assets.mjs'
+      - 'scripts/render-toolkit-proof.mjs'
+      - 'scripts/qa-toolkit.mjs'
+      - 'scripts/install_studio_v2.py'
+      - 'scripts/export-studio-art.py'
+      - 'package.json'
+      - '.github/workflows/pixel-studio-v2.yml'
+  pull_request:
+    paths:
+      - 'studio/**'
+      - 'src/toolkit/**'
+      - 'scripts/build-pixel-assets.mjs'
+      - 'scripts/render-toolkit-proof.mjs'
+      - 'scripts/qa-toolkit.mjs'
+      - 'package.json'
+  workflow_dispatch:
+jobs:
+  asset-toolkit-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Node dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+      - name: Validate Python adapters
+        run: |
+          python3 -m py_compile scripts/install_studio_v2.py scripts/export-studio-art.py
+          python3 scripts/install_studio_v2.py --check
+      - name: TypeScript quality gate
+        run: npm run typecheck:toolkit
+      - name: Generate original pixel art, moving MP4 and verify
+        run: npm run assets:verify
+      - name: Upload usable art, real movie and QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-studio-v2-toolkit-proof
+          path: |
+            public/toolkit/sprites/*.png
+            out/toolkit/pixel-toolkit-proof-1080p.mp4
+            out/toolkit/proof-still.png
+            out/toolkit/verification.json
+            out/toolkit/assets-report.json
+          if-no-files-found: error
+          retention-days: 30

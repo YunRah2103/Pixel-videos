@@ -1,0 +1,47 @@
+name: Sunset Harbor V4 — atmosphere proof
+on:
+  push:
+    branches: [agent/sunset-harbor-v4-atmosphere]
+    paths:
+      - 'src/scenes/v4/HarborAtmosphereV4.mjs'
+      - 'src/scenes/v4/HarborAtmosphereProof.tsx'
+      - 'scripts/render-v4-atmosphere.mjs'
+      - '.github/workflows/render-v4-atmosphere.yml'
+      - 'docs/V4_ATMOSPHERE_INTEGRATION.md'
+  workflow_dispatch:
+jobs:
+  render-atmosphere:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install native dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Native Remotion proof, soundtrack, full decode, frame counts and screenshot captures
+        run: node scripts/render-v4-atmosphere.mjs
+      - name: Verify exact deliverables
+        run: |
+          test -s out/sunset-harbor-v4-atmosphere-1080p.mp4
+          test -s out/qa-v4-atmosphere/opening.png
+          test -s out/qa-v4-atmosphere/middle.png
+          test -s out/qa-v4-atmosphere/ending.png
+          test -s out/qa-v4-atmosphere/verification.json
+          ffprobe -v error -count_frames -show_entries stream=codec_name,codec_type,width,height,nb_read_frames:format=duration -of json out/sunset-harbor-v4-atmosphere-1080p.mp4
+          ffmpeg -v error -i out/sunset-harbor-v4-atmosphere-1080p.mp4 -f null -
+      - name: Upload moving MP4, QA stills and validation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v4-atmosphere-native-1080x1920
+          path: |
+            out/sunset-harbor-v4-atmosphere-1080p.mp4
+            out/qa-v4-atmosphere/opening.png
+            out/qa-v4-atmosphere/middle.png
+            out/qa-v4-atmosphere/ending.png
+            out/qa-v4-atmosphere/verification.json
+          if-no-files-found: error
+          retention-days: 30
