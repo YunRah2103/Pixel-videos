@@ -1,6 +1,6 @@
 # Sunset Harbor V5 — Final Director's Production Plan / QA Gate
 
-**Status: PREPRODUCTION ONLY — NOT A FINISHED V5 FILM.**
+**Status: V5 FINAL RENDER TECHNICALLY VERIFIED; ARTISTIC REVIEW COMPLETED AT 9 FRAMES / OWNER APPROVAL PENDING.**
 **Issue:** #15. **Base:** `integration/sunset-harbor-v4-final` at `22f9c9f87aed98fb2cbdeaf958f998c3eda32a10`.
 **Delivering branch:** `integration/sunset-harbor-v5-final`; PR target must remain V4, never main.
 
@@ -11,8 +11,8 @@
 - Concrete weaknesses: clouds are still broad stepped geometric wedges; repeated rectilinear facades/window matrices create prefab feeling; water has too many small equal-value shimmer strokes; the foreground railing/ground takes substantial picture space; subjects are tiny and their acting is difficult to read at phone scale. The opening/middle/closing contact sheet changes but the entire piece retains nearly the same shot composition.
 - V5 must demonstrably fix each failure: **drawing changes, not extra procedural noise**, stronger atmosphere and visible narrative staging. Compare V4 and V5 at frames 0/45/90/135/180/225/270/315/359.
 
-## Hard blocker (checked 24 October 2026)
-At preproduction start, all three specialist branches and this integration branch compare IDENTICAL to V4 (0 commits ahead), and no V5 proof PRs exist. **Do not compose a pretend film from old V4 art or claim V5 rendered.** Wait for actual PRs, source files and verified moving proof artifacts *before final integration*.
+## Dependency delivery (historical preproduction blocker resolved)
+At the first audit no agents had delivered. They later supplied actual source PRs and native proof artifacts. Agent 1 PR #19, run 40116729550, artifact 12570445503. Agent 2 PR #17, run 40116566726, artifact 12570005402. Agent 3 PR #18, run 40116644941, artifact 12570370366. All three authored V5 sources were copied into the final integration branch; no specialist branch was changed.
 
 ## Handoffs / acceptance gates
 | Agent | Must deliver in source | Actual proof to review |
@@ -53,5 +53,16 @@ Preserve `assets/v3-chill-part01.b64`, the **short original user-supplied Day & 
 - Fix weak visuals, re-render and inspect *again* before setting approved=true. Artifact exists + CI green is not artistic signoff.
 - PR into V4 only, not main. Delivery must include final MP4, PR URL, successful run URL, artifact link, comparison sheet, ffprobe JSON and remaining limitations.
 
-## Current signoff
-**REJECT / WAIT FOR DEPENDENCIES** — as of this audit, V5 assets and isolated proof renders have not been delivered. This document records verified V4 observations only; final aesthetic assessment remains pending.
+## Final integrated run — technical PASS, visible defect repaired
+- Final source: `src/scenes/v5/SunsetHarborV5Final.tsx` with 17 separate scene planes from true V5 world/atmosphere/story modules; `Root.tsx` registers 360x640 / 360 frames / 30 fps.
+- Original world atlas PNG copied without format conversion. Five independently composed world planes; external per-depth camera used exactly once, and agent world-internal parallax explicitly disabled.
+- **Initial render run** [40121518313](https://github.com/YunRah2103/Pixel-videos/actions/runs/40121518313) passed technical QA, but **manual inspection failed**: character heads were incorrectly drawn at top frame edge instead of attached to characters. Defective early MP4 was rejected.
+- **Fix on integration branch only:** commit `e8ff186138911c9296f311f7a20e1384743de48e` reparented both animated portrait fragments at native y488–489. Subsequent full nine-frame inspection confirmed two clean, attached faces, no stray duplicates in the opening, legible promenade acting, changing boat pose/placement and connected final framing.
+- **Corrected successful run:** [40121835342](https://github.com/YunRah2103/Pixel-videos/actions/runs/40121835342) at fixed source commit `e8ff186138911c9296f311f7a20e1384743de48e`.
+- **Actual MP4 and QA:** [Artifact 12570679408](https://github.com/YunRah2103/Pixel-videos/actions/runs/40121835342/artifacts/12570679408). Inside: `sunset-harbor-v5-FINAL-1080p.mp4`, all nine decoded V5 frames, V5 contact sheet, V4+V5 matched-time comparison sheet, `verification.json`.
+- **Independent downloaded MP4 FFprobe:** 12.000000 s, 1080×1920, 30/1 fps, 360 decoded video frames, H.264/AAC, 7,711,132 bytes. Full FFmpeg decode on delivered artifact passed.
+- No black gaps and no silent soundtrack segments under the automated analysis. The 12s score uses the owner-provided ~4s Day & Night excerpt with 420ms overlapping crossfades and 900ms ending fade. The full-length original track is not available and music rights for redistribution remain owner's responsibility.
+- Creative comparison: substantially different original gabled harbour architecture, meaningful warm/cool façade patterns, redesigned clouds, materially calmer perspective-organised water with gold ribbon, larger legible faces, walking/cat and sailing boat movement, more purposeful final hold.
+- **Remaining artistic limitation:** Clouds and building shading remain stylised/native pixel-art, not a fully hand-painted anime illustration; no subjective premium-quality guarantee. The user should review the full delivered video before public release.
+
+Final GitHub PR #16 targets V4, **no main merge**.
