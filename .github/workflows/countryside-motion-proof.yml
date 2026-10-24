@@ -1,0 +1,56 @@
+name: Countryside Drive — Agent 3 native motion proof
+on:
+  push:
+    branches:
+      - agent/countryside-motion
+    paths:
+      - 'src/scenes/countryside/DrivingMotion.ts'
+      - 'src/scenes/countryside/CountrysideMotionProof.tsx'
+      - 'src/scenes/countryside/motion-proof.entry.ts'
+      - 'tests/countryside-motion.test.mjs'
+      - 'scripts/render-countryside-motion.mjs'
+      - '.github/workflows/countryside-motion-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  motion-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install full available Pixel Studio JS toolkit
+        run: npm install --no-audit --no-fund
+      - name: Check installed optional editors (do not claim pre-installed)
+        run: npm run tools:check
+      - name: Check toolkit TypeScript
+        run: npm run typecheck:toolkit
+      - name: Build native toolkit assets and verify its native moving proof
+        run: npm run assets:verify
+      - name: Verify countryside motion frame seeking and seams
+        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs
+      - name: Ensure Remotion Chromium, FFmpeg, and FFprobe
+        run: |
+          npx remotion browser ensure
+          ffmpeg -version
+          ffprobe -version
+      - name: Render separate 360-frame Remotion proof, decode and capture 9 frames
+        run: node scripts/render-countryside-motion.mjs
+      - name: Publish actual proof MP4, contact sheet, and QA evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: countryside-agent3-motion-native-proof
+          path: |
+            out/countryside-motion/countryside-motion-proof-1080p.mp4
+            out/countryside-motion/motion-proof-native.mp4
+            out/countryside-motion/motion-contact-sheet.png
+            out/countryside-motion/captures/*.png
+            out/countryside-motion/motion-verification.json
+          if-no-files-found: warn
+          retention-days: 30
