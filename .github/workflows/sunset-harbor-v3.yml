@@ -1,0 +1,46 @@
+name: Sunset Harbor V3 cinematic animation and Day Night score
+on:
+  push:
+    branches:
+      - agent/sunset-harbor-v3-cinematic-motion
+    paths:
+      - 'src/**'
+      - 'assets/v3-day-night-chill.opus.b64'
+      - 'scripts/render_v3.mjs'
+      - 'package.json'
+      - '.github/workflows/sunset-harbor-v3.yml'
+  workflow_dispatch:
+jobs:
+  render-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Remotion dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Render V3 moving film with user-supplied Day Night music
+        run: node scripts/render_v3.mjs
+      - name: Verify full movie decodes including AAC audio
+        run: |
+          ffprobe -v error -count_frames -show_entries stream=codec_type,codec_name,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/sunset-harbor-v3-chill-1080p.mp4
+          ffmpeg -v error -i out/sunset-harbor-v3-chill-1080p.mp4 -f null -
+          test -s out/qa/v3-opening.png
+          test -s out/qa/v3-middle.png
+          test -s out/qa/v3-ending.png
+      - name: Upload verified V3 MP4 and contact frames
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v3-cinematic-day-night-1080p
+          path: |
+            out/sunset-harbor-v3-chill-1080p.mp4
+            out/qa/v3-opening.png
+            out/qa/v3-middle.png
+            out/qa/v3-ending.png
+            out/qa/verification.json
+          if-no-files-found: error
+          retention-days: 30
