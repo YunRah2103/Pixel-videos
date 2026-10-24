@@ -66,7 +66,7 @@ const ScrollingRoad: React.FC<{offsetX:number}> = ({offsetX}) => {
   return <AbsoluteFill>
     <div style={rect(0,480,360,95,palette.road)}/>
     <div style={rect(0,573,360,67,palette.grass)}/>
-    {Array.from({length:16},(_,i)=> <div key={i} style={rect(roadPhase+i*36,526,18,3,palette.lane)}/>)}
+    {Array.from({length:24},(_,i)=> <div key={i} style={rect(roadPhase+i*36,526,18,3,palette.lane)}/>)}
     <div style={rect(0,569,360,4,palette.shade)}/>
   </AbsoluteFill>;
 };
@@ -75,7 +75,7 @@ const ScrollingVerge: React.FC<{offsetX:number}> = ({offsetX}) => {
   const pos = wrapTileOffset(offsetX,COUNTRYSIDE_LAYER_SPEC.verge.periodPx);
   return <AbsoluteFill>
     <div style={rect(0,458,360,22,palette.grass)}/>
-    {Array.from({length:8},(_,i)=> <div key={i} style={rect(pos+i*45,467+(i%2)*4,10,3,palette.mid)}/>)}
+    {Array.from({length:16},(_,i)=> <div key={i} style={rect(pos+i*45,467+(i%2)*4,10,3,palette.mid)}/>)}
   </AbsoluteFill>;
 };
 
