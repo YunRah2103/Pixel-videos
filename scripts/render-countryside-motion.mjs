@@ -59,9 +59,11 @@ const contact=resolve(OUT,'motion-contact-sheet.png');
 run('ffmpeg',['-hide_banner','-loglevel','error','-y',
   '-framerate','1','-i',resolve(CAPTURES,'capture-%03d.png'),
   '-vf','tile=3x3','-frames:v','1',contact]);
-const blackScan=run('ffmpeg',['-hide_banner','-loglevel','info','-i',final,
- '-vf','blackdetect=d=0.05:pix_th=0.08','-an','-f','null','-']);
-if(blackScan.includes('black_start'))throw new Error('Motion proof contains black gaps');
+const blackScan=spawnSync('ffmpeg',['-hide_banner','-loglevel','info','-i',final,
+ '-vf','blackdetect=d=0.05:pix_th=0.08','-an','-f','null','-'],
+ {cwd:ROOT,encoding:'utf8',maxBuffer:128*1024*1024});
+if(blackScan.status!==0 || blackScan.error)throw new Error('FFmpeg black-gap scan failed: '+(blackScan.stderr || blackScan.error));
+if((blackScan.stderr || '').includes('black_start'))throw new Error('Motion proof contains black gaps');
 const report={
   type:'AGENT 3 MOTION PROOF — NOT FINAL COUNTRYSIDE FILM',
   renderEntry:'src/scenes/countryside/motion-proof.entry.ts',
