@@ -13,7 +13,7 @@ if(music)args.push('-i',music);
 args.push('-map','0:v:0');
 if(music)args.push('-map','1:a:0');
 args.push('-vf','scale=1080:1920:flags=neighbor,format=yuv420p','-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv420p','-r','30');
-if(music)args.push('-af','afade=t=in:st=0:d=.24,afade=t=out:st=10.65:d=1.35','-c:a','aac','-b:a','160k');
+if(music)args.push('-af','afade=t=in:st=0:d=0.24,afade=t=out:st=10.65:d=1.35','-c:a','aac','-b:a','160k');
 args.push('-t','12','-movflags','+faststart',dest);run('ffmpeg',args);
 const p=spawnSync('ffprobe',['-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=codec_name,width,height,r_frame_rate,nb_read_frames:format=duration','-of','json',dest],{encoding:'utf8'});
 if(p.status!==0)throw Error('ffprobe failed');
