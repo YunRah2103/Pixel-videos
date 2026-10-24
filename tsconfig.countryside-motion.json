@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/scenes/countryside/DrivingMotion.ts",
+    "src/scenes/countryside/CountrysideMotionProof.tsx",
+    "src/scenes/countryside/motion-proof.entry.ts"
+  ],
+  "exclude": []
+}
