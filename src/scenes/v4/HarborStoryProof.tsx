@@ -35,7 +35,7 @@ export const HarborStoryProof:React.FC=()=>{
  const life=renderHarborLifeV4(frame,m);
  return <AbsoluteFill style={{width:WIDTH,height:HEIGHT,
      backgroundColor:'#183e56',overflow:'hidden',imageRendering:'pixelated'}}>
-   <div style={layerStyle(m,0.55)} dangerouslySetInnerHTML={inner(v3)}/>
+   <div style={layerStyle(m,0.82)} dangerouslySetInnerHTML={inner(v3)}/>
    <div style={layerStyle(m,m.parallax.sky)} dangerouslySetInnerHTML={inner(makeSvg(life.birds))}/>
    <div style={layerStyle(m,m.parallax.water)} dangerouslySetInnerHTML={inner(makeSvg(life.water))}/>
    <div style={layerStyle(m,m.parallax.lifeFar)} dangerouslySetInnerHTML={inner(makeSvg(life.boat))}/>
