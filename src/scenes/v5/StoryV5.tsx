@@ -77,7 +77,7 @@ function personOne(f:number,m:any){
  // The neck/head have independent deliberate orientation and brief natural blinks.
  let portrait='';
  portrait+=R(-4,493,8,7,skin);
- portrait+=rot(-glance*8,0,489,head('#3a485f','#e4b397','#f1c3a3',m.blinkA,glance,m.quietSmile>.6));
+ portrait+=G(0,489,rot(-glance*8,0,0,head('#3a485f','#e4b397','#f1c3a3',m.blinkA,glance,m.quietSmile>.6)));
  // Beret and rim shading; asymmetric original silhouette.
  portrait+=P([[-11,480],[-8,475],[2,474],[8,478],[9,481],[-11,482]],'#4d6071');
  portrait+=R(-13,481,20,3,'#263e54')+R(-5,474,6,2,'#74838c');
@@ -111,8 +111,8 @@ function personTwo(f:number,m:any){
   '#ac8299','#deb0b0',skin);
  let portrait='';
  portrait+=R(-4,493,8,7,skin);
- portrait+=rot(look*9,0,488,
-  head('#51435f',skin,'#f8c9b0',m.blinkB,look,m.quietSmile>.4));
+ portrait+=G(0,488,rot(look*9,0,0,
+  head('#51435f',skin,'#f8c9b0',m.blinkB,look,m.quietSmile>.4)));
  // Wind-swept bangs, ribbon and layered hair must move with the body.
  portrait+=P([[-11,484],[-12,478],[-7,474],[0,473],[7,477],[10,484],
   [8,491],[5,483]],'#52445c');
