@@ -1,0 +1,45 @@
+name: Countryside Drive Agent 1 pixel-car motion proof
+on:
+  push:
+    branches: [agent/countryside-car]
+  pull_request:
+    paths:
+      - 'src/scenes/countryside/CarLayer.tsx'
+      - 'src/countryside-car-proof.tsx'
+      - 'studio/countryside/car/**'
+      - 'public/countryside/car/**'
+      - 'scripts/render-countryside-car.mjs'
+      - '.github/workflows/countryside-car-proof.yml'
+  workflow_dispatch:
+jobs:
+  car-sprite-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies and check studio toolkit
+        run: |
+          npm install --no-audit --no-fund
+          npm run tools:check
+          npm run typecheck:toolkit
+          npm run assets:build
+          npm run assets:proof
+          npm run assets:qa
+      - name: Real Remotion and FFmpeg car proof
+        run: node scripts/render-countryside-car.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: countryside-car-agent1-proof
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            public/countryside/car/*.png
+            out/countryside-car/coupe-proof-native.mp4
+            out/countryside-car/coupe-proof-1080p.mp4
+            out/countryside-car/coupe-contact-sheet.png
+            out/countryside-car/verification.json
