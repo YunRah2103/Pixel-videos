@@ -7,7 +7,7 @@ This PR owns the frame-exact director score \`src/scenes/v4/HarborMotionV4.mjs\`
 
 | Time | Camera / emotional beat | Acting |
 | --- | --- | --- |
-| 00:00–00:03 | Wonder: one warm harbour sunset, quietly revealed with a 1.8–3.4% controlled push and subtle pan. | Bird flock gains height. Characters are present, not constantly busy. |
+| 00:00–00:03 | Wonder: one warm harbour sunset, quietly revealed with a 1.8–4.4% opening push (gradually growing to ~11% as the story approaches the waterfront) and subtle pan. | Bird flock gains height. Characters are present, not constantly busy. |
 | 00:03–00:06 | Belonging: drift toward lively waterfront, differentiated parallax. | A walks closer; scarf, cape and flowerheads respond to breeze; the sailor appears on the water. Cat begins walking. |
 | 00:06–00:09 | Connection: camera holds its slow drift; water and rigging continue. | Two actors glance, hands approach and meet; boat visibly travels with wake; cat approaches. |
 | 00:09–00:12 | Afterglow: ease down into a composed final tableau without cut or title. | Hands remain linked; cat sits; gentle light/railing accent peaks. |
