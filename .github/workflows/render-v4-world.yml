@@ -1,0 +1,45 @@
+name: Sunset Harbor V4 Agent 1 — illustrated world proof
+on:
+  push:
+    branches: [agent/sunset-harbor-v4-world]
+    paths:
+      - 'src/scenes/v4/HarborWorldV4.mjs'
+      - 'src/scenes/v4/HarborWorldV4.d.mts'
+      - 'src/scenes/v4/HarborWorldProof.tsx'
+      - 'src/scenes/v4/HarborWorldProofRoot.tsx'
+      - 'src/scenes/v4/HarborWorldProofIndex.ts'
+      - 'scripts/render-v4-world.mjs'
+      - '.github/workflows/render-v4-world.yml'
+  workflow_dispatch:
+jobs:
+  world-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Remotion
+        run: npm install --no-audit --no-fund
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Native Remotion 360p render, audio and pixel-perfect 1080p encoding
+        run: node scripts/render-v4-world.mjs
+      - name: Check generated footage, musical soundtrack and QA contact frames
+        run: |
+          test -s out/v4-world/sunset-harbor-v4-world-1080p.mp4
+          test -s out/v4-world/qa/world-opening-000.png
+          test -s out/v4-world/qa/world-middle-180.png
+          test -s out/v4-world/qa/world-ending-330.png
+          test -s out/v4-world/qa/world-v4-verification.json
+      - name: Upload genuine moving MP4 proof and inspection stills
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-harbor-v4-agent1-world-proof
+          path: |
+            out/v4-world/sunset-harbor-v4-world-1080p.mp4
+            out/v4-world/qa/*.png
+            out/v4-world/qa/*.json
+          if-no-files-found: error
+          retention-days: 30
