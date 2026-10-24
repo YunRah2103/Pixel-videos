@@ -1,0 +1,10 @@
+export type WalkPose={leftFootX:number;rightFootX:number;leftFootY:number;rightFootY:number;hipY:number;headTilt:number;leftArm:number;rightArm:number};
+export type CarPose={bodyY:number;bodyPitch:number;wheelAngle:number;suspensionFront:number;suspensionRear:number};
+export type BoatPose={x:number;y:number;roll:number;sailBend:number;wakeStrength:number};
+export function walkPose(frame:number,options?:{cycle?:number;stride?:number}):WalkPose;
+export function carPose(frame:number,options?:{speed?:number;roadRoughness?:number}):CarPose;
+export function boatPose(frame:number,options?:{swell?:number}):BoatPose;
+export function animalPose(frame:number,options?:{cycle?:number}):{frontPawY:number;rearPawY:number;tailAngle:number;eyeClosed:boolean};
+export function clothPose(frame:number,options?:{phase?:number;wind?:number}):{x:number;y:number;angle:number};
+export function frameSlot(frame:number,options:{count:number;hold?:number;start?:number}):number;
+export function rigPose(rig:'walk'|'car'|'boat'|'animal'|'cloth',frame:number,settings?:Record<string,number>):Record<string,any>;
