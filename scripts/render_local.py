@@ -28,7 +28,7 @@ def run():
   if proc.wait()!=0:raise RuntimeError('FFmpeg video render failed')
  if a.music:
   # Music source remains user-provided, not downloaded or replaced.
-  aud=['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(intermediate),'-ss','0','-i',a.music,'-map','0:v:0','-map','1:a:0','-t',str(a.frames/30),'-filter:a',f'afade=t=in:st=0:d=.24,afade=t=out:st={a.frames/30-1.35}:d=1.35','-c:v','copy','-c:a','aac','-b:a','160k','-ar','44100','-movflags','+faststart','-shortest',a.output]
+  aud=['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(intermediate),'-ss','0','-i',a.music,'-map','0:v:0','-map','1:a:0','-t',str(a.frames/30),'-filter:a',f'afade=t=in:st=0:d=0.24,afade=t=out:st={a.frames/30-1.35}:d=1.35','-c:v','copy','-c:a','aac','-b:a','160k','-ar','44100','-movflags','+faststart','-shortest',a.output]
   subprocess.run(aud,check=True)
  else:
   from shutil import copyfile;copyfile(intermediate,a.output)
