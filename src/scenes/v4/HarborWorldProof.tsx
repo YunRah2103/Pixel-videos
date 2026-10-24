@@ -2,10 +2,12 @@ import React from 'react';
 import {AbsoluteFill,useCurrentFrame} from 'remotion';
 import {renderHarborBaseLayers} from './HarborWorldV4.mjs';
 import {getHarborMotion} from '../v3/HarborMotion.mjs';
+import {harborCoupleSvg,harborCatSvg} from '../v3/HarborLife.mjs';
 
 /**
  * Isolated V4 WORLD moving proof. Temporary water and cloud placeholders
  * are intentionally NOT part of HarborWorldV4.mjs or Agent 2's scope.
+ * V3 character sprites serve as proof-only placeholders for Agent 3.
  * Music added in the dedicated render script, matching the V3 final.
  */
 const ri=(x:number,y:number,w:number,h:number,c:string)=>'<rect x="'+Math.round(x)+'" y="'+Math.round(y)+'" width="'+Math.max(1,Math.round(w))+'" height="'+Math.max(1,Math.round(h))+'" fill="'+c+'"/>';
@@ -23,8 +25,8 @@ const cloud=(x:number,y:number,s:number,t:number,seed:number)=>{
 };
 const cloudProof=(f:number)=>{
  let c='';
- c+=cloud(-22,108,1.08,f,1)+cloud(201,118,.78,f,2)+cloud(294,62,.68,f,3);
- c+=cloud(-80,213,.65,f,4)+cloud(273,211,.6,f,5);
+ c+=cloud(-36,96,1.46,f,1)+cloud(180,128,1.18,f,2)+cloud(266,56,1.07,f,3);
+ c+=cloud(-83,212,.92,f,4)+cloud(273,203,.78,f,5);
  // Tiny moving gull flock, low enough to distinguish movement in key frames.
  for(let i=0;i<6;i++){
   const x=40+i*21+f*(.022+i*.008),y=208+i%3*9+Math.sin(f*.06+i)*2;
@@ -67,7 +69,8 @@ export const HarborWorldProof:React.FC=()=>{
  });
  const image='<svg xmlns="http://www.w3.org/2000/svg" width="360" height="640" viewBox="0 0 360 640" shape-rendering="crispEdges">'+
   layers.sky+cloudProof(frame)+layers.distant+waterProof(frame)+
-  layers.architecture+layers.harbourStructures+layers.promenade+layers.foreground+'</svg>';
+  layers.architecture+layers.harbourStructures+layers.promenade+
+  harborCoupleSvg(motion)+harborCatSvg(motion)+layers.foreground+'</svg>';
  const scale=1.004+frame/359*.025;
  const tx=-1.4+frame/359*2.4,ty=-.35-frame/359*1.1;
  return <AbsoluteFill style={{width:360,height:640,background:'#153d5e',overflow:'hidden'}}>
