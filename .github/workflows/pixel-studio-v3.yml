@@ -4,6 +4,7 @@ on:
     branches:
       - feat/pixel-studio-v3-production
       - integration/sunset-harbor-v4-final
+      - production/countryside-drive
     paths:
       - 'studio/**'
       - 'src/toolkit/**'
