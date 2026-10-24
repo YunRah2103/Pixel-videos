@@ -49,11 +49,15 @@ for(const f of checkpoints){
  '-vf','select=eq(n\\,'+f+')','-fps_mode','vfr','-frames:v','1',path]);
  if(!existsSync(path)||statSync(path).size<1024)throw Error('Could not decode '+path);
  const content=readFileSync(path);
- const img=sharp(content);
- const shrunk=await img.resize(360,640,{kernel:'nearest'}).raw().toBuffer({resolveWithObject:true});
- const reconstructed=await sharp(shrunk.data,{raw:shrunk.info})
-   .resize(W,H,{kernel:'nearest'}).raw().toBuffer();
- const raw=await img.removeAlpha().raw().toBuffer({resolveWithObject:true});
+ // Use separate sharp pipelines. Reusing a resized Sharp instance here
+ // would accidentally compare different dimensions and hide a grid defect.
+ const shrunk=await sharp(content).resize(360,640,{kernel:'nearest'})
+   .removeAlpha().raw().toBuffer({resolveWithObject:true});
+ const reconstructed=await sharp(shrunk.data,{raw:{
+   width:shrunk.info.width,height:shrunk.info.height,channels:shrunk.info.channels
+ }}).resize(W,H,{kernel:'nearest'}).raw().toBuffer();
+ const raw=await sharp(content).removeAlpha().raw().toBuffer({resolveWithObject:true});
+ if(reconstructed.length!==raw.data.length)throw Error('Grid comparison buffers differ in size');
  // Codec chroma conversion softens a few edge pixels; report the deviation,
  // rather than silently declaring art crisp based only on a metadata test.
  let sum=0;const n=Math.min(reconstructed.length,raw.data.length);
