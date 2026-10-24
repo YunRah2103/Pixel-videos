@@ -10,7 +10,7 @@ const N=x=>Math.round(x);
 const S=x=>Number.isFinite(x)?x:0;
 const r=(x,y,w,h,c)=>'<rect x="'+N(x)+'" y="'+N(y)+'" width="'+Math.max(1,N(w))+'" height="'+Math.max(1,N(h))+'" fill="'+c+'"/>';
 const p=(points,c)=>'<polygon points="'+points.map(q=>N(q[0])+','+N(q[1])).join(' ')+'" fill="'+c+'"/>';
-const group=(x,y,body,extra='')=>'<g transform="translate('+N(x)+' '+N(y)+')" '+extra+'>'+body+'</g>';
+const group=(x,y,body,extra='')=>'<g transform="translate('+N(x)+' '+N(y)+')'+(extra?' '+extra:'')+'">'+body+'</g>';
 const rotate=(angle,x,y,body)=>'<g transform="rotate('+Number(angle.toFixed(2))+' '+x+' '+y+')">'+body+'</g>';
 const sine=(frame,period,phase=0)=>Math.sin(frame*2*Math.PI/period+phase);
 const fade=x=>Math.max(0,Math.min(1,x));
