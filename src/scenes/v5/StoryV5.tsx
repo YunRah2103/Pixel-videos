@@ -68,7 +68,7 @@ function personOne(f:number,m:any){
  body+=R(-1,500,3,28,'#c39e98')+R(-2,528,10,3,'#314d62');
  for(let i=0;i<3;i++)body+=R(3,509+i*6,1,1,'#f6cfaa');
  // Walk cycle influences free elbow only while moving.
- body+=sleeveArm(x-9,502,x-12-(feet.walk?2:0),519+Math.sin(f/9)*2,
+ body+=sleeveArm(-9,502,-12-(feet.walk?2:0),519+Math.sin(f/9)*2,
   '#365e74','#62909a',skin).replaceAll('NaN','0');
  // The reaching sleeve is drawn in world-coordinates OUTSIDE the translated body.
  q+=G(x,-bob,body);
