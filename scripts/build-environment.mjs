@@ -3,9 +3,13 @@ import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import sharp from 'sharp';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const scene=JSON.parse(await readFile(resolve(root,'studio/countryside.scene.json'),'utf8'));
+const sceneFile=process.argv[2]?resolve(root,process.argv[2]):resolve(root,'studio/countryside.scene.json');
+if(!sceneFile.startsWith(resolve(root,'studio')+'/'))throw Error('Scene must live under studio/');
+const scene=JSON.parse(await readFile(sceneFile,'utf8'));
 if(scene.schemaVersion!==1||scene.width<64||scene.height<64||scene.stageWidth<scene.width||scene.stageWidth>8192)throw Error('Invalid scene geometry');
-const output=resolve(root,'public/toolkit/environments',scene.name.toLowerCase().includes('countryside')?'countryside':'scene');
+const slug=(scene.slug||'countryside');
+if(!/^[a-z][a-z0-9-]{1,50}$/.test(slug))throw Error('Invalid scene slug');
+const output=resolve(root,'public/toolkit/environments',slug);
 await mkdir(output,{recursive:true});
 const assets={};
 const assetReport=JSON.parse(await readFile(resolve(root,'out/toolkit/assets-report.json'),'utf8'));
@@ -42,7 +46,7 @@ for(const layer of scene.layers){
  const png=await sharp({create:{width:scene.stageWidth,height:scene.height,channels:4,background:'#00000000'}})
   .composite(elements).png({palette:false}).toBuffer();
  const file=resolve(output,layer.id+'.png');await writeFile(file,png);
- exported.push({id:layer.id,depth:layer.depth,image:'toolkit/environments/countryside/'+layer.id+'.png',objects:(layer.sprites||[]).length});
+ exported.push({id:layer.id,depth:layer.depth,image:'toolkit/environments/'+slug+'/'+layer.id+'.png',objects:(layer.sprites||[]).length});
 }
 const payload={name:scene.name,width:scene.width,height:scene.height,stageWidth:scene.stageWidth,camera:scene.camera,
  layers:exported,hero:scene.hero,license:'original authored artwork; MIT'};

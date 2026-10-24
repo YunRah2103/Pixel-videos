@@ -78,7 +78,6 @@
     {
       "id": "roadside",
       "depth": 0.45,
-      "color": "#749078",
       "bands": [
         {
           "top": 448,
@@ -174,5 +173,6 @@
     "y": 545,
     "scale": 2,
     "rig": "car"
-  }
+  },
+  "slug": "countryside"
 }
