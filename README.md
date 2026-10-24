@@ -93,3 +93,7 @@ git push -u origin main
 ```
 
 Or upload the project files using the GitHub web interface. Do **not** upload `.tools`, `node_modules` or the generated `out` folder. `npm install` and `--all` perform actual downloads on the user's machine or CI runner; tools are not bundled inside the ZIP.
+
+## Pixel Studio V2 — authoring toolkit
+
+New pixel-art tools and a reproducible agent workflow are documented in [Pixel Studio V2](docs/PIXEL_STUDIO_V2.md). It includes hand-authored indexed palette sprites, an executable Sharp build path, PixiJS deterministic water/lighting effects, Krita/Pixelorama/Godot export adapters, LDtk project inspection, a 90-frame moving MP4 proof and GitHub Actions QA. Run `npm install && npm run assets:verify` to create and verify the demo, or `npm run tools:check` to inspect optional editors. The toolkit is additive and does not replace active Sunset Harbor V5 agent modules.
