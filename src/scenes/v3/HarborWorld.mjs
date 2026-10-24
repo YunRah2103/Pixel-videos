@@ -111,7 +111,7 @@ for(let i=0;i<35;i++){let x=(i*53)%360,y=604+(i%5)*6;let dx=Math.round(Math.sin(
 for(let k=0;k<28;k++){let x=350-(k%7)*4,y=333+Math.floor(k/7)*13;o+=r(x,y,4,4,k%3?'#42746c':'#7aa483');if(k%4===0)o+=r(x+1,y-2,2,2,'#e8a297')}
 return o}
 export function renderHarborWorld(frame,motion={}){frame=Math.floor(Math.max(0,frame));let o=`<svg xmlns="http://www.w3.org/2000/svg" width="360" height="640" viewBox="0 0 360 640" shape-rendering="crispEdges">`;
-o+=v3Sky(frame);
+o+=v3Sky(frame,motion);
 // halo in stepped sunset bands and a deliberately faceted sun
 for(let rr=48;rr>=24;rr-=8)o+=pixelDisc(227,273,rr,mix('#efb7ad','#f8c9ae',1-(rr-24)/24),3);
 o+=pixelDisc(227,273,20,'#fff0bf',2)+pixelDisc(225,272,13,'#fff4cd',2);
@@ -129,7 +129,7 @@ return o+'</svg>'}
  */
 export const HARBOR_WIDTH=360,HARBOR_HEIGHT=640;
 const v3safe=(x,d=0)=>Number.isFinite(x)?x:d;
-function v3Sky(frame){
+function v3Sky(frame,motion={}){
  const stops=[[0,'#123d5a'],[51,'#285e7b'],[108,'#5b7d9b'],[160,'#9b94b1'],[214,'#d0a3b8'],[262,'#efadad'],[308,'#ffcab0'],[360,'#ffe3ab']];
  let out='';
  for(let y=0;y<362;y+=2){let j=0;while(j<stops.length-2&&y>stops[j+1][0])j++;
@@ -137,6 +137,8 @@ function v3Sky(frame){
  out+=p([[0,216],[41,212],[75,216],[125,211],[168,219],[220,216],[277,207],[360,218],[360,243],[0,243]],'#b6a0b9');
  out+=p([[0,239],[55,235],[96,246],[163,241],[226,246],[284,235],[360,241],[360,257],[0,257]],'#e6afba');
  for(let i=0;i<80;i++){let x=rnd(i+811)*360,y=rnd(i+219)*255;if(i%4===0)out+=r(x,y,2+i%3,1,y>180?'#f4c4b6':'#9badb8');}
+ const exposure=Math.max(0,Math.min(1.25,v3safe(motion.lightIntensity,1)));
+ if(exposure!==1)out+='<rect x="0" y="205" width="360" height="152" fill="'+(exposure>1?'#ffe7bc':'#344b76')+'" opacity="'+Math.abs(exposure-1)*.21+'"/>';
  return out;
 }
 function v3CloudMass(x,y,z,i){
@@ -197,7 +199,8 @@ function v3Architecture(frame,motion){
   o+=r(x,y,17,3,'#e2ad96')+r(x+2,y-4,3,5,'#578b7c')+r(x+7,y-6,4,7,'#85b398')+r(x+12,y-4,3,5,'#699884');
   o+=r(x+7,y-8,3,3,'#efaaa5');
  }
- return '<g transform="translate('+Math.round(-cam*.45)+' '+Math.round(-rise*.35)+')">'+o+'</g>';
+ const zoom=Math.max(1,Math.min(1.04,v3safe(motion.cameraZoom,1)));
+ return '<g transform="translate('+Math.round(180*(1-zoom)-cam*.45)+' '+Math.round(365*(1-zoom)-rise*.35)+') scale('+zoom+')">'+o+'</g>';
 }
 function v3Foreground(frame,motion){
  let o='',s=frame*.034+v3safe(motion.foliage);
