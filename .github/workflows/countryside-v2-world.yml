@@ -1,0 +1,53 @@
+name: Countryside V2 — original world art + Pixel Studio V3 proof
+on:
+  push:
+    branches:
+      - agent/countryside-v2-world-art
+  pull_request:
+    branches:
+      - feat/pixel-studio-v3-production
+  workflow_dispatch:
+jobs:
+  world-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install FFmpeg and FFprobe on hosted runner
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: Setup and exercise Pixel Studio V3 toolkit
+        run: npm run studio:setup
+      - name: Verify atlas builder
+        run: npm run atlas:build
+      - name: Verify environment builder
+        run: npm run environment:build
+      - name: Verify native toolkit environment movie
+        run: npm run environment:proof
+      - name: Verify V3 objective visual QA
+        run: npm run visual:qa
+      - name: Build original six-layer V2 artwork
+        run: node studio/countryside/world/build-world-v2.mjs
+      - name: Render moving world-only film and fully decode it
+        run: node scripts/render-world-v2-proof.mjs
+      - name: Upload MP4, contact sheet, native PNG layers and proof QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v2-world-art-proof
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            out/countryside-v2-world/countryside-v2-world-proof.mp4
+            out/countryside-v2-world/verification.json
+            out/countryside-v2-world/contact-sheet.png
+            public/countryside/world/*.png
+            public/countryside/world/manifest.json
+            out/studio-v3/visual-qa.json
