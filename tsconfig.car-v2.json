@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/countryside-v2-car-proof.tsx",
+    "src/scenes/countryside/CarLayer.tsx"
+  ],
+  "exclude": [
+    "src/scenes/v3/**",
+    "src/scenes/v4/**"
+  ]
+}
