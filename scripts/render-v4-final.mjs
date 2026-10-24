@@ -31,30 +31,55 @@ const npx=process.platform==='win32'?'npx.cmd':'npx';
 exec(npx,['remotion','render','src/index.ts','SunsetHarborV4Final',NATIVE,
  '--codec','h264','--concurrency','2','--log','error']);
 
-// Crossfade repeated segments to avoid sharp, clicky 4s boundaries.
-// This does not claim to restore the missing full-length recording.
-const segment=Math.min(3.86,shortDuration-0.02);
-const overlap=Math.min(0.42,segment*0.16);
-const advance=segment-overlap;
-const loops=Math.ceil((SECONDS-segment)/advance)+1;
-let filter='[1:a]asplit='+loops+Array.from({length:loops},(_,i)=>'[s'+i+']').join('')+';';
-const labels=[];
-for(let i=0;i<loops;i++){
- const dst='[b'+i+']',delay=Math.round(i*advance*1000);
- filter+='[s'+i+']atrim=0:'+segment.toFixed(3)+',asetpts=PTS-STARTPTS,'+
-  'afade=t=in:st=0:d='+overlap.toFixed(3)+','+
-  'afade=t=out:st='+(segment-overlap).toFixed(3)+':d='+overlap.toFixed(3)+','+
-  'adelay='+delay+':all=1'+dst+';';
- labels.push(dst);
+// Decode the exact owner-supplied four-second segment to independent PCM.
+// FFmpeg's earlier asplit/adelay mix ended at the first excerpt! Build an
+// explicit sample-accurate crossfade score, then encode the full 12s stream.
+const SR=48000, PCM='out/v4-final-score-f32le.pcm';
+const extracted=spawnSync('ffmpeg',['-v','error','-i',SOURCE,'-vn','-ac','1',
+ '-ar',String(SR),'-f','f32le','-'],{encoding:null,maxBuffer:8*1024*1024});
+if(extracted.status!==0||extracted.error)throw Error('Score decode failed: '+extracted.stderr?.toString());
+const pcm=extracted.stdout;
+if(!pcm||pcm.length<SR*2*4)throw Error('No real score PCM decoded');
+const source=new Float32Array(pcm.length/4);
+for(let i=0;i<source.length;i++)source[i]=pcm.readFloatLE(i*4);
+const overlap=0.42;
+const excerptSamples=Math.min(Math.floor((shortDuration-0.02)*SR),Math.floor(3.86*SR));
+const crossSamples=Math.round(overlap*SR),step=excerptSamples-crossSamples;
+const destSamples=Math.round(SECONDS*SR);
+const output=new Float32Array(destSamples);
+const count=Math.ceil((destSamples-excerptSamples)/step)+1;
+for(let repeat=0;repeat<count;repeat++){
+ const offset=repeat*step;
+ for(let j=0;j<excerptSamples&&offset+j<destSamples;j++){
+   let gain=1;
+   if(j<crossSamples)gain=j/crossSamples;
+   if(j>=excerptSamples-crossSamples)gain=Math.min(gain,(excerptSamples-1-j)/crossSamples);
+   output[offset+j]+=source[j]*Math.max(0,gain);
+ }
 }
-filter+=labels.join('')+'amix=inputs='+loops+':duration=longest:normalize=0,'+
- 'atrim=0:12,afade=t=in:st=0:d=0.12,afade=t=out:st=11.1:d=0.9,'+
- 'aresample=48000[score];[0:v]scale='+W+':'+H+':flags=neighbor,format=yuv420p[v]';
-exec('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',NATIVE,'-i',SOURCE,
- '-filter_complex',filter,'-map','[v]','-map','[score]','-c:v','libx264',
- '-preset','medium','-crf','17','-pix_fmt','yuv420p','-r','30',
- '-c:a','aac','-b:a','160k','-ar','48000',
- '-t',String(SECONDS),'-movflags','+faststart',FINAL]);
+// A transparent short opening and 900ms ending fade. Small headroom prevents
+// transients from clipping when original notes coincide in overlap sections.
+for(let i=0;i<destSamples;i++){
+ const inGain=Math.min(1,i/(0.12*SR));
+ const outGain=Math.min(1,(destSamples-1-i)/(0.9*SR));
+ output[i]*=0.87*Math.max(0,Math.min(inGain,outGain));
+}
+const scoreRms=[];
+for(let sec=0;sec<SECONDS;sec++){
+ let power=0;for(let j=sec*SR;j<(sec+1)*SR;j++)power+=output[j]*output[j];
+ scoreRms.push(Math.sqrt(power/SR));
+}
+if(scoreRms.slice(0,11).some((r)=>r<0.002))throw Error('Silent music second in PCM master: '+scoreRms.join(', '));
+const pcmBuffer=Buffer.allocUnsafe(destSamples*4);
+for(let i=0;i<destSamples;i++)pcmBuffer.writeFloatLE(output[i],i*4);
+writeFileSync(PCM,pcmBuffer);
+// Encode from an explicit twelve-second PCM track — no input loop ambiguity.
+exec('ffmpeg',['-hide_banner','-loglevel','error','-y','-i',NATIVE,
+ '-f','f32le','-ar',String(SR),'-ac','1','-i',PCM,'-map','0:v:0','-map','1:a:0',
+ '-vf','scale='+W+':'+H+':flags=neighbor,format=yuv420p',
+ '-c:v','libx264','-preset','medium','-crf','17','-pix_fmt','yuv420p',
+ '-r','30','-c:a','aac','-b:a','160k','-ar',String(SR),'-t',String(SECONDS),
+ '-movflags','+faststart',FINAL]);
 
 const meta=probe(FINAL);
 const v=meta.streams.find(s=>s.codec_type==='video');
@@ -64,6 +89,21 @@ if(!v||v.codec_name!=='h264'||v.width!==W||v.height!==H||
  !a||a.codec_name!=='aac'||Math.abs(Number(meta.format.duration)-SECONDS)>0.15)
  throw Error('Delivery contract mismatch: '+JSON.stringify(meta));
 exec('ffmpeg',['-v','error','-xerror','-i',FINAL,'-f','null','-']);
+// Verify decoded AAC audio is present in EVERY second, not just at the start.
+const audioCheck=spawnSync('ffmpeg',['-v','error','-i',FINAL,'-vn','-ac','1',
+ '-ar','8000','-f','f32le','-'],{encoding:null,maxBuffer:2*1024*1024});
+if(audioCheck.status!==0||audioCheck.error)throw Error('AAC decode failure');
+const outputAudioRms=[];
+for(let sec=0;sec<SECONDS;sec++){
+ const start=sec*8000*4,end=Math.min(audioCheck.stdout.length,(sec+1)*8000*4);
+ if(end-start<7500*4)throw Error('Truncated AAC second '+sec);
+ let sum=0;
+ for(let k=start;k<end;k+=4){const x=audioCheck.stdout.readFloatLE(k);sum+=x*x;}
+ outputAudioRms.push(Math.sqrt(sum/((end-start)/4)));
+}
+if(outputAudioRms.slice(0,11).some(x=>x<0.001))
+ throw Error('Decoded AAC has missing music segments: '+JSON.stringify(outputAudioRms));
+
 
 // Nine scene-space checkpoints, from opening through final music fade.
 const checkpoints=[0,45,90,135,180,225,270,315,359];
@@ -95,7 +135,7 @@ const result={
  width:v.width,height:v.height,videoCodec:v.codec_name,audioCodec:a.codec_name,
  audioChannels:a.channels,duration:Number(meta.format.duration),fullFFmpegDecode:true,
  audioProvenance:'V3 user-supplied Day & Night excerpt (original recording not fully available)',
- excerptSeconds:shortDuration,crossfadeSeconds:overlap,
+ excerptSeconds:shortDuration,crossfadeSeconds:overlap,audioRmsPerSecond:outputAudioRms,
  caution:'Check owner audio rights before public music redistribution.',
  bytes:statSync(FINAL).size,contactSheet:CONTACT,checkpoints:frames
 };
