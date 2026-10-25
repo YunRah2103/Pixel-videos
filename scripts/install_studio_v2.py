@@ -81,7 +81,7 @@ def install_krita():
     if prefix and not shutil.which('sudo'):
         raise RuntimeError('Need sudo permissions to install Krita')
     run(*prefix,'apt-get','update','-y')
-    run(*prefix,'apt-get','install','-y','krita','xvfb')
+    run(*prefix,'apt-get','install','-y','krita','xvfb','xauth')
 
 def check():
     status={}

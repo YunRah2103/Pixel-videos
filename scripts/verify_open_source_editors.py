@@ -26,10 +26,15 @@ def executable(folder, rule):
     return files[0]
 
 def run_version(path, args):
+    command=[str(path),*args]
     env=dict(os.environ)
     if Path(str(path)).name.lower() == 'krita':
-        env['QT_QPA_PLATFORM']='offscreen'
-    proc=subprocess.run([str(path),*args],cwd=ROOT,capture_output=True,
+        # Krita's Ubuntu launcher overrides Qt offscreen settings;
+        # launch it in a disposable virtual X11 display instead.
+        if not shutil.which('xvfb-run'):
+            raise RuntimeError('xvfb-run required for Krita headless verification')
+        command=['xvfb-run','-a',*command]
+    proc=subprocess.run(command,cwd=ROOT,capture_output=True,
                         text=True,errors='replace',timeout=65,env=env)
     output=(proc.stdout+'\n'+proc.stderr).strip()
     if proc.returncode!=0:
