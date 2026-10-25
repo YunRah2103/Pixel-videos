@@ -107,7 +107,7 @@ function paint(id){const [w,h]=size[id],c=canvas(w,h);
  }else if(id==='road'){
   block(c,0,0,w,98,'road');block(c,0,0,w,4,'roadDark');block(c,0,4,w,2,'line');
   block(c,0,9,w,2,'roadLight');block(c,0,84,w,3,'roadLight');block(c,0,94,w,4,'roadDark');
-  for(let x=13;x<w;x+=90){block(c,x,54,39,4,'line');block(c,x+3,58,32,1,'roadDark')}
+  for(let x=13;x<w;x+=96){block(c,x,54,39,4,'line');block(c,x+3,58,32,1,'roadDark')}
   for(let x=0;x<w;x+=13){let y=16+mod(x*11,69);block(c,x+2,y,2+mod(x,5),1,mod(x,3)?'roadDark':'roadLight')}
   block(c,0,98,w,62,'grass');block(c,0,98,w,4,'soil');block(c,0,102,w,2,'grassLight');
   for(let x=0;x<w;x+=13){const y=107+mod(x*7,52);block(c,x,y,5,2,'grassDark');block(c,x+2,y-4,2,5,'grassLight')}
