@@ -11,6 +11,7 @@ from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spra
 from v5_sky_courier import paint_sky_courier, save_courier_cels
 from v5_neon_activation import paint_neon_activation, save_sign_cels
 from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST
+from v5_micro_life import paint_micro_life
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -66,12 +67,16 @@ def frame(f):
  for j in range(24):
   yy=430+j*3;xx=(j*57+29)%W
   d.line((xx,yy,min(W-1,xx+5+j//5),yy),fill=(83,61,83,90))
+ paint_micro_life(canvas,f)
  position=min(1,max(0,(t-.15)/4.15))
- x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*(position*position*(3-2*position)))
- ty=round(TRAM_START['y']+math.sin(t*6)*1.3)
+ # Gentle lead-in/lead-out without the earlier overlong slow creep.
+ eased=position-.065*math.sin(2*math.pi*position)
+ x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*eased)
+ # Two road frequencies create small suspension response, never subpixel blur.
+ ty=round(TRAM_START['y']+.9*math.sin(t*8)+.55*math.sin(t*15+.6))
  if t>=.15:
   d.ellipse((max(-20,x+7),ty+57,min(290,x+158),ty+65),fill=(1,6,17,140))
-  moving_cel=sprites[int(t*16)%len(sprites)]
+  moving_cel=sprites[f%len(sprites)]
   reflect_sprite(canvas,moving_cel,x,ty,f,ground_y=421)
   passing_headlight(canvas,x,ty,f,min(1,max(0,(t-3.65)*1.45)))
   canvas.alpha_composite(moving_cel,(x,ty))
@@ -137,17 +142,21 @@ assert len(set(hashes))==30
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
  'original_sprite_cels':len(sprites),'courier_sprite_cels':len(courier_cels),
+ 'polish_pass':'24-cel tram, 12-cel articulated umbrella walk, independent street micro-life, naturally segmented actor-linked puddles',
+ 'hero_motion_timing':'tram with gentle continuous lead-in/lead-out and two-frequency integer suspension response; walker smoothstep arrival',
+ 'no_blur_or_interpolation':True,
  'open_sign_sprite_cels':len(sign_cels),
  'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x hero tracking at frames 58-104; full scene at 0-57 and 105-149',
  'story_payoff':'six-step original typographic OPEN neon sequence and localized wet-road light reflections',
  'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
  'skyline_motion_source':'Tiled objects courier-start and courier-finish',
- 'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
+ 'pedestrian_sprite_cels':13,'walking_poses':12,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
- 'tram_sprite_provenance':'Eight original script-authored streamlined transit cels; see scripts/v5_streamline_tram.py',
- 'native_puddle_reflections':'Current moving trolley sprite cel mirrored in broken native-pixel bands; not a static still',
+ 'tram_sprite_provenance':'Twenty-four original script-authored streamlined transit cels; see scripts/v5_streamline_tram.py',
+ 'native_puddle_reflections':'Current moving trolley sprite cel mirrored in irregular clustered native-pixel puddles; not a static still',
+ 'independent_environment_life':'three authored gutter drips, independently phased steam and tiny persistent puddle rings; scripts/v5_micro_life.py',
  'original_directed_pixel_lights':['tracked trolley headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
  'artistic_review_note':'Compare storyboard still + moving light interactions; source is licensed and final approval remains pending.',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
