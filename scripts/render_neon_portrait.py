@@ -8,6 +8,7 @@ from pathlib import Path
 from PIL import Image,ImageDraw
 from v5_pedestrian import draw_secondary_story, save_character_cels
 from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spray
+from v5_sky_courier import paint_sky_courier, save_courier_cels
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -20,7 +21,7 @@ if not LAYOUT_FILE.is_file():
  raise RuntimeError('Tiled-exported storyboard missing: export studio/v5/neon-portrait.tmx with tiled --export-map')
 TILED=json.loads(LAYOUT_FILE.read_text())
 OBJECTS={o.get('name'):o for layer in TILED['layers'] for o in layer.get('objects',[])}
-for required in ('tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop'):
+for required in ('tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop','courier-start','courier-finish'):
  if required not in OBJECTS:raise RuntimeError('Missing Tiled stage object '+required)
 TRAM_START=OBJECTS['tram-start']
 TRAM_FINISH=OBJECTS['tram-finish']
@@ -39,6 +40,7 @@ def moving_plane(src,offset,y):
 
 from v5_streamline_tram import save_tram_cels
 sprites=save_tram_cels(OUT)
+courier_cels=save_courier_cels(OUT)
 save_character_cels(OUT)
 rng=random.Random(79523)
 rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,6),rng.randrange(20,60)) for _ in range(55)]
@@ -49,8 +51,11 @@ def frame(f):
  t=f/FPS
  cam=int(16*(f/(N-1))**1.6)
  canvas=Image.new('RGBA',(W,H),(6,12,28,255))
- for src,offset in zip(planes,(168+int(cam*.25),230+int(cam*.52),268+cam)):
+ for layer_index,(src,offset) in enumerate(zip(planes,(168+int(cam*.25),230+int(cam*.52),268+cam))):
   canvas.alpha_composite(moving_plane(src,offset,44))
+  if layer_index == 0:
+   # Hand-authored eight-cel aerial vehicle, naturally occluded by near architecture.
+   paint_sky_courier(canvas,f,OBJECTS['courier-start'],OBJECTS['courier-finish'])
  canvas.alpha_composite(planes[0].crop((0,0,270,44)),(0,0))
  pavement=planes[2].crop((260,345,530,384)).resize((270,51),Image.Resampling.NEAREST)
  canvas.alpha_composite(pavement,(0,429))
@@ -133,7 +138,10 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':len(sprites),'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
+ 'original_sprite_cels':len(sprites),'courier_sprite_cels':len(courier_cels),
+ 'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
+ 'skyline_motion_source':'Tiled objects courier-start and courier-finish',
+ 'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
