@@ -1,0 +1,57 @@
+name: Countryside V3 Agent 3 — REAL PixiJS motion and MP4 proof
+on:
+  push:
+    branches:
+      - agent/countryside-v3-motion-pixi
+  workflow_dispatch:
+jobs:
+  pixi-motion-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install actual Remotion, PixiJS, Sharp and Pixel Studio V3
+        run: |
+          npm install --no-audit --no-fund
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffprobe -version
+          node -e "import('pixi.js').then(p=>console.log('PixiJS runtime loaded; Application='+typeof p.Application+', TilingSprite='+typeof p.TilingSprite))"
+      - name: ACTUALLY use Pixel Studio V3 (atlas, sprites, rigs, environment, moving proof)
+        run: npm run studio:setup
+      - name: Test V3 actual Pixi scene plan and compatible artist interfaces
+        run: |
+          npx tsc --project tsconfig.countryside-pixi.json --noEmit
+          node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs tests/countryside-pixi-v3.test.mjs
+          node studio/countryside/world/build-world-v2.mjs
+          node studio/countryside/car/build-car-v2.mjs
+          node scripts/qa-countryside-v2.mjs
+      - name: Render 360 real Remotion frames with Pixi TilingSprite planes and Graphics
+        run: node scripts/render-countryside.mjs
+      - name: Verify FULL video plus nonempty picture and generated Pixel Studio diagnostics
+        run: |
+          test -s out/countryside-drive-final-1080p.mp4
+          test -s out/countryside-final-qa/countryside-contact-sheet.png
+          test -s out/countryside-final-qa/verification.json
+          test -s out/studio-v3/visual-qa.json
+          ffprobe -v error -count_frames -show_entries stream=codec_name,width,height,nb_read_frames,pix_fmt:format=duration -of json out/countryside-drive-final-1080p.mp4
+          ffmpeg -v error -xerror -i out/countryside-drive-final-1080p.mp4 -f null -
+      - name: Publish genuine PixiJS + Remotion 12s film and FFprobe evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent3-countryside-v3-real-pixi-1080p
+          path: |
+            out/countryside-drive-final-1080p.mp4
+            out/countryside-final-qa/verification.json
+            out/countryside-final-qa/art-source-qa.json
+            out/countryside-final-qa/countryside-contact-sheet.png
+            out/countryside-final-qa/frame-*.png
+            out/studio-v3/visual-qa.json
+            out/studio-v3/contact-sheet.png
+          retention-days: 30
+          if-no-files-found: error

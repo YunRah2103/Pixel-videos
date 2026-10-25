@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/scenes/countryside/DrivingMotion.ts",
+    "src/scenes/countryside/PixiWorldPlan.ts",
+    "src/scenes/countryside/PixiCountrysideWorld.tsx",
+    "src/scenes/countryside/CarLayer.tsx",
+    "src/scenes/countryside/CountrysideDrive.tsx",
+    "src/scenes/countryside/DrivingMotionV3.ts"
+  ],
+  "compilerOptions": {
+    "allowImportingTsExtensions": true
+  }
+}
