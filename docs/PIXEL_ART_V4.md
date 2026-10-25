@@ -75,3 +75,14 @@ Our automated tools prove that software ran, not that the result looks attractiv
 
 Copy docs/PIXEL_ART_V4_AGENT_TEST.md into a new ChatGPT agent. The agent should create a separate PR against production/countryside-drive, not touch current Countryside V3 or Sunset Harbor final branches and never merge to main without approval.
 
+
+## Editor installation proof (V4.1)
+
+The `pixel-v4-editors.yml` workflow downloads and installs the *real free editor binaries* on a Linux GitHub Actions runner. It uses the upstream release-specific filenames; Pixelorama publishes `Pixelorama-Linux-64bit.tar.gz`, Godot publishes `Godot_v..._linux.x86_64.zip`, and LDtk publishes `ubuntu-distribution.zip`. Krita is installed from the Ubuntu apt repository.
+
+Commands:
+
+    python3 scripts/setup_pixel_art_v4.py --free-editors
+    python3 scripts/verify_open_source_editors.py
+
+The verifier **runs Pixelorama and Godot headlessly**, calls Krita's version command, checks the downloaded LDtk AppImage installer's executable permission (GUI installation/use still unverified), and writes `out/editor-toolchain/verification.json`. It does not claim an LDtk GUI render occurred and it does not certify an agent genuinely painted any sprites in the installed programs. Inspect the GitHub Actions job logs and verification artifact for actual evidence. Generated editor binaries are intentionally not uploaded, redistributed, or added to git: agents can reproduce the installation using the same commands.

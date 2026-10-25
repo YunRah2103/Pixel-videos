@@ -37,25 +37,33 @@ def latest_release(repo):
 
 
 def choice(assets, kind):
+    """Pick the official binary for this architecture; project filename conventions differ."""
     system = platform.system().lower()
     arch = platform.machine().lower()
-    if arch not in ('x86_64', 'amd64', 'arm64', 'aarch64'):
+    x64 = arch in ('x86_64','amd64')
+    arm64 = arch in ('arm64','aarch64')
+    if not (x64 or arm64):
         raise RuntimeError(f'Unsupported CPU architecture: {arch}')
-    if system == 'linux':
-        candidates = ('linux', 'x86_64' if arch in ('x86_64','amd64') else 'arm64')
-    elif system == 'windows':
-        candidates = ('win64' if arch in ('x86_64','amd64') else 'windows',)
-    elif system == 'darwin':
-        candidates = ('macos',) if kind == 'pixelorama' else ('macos',)
-    else:
-        raise RuntimeError(f'Unsupported platform: {system}')
-    matches = [a for a in assets if all(s in a['name'].lower() for s in candidates)
-               and a['name'].lower().endswith(('.zip','.tar.gz','.tar.xz'))]
-    if not matches and system == 'darwin':
-        matches = [a for a in assets if 'osx' in a['name'].lower() and a['name'].endswith('.zip')]
+    def valid(a):
+        name = a['name'].lower()
+        if kind == 'pixelorama':
+            if system == 'linux':
+                return name == ('pixelorama-linux-64bit.tar.gz' if x64 else 'pixelorama-linux-arm64.tar.gz')
+            if system == 'windows':
+                return name == ('pixelorama-windows-64bit.zip' if x64 else 'pixelorama-windows-arm64.zip')
+            return False
+        if kind == 'godot':
+            if system == 'linux':
+                return name.endswith(('_linux.x86_64.zip' if x64 else '_linux.arm64.zip')) and not 'mono' in name
+            if system == 'windows':
+                return name.endswith('_win64.exe.zip') if x64 else name.endswith('_windows_arm64.exe.zip')
+            if system == 'darwin':
+                return name.endswith('_macos.universal.zip') and not 'mono' in name
+        return False
+    matches = [a for a in assets if valid(a)]
     if not matches:
-        raise RuntimeError(f'No matching {kind} archive found for {system}/{arch}; download manually from the official releases page')
-    matches.sort(key=lambda a: (a['name'].lower().endswith('.zip'), a.get('size',0)), reverse=True)
+        raise RuntimeError(f'No official {kind} download compatible with {system}/{arch}')
+    matches.sort(key=lambda a: a.get('size',0))
     return matches[0]
 
 
@@ -68,6 +76,8 @@ def safe_extract(archive, destination):
                 p = (destination / item.filename).resolve()
                 if not p.is_relative_to(dest_resolved):
                     raise ValueError('Refusing archive path traversal')
+                if (item.external_attr >> 16) & 0o170000 == 0o120000:
+                    raise ValueError('Refusing archive symlink')
             z.extractall(destination)
     else:
         with tarfile.open(archive) as t:
@@ -94,7 +104,7 @@ def binary_tool(repo, kind, target):
         with urllib.request.urlopen(request, timeout=240) as src, archive.open('wb') as out:
             shutil.copyfileobj(src, out)
     safe_extract(archive,target)
-    print(f'Installed {kind} under {target.relative_to(ROOT)}')
+    print(f'Installed {kind} under {target.relative_to(ROOT)} from {asset["name"]}')
 
 
 def clone(repo, name):

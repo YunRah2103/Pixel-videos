@@ -29,8 +29,9 @@ def find_executable(name,root):
         return binary
     if root.is_dir():
         matches=[p for p in root.rglob('*') if p.is_file() and
-                 (name.lower() in p.name.lower()) and
-                 ('linux' in p.name.lower() or p.suffix.lower() in ('.exe','.appimage'))]
+                 name.lower() in p.name.lower() and
+                 p.name.lower().endswith(('.x86_64','.arm64','.appimage','.exe')) and
+                 os.access(p,os.X_OK)]
         if matches:
             return str(sorted(matches,key=lambda p:len(str(p)))[0])
     return None
@@ -43,11 +44,11 @@ def install_ldtk():
     with urllib.request.urlopen(req,timeout=30) as response:
         release=json.load(response)
     assets=release.get('assets',[])
-    matches=[a for a in assets if 'linux' in a.get('name','').lower()
-             and a['name'].lower().endswith('.zip')]
+    matches=[a for a in assets if a.get('name','').lower() in ('ubuntu-distribution.zip','ldtk-linux.zip')
+             or ('linux' in a.get('name','').lower() and a['name'].lower().endswith('.zip'))]
     if not matches:
         raise RuntimeError('No official Linux LDtk ZIP in latest release; install manually from https://ldtk.io')
-    matches.sort(key=lambda a:(('64' in a['name']),a.get('size',0)),reverse=True)
+    matches.sort(key=lambda a: (a['name'].lower()=='ubuntu-distribution.zip',a.get('size',0)),reverse=True)
     asset=matches[0]
     dest=TARGET/'editors'/'ldtk'
     dest.mkdir(parents=True,exist_ok=True)
@@ -80,7 +81,7 @@ def install_krita():
     if prefix and not shutil.which('sudo'):
         raise RuntimeError('Need sudo permissions to install Krita')
     run(*prefix,'apt-get','update','-y')
-    run(*prefix,'apt-get','install','-y','krita','xvfb')
+    run(*prefix,'apt-get','install','-y','krita','xvfb','xauth')
 
 def check():
     status={}
