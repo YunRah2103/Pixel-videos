@@ -37,40 +37,8 @@ def moving_plane(src,offset,y):
   im.alpha_composite(src,(x,y));x+=src.width
  return im
 
-def trolley(wheelphase):
- im=Image.new('RGBA',(164,66));d=ImageDraw.Draw(im)
- ink=(8,12,28);gold=(255,174,102);teal=(54,198,221)
- d.ellipse((8,56,159,64),fill=(3,5,16,110))
- d.polygon([(17,43),(150,43),(159,54),(8,54)],fill=ink)
- for cx in (35,130):
-  d.ellipse((cx-11,46,cx+11,65),fill=(6,11,23),outline=(108,118,133))
-  d.ellipse((cx-7,50,cx+7,61),fill=(41,59,73),outline=(181,165,143))
-  d.line((cx-5 if wheelphase%2 else cx,52,cx+5 if wheelphase%2 else cx,60),fill=gold,width=2)
-  d.ellipse((cx-2,54,cx+2,58),fill=(255,217,151))
- d.polygon([(5,27),(16,16),(35,10),(117,9),(148,15),(158,28),(157,48),(149,52),(14,52),(5,46)],fill=(9,14,32),outline=(240,84,119))
- d.polygon([(9,27),(19,20),(38,14),(116,13),(143,19),(153,29),(152,45),(10,45)],fill=(143,37,74))
- d.polygon([(13,29),(21,21),(40,17),(116,16),(141,22),(150,30),(149,39),(13,39)],fill=(49,43,78))
- d.line((22,18,117,15),fill=gold,width=2)
- d.line((12,41,152,41),fill=gold,width=3)
- d.line((17,45,152,45),fill=teal,width=2)
- for xx in (26,46,66,86,106):
-  d.polygon([(xx,20),(xx+14,20),(xx+15,33),(xx,33)],fill=(16,40,66),outline=(215,133,102))
-  d.line((xx+2,22,xx+12,22),fill=(108,217,231))
-  d.point((xx+5,28),fill=(224,149,109))
- for xx in (42,82,123):d.line((xx,20,xx,40),fill=gold)
- d.polygon([(128,20),(140,24),(149,32),(129,32)],fill=(22,65,86),outline=(110,222,226))
- d.line((67,10,73,0,102,0,110,10),fill=(123,154,155),width=2)
- d.line((74,0,102,0),fill=gold)
- d.rectangle((56,12,89,15),fill=(255,199,112))
- d.rectangle((18,36,29,39),fill=(255,205,125))
- d.rectangle((131,36,150,39),fill=teal)
- d.polygon([(148,33),(161,31),(163,36),(151,40)],fill=(255,226,171))
- d.rectangle((5,33,8,38),fill=(249,77,116))
- for xx in range(35,130,9):d.point((xx,43),fill=(255,223,167))
- return im
-
-sprites=[trolley(k) for k in range(4)]
-for i,s in enumerate(sprites):s.save(OUT/('trolley-cel-%d.png'%i))
+from v5_streamline_tram import save_tram_cels
+sprites=save_tram_cels(OUT)
 save_character_cels(OUT)
 rng=random.Random(79523)
 rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,6),rng.randrange(20,60)) for _ in range(55)]
@@ -95,7 +63,7 @@ def frame(f):
  ty=round(TRAM_START['y']+math.sin(t*6)*1.3)
  if t>=.15:
   d.ellipse((max(-20,x+7),ty+57,min(290,x+158),ty+65),fill=(1,6,17,140))
-  moving_cel=sprites[int(t*16)%4]
+  moving_cel=sprites[int(t*16)%len(sprites)]
   reflect_sprite(canvas,moving_cel,x,ty,f,ground_y=421)
   passing_headlight(canvas,x,ty,f,min(1,max(0,(t-3.65)*1.45)))
   canvas.alpha_composite(moving_cel,(x,ty))
@@ -165,10 +133,11 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':4,'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
+ 'original_sprite_cels':len(sprites),'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
+ 'tram_sprite_provenance':'Eight original script-authored streamlined transit cels; see scripts/v5_streamline_tram.py',
  'native_puddle_reflections':'Current moving trolley sprite cel mirrored in broken native-pixel bands; not a static still',
  'original_directed_pixel_lights':['tracked trolley headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
  'artistic_review_note':'Compare storyboard still + moving light interactions; source is licensed and final approval remains pending.',
