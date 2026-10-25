@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="9" height="16" tilewidth="30" tileheight="30" infinite="0" nextlayerid="4" nextobjectid="6">
+ <properties>
+  <property name="art_provenance" value="Ansimuz Cyberpunk Street Environment (CC BY 3.0)"/>
+  <property name="native_size" value="270x480"/>
+  <property name="shot_duration_frames" type="int" value="150"/>
+ </properties>
+ <objectgroup id="1" name="hero-motion">
+  <object id="1" name="tram-start" x="-165" y="359"/>
+  <object id="2" name="tram-finish" x="215" y="359"/>
+ </objectgroup>
+ <objectgroup id="2" name="neon-story">
+  <object id="3" name="open-sign" x="221" y="216" width="44" height="16"/>
+ </objectgroup>
+ <objectgroup id="3" name="source-art-blocking">
+  <object id="4" name="building-atmosphere" x="0" y="44" width="270" height="384"/>
+  <object id="5" name="foreground-pavement" x="0" y="429" width="270" height="51"/>
+ </objectgroup>
+</map>
