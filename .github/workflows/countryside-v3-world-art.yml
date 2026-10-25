@@ -60,14 +60,24 @@ jobs:
           find .tools/editors/ldtk -type f | head -n 24
           find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) -exec chmod +x {} \;
           test -n "$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) | head -n 1)"
-      - name: Pixelorama really imports and exports original tree sprites
-        continue-on-error: true
+      - name: Pixelorama genuinely loads and inspects editable native PXO sprites
         run: |
           PIXELORAMA="$(find .tools/editors/pixelorama -type f \( -name 'Pixelorama.x86_64' -o -name 'Pixelorama*.x86_64' \) | head -n 1)"
           python3 scripts/build-v3-pixelorama.py
-          "$PIXELORAMA" --headless --quit -- --export --output "$PWD/out/editor-evidence/nearTrees-by-Pixelorama.png" "$PWD/studio/countryside/world/sources/nearTrees.pxo" 2>&1 | tee out/editor-evidence/pixelorama-export.log
-          test -s out/editor-evidence/nearTrees-by-Pixelorama.png
-          node -e "const s=require('sharp');Promise.all(['public/countryside/world/nearTrees.png','out/editor-evidence/nearTrees-by-Pixelorama.png'].map(x=>s(x).metadata())).then(m=>{if(m[0].width!==m[1].width||m[0].height!==m[1].height)process.exit(1);console.log('PIXELORAMA_SPRITE_ROUNDTRIP',m[1].width,m[1].height)})"
+          "$PIXELORAMA" --headless --quit -- --size "$PWD/studio/countryside/world/sources/nearTrees.pxo" 2>&1 | tee out/editor-evidence/pixelorama-inspect.log
+          grep -Eq '960.*235' out/editor-evidence/pixelorama-inspect.log
+          export PIXELORAMA
+          xvfb-run -a bash -c '
+            "$PIXELORAMA" "$PWD/studio/countryside/world/sources/nearTrees.pxo" > out/editor-evidence/pixelorama-gui.log 2>&1 &
+            p=$!
+            sleep 7
+            xwininfo -root -tree > out/editor-evidence/pixelorama-window-tree.txt 2>&1
+            import -window root out/editor-evidence/pixelorama-editor-screenshot.png
+            kill "$p" 2>/dev/null || true
+            wait "$p" 2>/dev/null || true
+          '
+          test -s out/editor-evidence/pixelorama-editor-screenshot.png
+          grep -i Pixelorama out/editor-evidence/pixelorama-window-tree.txt
       - name: Krita really opens editable sky artwork and exports a PNG
         continue-on-error: true
         run: |
@@ -96,7 +106,9 @@ jobs:
         run: node scripts/render-world-v3-proof.mjs
       - name: Strict evidence gate — all three desktop editors must produce real output
         run: |
-          test -s out/editor-evidence/nearTrees-by-Pixelorama.png
+          grep -Eq '960.*235' out/editor-evidence/pixelorama-inspect.log
+          test -s out/editor-evidence/pixelorama-editor-screenshot.png
+          grep -qi Pixelorama out/editor-evidence/pixelorama-window-tree.txt
           test -s out/editor-evidence/sky-by-Krita.png
           test -s out/editor-evidence/ldtk-editor-screenshot.png
           grep -qi LDtk out/editor-evidence/ldtk-window-tree.txt
