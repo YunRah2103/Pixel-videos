@@ -10,6 +10,7 @@ from v5_pedestrian import draw_secondary_story, save_character_cels
 from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spray
 from v5_sky_courier import paint_sky_courier, save_courier_cels
 from v5_neon_activation import paint_neon_activation, save_sign_cels
+from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -91,7 +92,9 @@ def frame(f):
  for ix,(xx,yy,length,speed) in enumerate(rain):
   q=(yy+f*speed//30)%H
   d.line((xx,q,xx,q+length),fill=(98,161,192,52 if ix%3 else 71))
- return canvas.convert('RGB')
+ # Art-led three-shot direction: crop only AFTER independently animating all source layers.
+ # Shot 2 is an integer 2x trolley-tracking close-up, not an enlarged still.
+ return apply_cinematic_camera(canvas,f,x).convert('RGB')
 
 checked=(0,18,36,54,72,90,108,126,149)
 selected=[];hashes=[]
@@ -135,6 +138,7 @@ assert len(set(hashes))==30
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
  'original_sprite_cels':len(sprites),'courier_sprite_cels':len(courier_cels),
  'open_sign_sprite_cels':len(sign_cels),
+ 'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x hero tracking at frames 58-104; full scene at 0-57 and 105-149',
  'story_payoff':'six-step original typographic OPEN neon sequence and localized wet-road light reflections',
  'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
  'skyline_motion_source':'Tiled objects courier-start and courier-finish',
