@@ -41,8 +41,8 @@ def moving_plane(src,offset,y):
   im.alpha_composite(src,(x,y));x+=src.width
  return im
 
-from v5_streamline_tram import save_tram_cels
-sprites=save_tram_cels(OUT)
+from v5_sports_car import save_car_cels
+sprites=save_car_cels(OUT)
 courier_cels=save_courier_cels(OUT)
 save_character_cels(OUT)
 sign_cels=save_sign_cels(OUT)
@@ -141,12 +141,12 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':len(sprites),'courier_sprite_cels':len(courier_cels),
- 'polish_pass':'24-cel tram, 12-cel articulated umbrella walk, independent street micro-life, naturally segmented actor-linked puddles',
- 'hero_motion_timing':'tram with gentle continuous lead-in/lead-out and two-frequency integer suspension response; walker smoothstep arrival',
+ 'original_sprite_cels':len(sprites),'car_sprite_cels':len(sprites),'hero_vehicle_type':'two-door neo-retro GT coupe','courier_sprite_cels':len(courier_cels),
+ 'polish_pass':'replaced tram with original 24-cel low two-door GT coupe, retained 12-pose pedestrian, native-pixel micro-life and puddles',
+ 'hero_motion_timing':'GT coupe with continuous lead-in/lead-out, 24 distinct rim phases and two-frequency one-pixel suspension movement; walker smoothstep arrival',
  'no_blur_or_interpolation':True,
  'open_sign_sprite_cels':len(sign_cels),
- 'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x hero tracking at frames 58-104; full scene at 0-57 and 105-149',
+ 'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x coupe tracking at frames 58-104; full scene at 0-57 and 105-149',
  'story_payoff':'six-step original typographic OPEN neon sequence and localized wet-road light reflections',
  'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
  'skyline_motion_source':'Tiled objects courier-start and courier-finish',
@@ -154,10 +154,10 @@ assert len(set(hashes))==30
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
- 'tram_sprite_provenance':'Twenty-four original script-authored streamlined transit cels; see scripts/v5_streamline_tram.py',
- 'native_puddle_reflections':'Current moving trolley sprite cel mirrored in irregular clustered native-pixel puddles; not a static still',
+ 'car_sprite_provenance':'Original neo-retro two-door side-profile GT: 24 source-authored pixel cels; see scripts/v5_sports_car.py; no art editor falsely claimed',
+ 'native_puddle_reflections':'Current moving car sprite cel mirrored in irregular clustered native-pixel puddles; not a static still',
  'independent_environment_life':'three authored gutter drips, independently phased steam and tiny persistent puddle rings; scripts/v5_micro_life.py',
- 'original_directed_pixel_lights':['tracked trolley headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
+ 'original_directed_pixel_lights':['tracked coupe headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
  'artistic_review_note':'Compare storyboard still + moving light interactions; source is licensed and final approval remains pending.',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
  'artistic_approval':'pending human visual review'},indent=2))
