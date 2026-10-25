@@ -1,0 +1,35 @@
+# Countryside Drive V3 — master integration evidence and release status
+
+**Status: BLOCKED pending actual V3 agent files and execution proof. This branch is intentionally NOT final and MUST NOT merge to main.**
+
+## Source baseline inspected
+
+- Base `integration/countryside-drive-v2-art` at `097a00ee348d2b07ae40019916712c8343efab56`.
+- PR #31 and real CI run [40144338121](https://github.com/YunRah2103/Pixel-videos/actions/runs/40144338121) establish a genuine **V2** 1080x1920, 30fps, 12s Remotion/FFmpeg baseline. This is NOT proof of V3 tools.
+- V2 hero sprite: 192x80 native source, eight 32x32 wheel poses, measured rolling radius **15.5 native px**. Preserve exact wheel distance formula `roadTravelPx/(2*Math.PI*WHEEL_RADIUS_PX)`, fixed contact Y=495 and body-only spring offsets.
+- Original world source: `studio/countryside/world/build-world-v2.mjs`, production layers in `WorldLayers.tsx`. Keep integer/native pixel scale, no blur, vector fake art or camera shake.
+
+## Mandatory V3 specialist intake (not accepted on claims)
+
+| Specialist | Native source/evidence required | Present at branch initialization |
+| --- | --- | --- |
+| Agent 1: World | World .pxo Pixelorama, .kra Krita, .ldtk LDtk; actual editor/tool execution logs, authored PNGs, motion proof and branch/PR | **NO** |
+| Agent 2: Car | Car .pxo Pixelorama, native PNG and unique wheel frames, actual editor execution log, moving proof and branch/PR | **NO** |
+| Agent 3: Motion | Production Remotion graph imports PixiJS and uses it to draw real moving frames, recorded real render/proof and PR | **NO** |
+
+Merely installing Pixelorama, Krita, LDtk or PixiJS is not sufficient. Independently open and inspect native editable files and recorded execution evidence; manually check actual MP4 movement. `scripts/audit-countryside-v3.mjs --strict` blocks absent source and missing run references; **its passing is only machine preflight**, not proof of trustworthy tool usage or artistic approval.
+
+## Production integration rules
+
+1. Port Agent 1 original scene, art, LDtk layout into real `CountrysideDrive` production path. Inspect layer seams, transparency, depth, canopy silhouette and countryside composition at 360x640 native.
+2. Port Agent 2 hero sprite and its measured rolling radius/wheel-frame count. Respect wheel centres and contact Y from the real updated art; no independent spin timer.
+3. Port Agent 3 actual PixiJS code into the production Remotion render. Trace imports and verify runtime render side effects. No dead/demo Pixi imports credited as implementation.
+4. Integrate with Pixel Studio V3 pipelines, single shared road-distance clock, subtle spring physics and integer nearest-neighbour scaling.
+5. Run the actual 360-frame Remotion source at 30fps, 1080x1920 H.264, full FFmpeg -xerror decode, FFprobe metadata, 9 distinct decoded frames and contact sheet. Compare opening/middle/ending visually at mobile size.
+6. Approve only after original artwork and premium pixel-art appearance meet quality bar; reject average art, missing native tool evidence, clipping, black gaps, wheel sliding, repeated bland trees or irrelevant visual effects.
+
+## Audit/report location
+
+- `out/countryside-v3-qa/tool-audit.json` generated on CI. Failure is intentional until V3 agent evidence lands.
+- `evidence/countryside-v3/agent{1,2,3}/tool-execution.json` must identify specific real CI/tool-execution URLs and source-file provenance.
+- A separate workflow job can publish a **nonfinal V2-derived moving preview**. Do not label it as the verified V3 film.

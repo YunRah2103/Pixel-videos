@@ -1,0 +1,72 @@
+name: Countryside V3 — evidence gate and nonfinal preview
+on:
+  push:
+    branches:
+      - integration/countryside-drive-v3-final
+  pull_request:
+    branches:
+      - production/countryside-drive
+  workflow_dispatch:
+jobs:
+  v3-tool-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Perform V3 strict source and provenance audit
+        run: node scripts/audit-countryside-v3.mjs --strict
+      - name: Publish evidence report EVEN IF V3 BLOCKED
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v3-tool-evidence-audit
+          path: out/countryside-v3-qa/tool-audit.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  nonfinal-native-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Confirm FFmpeg / FFprobe
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: Execute Pixel Studio V3 asset pipeline, rigs and visual QA
+        run: |
+          npm run studio:setup
+          npm run atlas:build
+          npm run environment:build
+          npm run environment:proof
+          npm run visual:qa
+          npm run rigs:test
+          npm run typecheck:toolkit
+      - name: Native wheel and geometry tests
+        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs
+      - name: Real native Remotion film, FFprobe, full FFmpeg decode, contact sheet
+        run: node scripts/render-countryside.mjs
+      - name: Upload moving preview — NOT V3 artistically verified
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v3-branch-NONFINAL-preview-1080p
+          path: |
+            out/countryside-drive-final-1080p.mp4
+            out/countryside-final-qa/verification.json
+            out/countryside-final-qa/countryside-contact-sheet.png
+            out/countryside-final-qa/frame-*.png
+          if-no-files-found: error
+          retention-days: 30
