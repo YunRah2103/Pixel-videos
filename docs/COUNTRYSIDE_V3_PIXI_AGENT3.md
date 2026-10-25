@@ -42,3 +42,22 @@ The branch-push workflow `.github/workflows/countryside-v3-pixi-motion.yml` runs
 * **Final editor/Agent 4:** Cherrypick the V3 Pixi source, motion-plan file and this scene edit. Preserve the real scene and the 12s frame clock. No second scroll/wheel animation. This is a visual-motion proof until human artistic review, not a forced main merge.
 
 Known boundary: the V2 world PNG widths (720/840/960/384/384) differ from the older motion rig's conceptual 180/360/360/180/360 cycle repeat values. PixiJS wraps at each **actual PNG** tile width; all scrolling is continuous at internal tile seams. The last frame is **not guaranteed** to be perfectly match-cut loopable to frame 0 without a future art/motion loop contract. Do not falsely label it seamless across the 12-second cut.
+
+
+## Significant cinematic motion revision (requested after initial subtle proof)
+
+The **first** V3 PixiJS pass was visually too similar to V2 despite technical success. This revision substantially changes what a viewer actually sees:
+
+- `DrivingMotionV3.ts` replaces the constant 3-pixel/frame picture motion with a **3→7 native px/frame acceleration arc**, easing back to 5 at the end. One distance accumulator controls Pixi world, road, near foliage and all wheel rotations (15.5 px radius).
+- `carX` deliberately tracks 152→206→178 native px over the shot, keeping the coupe large and adding an obvious moving-game-camera feeling without shake.
+- Foreground roadside shrubs pass at **1.3× road distance**; larger varied stepped pixel canopies, moving native leaf clusters, cloud drift, animated dappled shadows on the road, tiny flying leaf specks and restrained high-speed tyre dust are drawn with real PixiJS `Graphics`.
+- **First-second hook:** frames **0–44** open on an exact 2× front-wheel tracking macro, frames **45–204** reveal the accelerated wide countryside, frames **205–270** cut to a DIFFERENT 2× rear-wheel tracking close-up, and frames **271–359** return to a cinematic wide road shot. These are exact integer-scale cuts: no blur or fractional zoom.
+- There is no AI scene, no SVG/vector conversion, no background camera shake, no independent wheel timer, no fixed-screenshot masquerading as animation.
+
+**Technical/artist boundary:** This pass uses the baseline editable Agent 1/2 V2 authored PNGs; Agents 1/2 have separate V3 art PRs #37/#36 awaiting provenance QA. Agent 4 should carry over these motion changes and then overlay the genuine audited new assets. Passing video QA does not imply complete artist approval.
+
+## Extra reproduction checks
+
+`tests/countryside-pixi-v3.test.mjs` now runs the real `getCinematicMotion` controller over all 360 frames, proving acceleration, exact distance-to-wheel synchronisation, pixel-snapped Pixi planes, near-camera trees/shrubs, road shadows, frame-seek determinism and the two 2× integer shot cuts.
+
+The GitHub Actions artifact must be regenerated after these edits; do not present the old first-pass MP4 as evidence of the **new** visual changes.

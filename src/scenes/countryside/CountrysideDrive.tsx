@@ -1,24 +1,38 @@
 /**
- * Countryside V3 motion pass: real PixiJS parallax behind a Remotion native
- * pixel car. All six scenery planes use the actual Agent 1 authored PNGs,
- * while the Agent 2 hero car rolls at exactly the same road distance.
- * No shake, CSS wheel clocks, blur, faux scanlines or generated placeholders.
+ * A real cinematic 12-second pixel-world DRIVE, not the unchanged V2 shot.
+ * 0–1.5s: front wheel macro; 1.5–6.83s: accelerating wide tracking;
+ * 6.83–9.03s: rear wheel macro; 9.03–12s: wide reveal. Hard integer zoom/cut (no filtered scaling).
+ *
+ * Runtime PixiJS TilingSprite/Graphics draws all six original art planes.
+ * The hero car remains Agent 2's compatible CarLayer.
  */
 import React from 'react';
 import {AbsoluteFill,useCurrentFrame} from 'remotion';
 import {CarLayer,WHEEL_RADIUS_PX} from './CarLayer';
 import {PixiCountrysideWorld} from './PixiCountrysideWorld';
-import {getCountrysideMotion} from './DrivingMotion';
-
+import {getCinematicMotion} from './DrivingMotionV3';
 export const CountrysideDrive:React.FC=()=>{
-  const frame=useCurrentFrame();
-  const m=getCountrysideMotion(frame,WHEEL_RADIUS_PX);
-  // Original artist layering: sky / far / mid / near / 'road','verge'.
-  return <AbsoluteFill style={{
-    overflow:'hidden',backgroundColor:'#6DB6E5',imageRendering:'pixelated'
+ const frame=useCurrentFrame();
+ const m=getCinematicMotion(frame,WHEEL_RADIUS_PX);
+ const close=m.shot!=='wide';
+ const focusWheelX=m.shot==='rear-closeup'?m.carX-53:m.carX+55;
+ // Integer 2x wheel-detail tracking: the full native Pixi+React scene is
+ // enlarged by an EXACT 2x integer, without shader blur or fractional scale.
+ // Normal wide view is 1x; no wobble, shake or CSS transitions.
+ const left=close?-2*(focusWheelX-90):0;
+ const top=close?-600:0;
+ // Preserve the correct world layer order 'road','verge' under the car.
+ return <AbsoluteFill style={{
+  overflow:'hidden',backgroundColor:'#6DB6E5',imageRendering:'pixelated'
+ }}>
+  <div style={{
+   position:'absolute',left,top,width:360,height:640,
+   transform:close?'scale(2)':'none',transformOrigin:'0 0',
+   imageRendering:'pixelated',pointerEvents:'none'
   }}>
-    <PixiCountrysideWorld frame={frame} motion={m}/>
-    <CarLayer frame={frame} x={m.carX} wheelContactY={495}
-      wheelRotationTurns={m.wheelRotationTurns} bobY={m.bobY}/>
-  </AbsoluteFill>;
+   <PixiCountrysideWorld frame={frame} motion={m}/>
+   <CarLayer frame={frame} x={m.carX} wheelContactY={495}
+    wheelRotationTurns={m.wheelRotationTurns} bobY={m.bobY}/>
+  </div>
+ </AbsoluteFill>;
 };
