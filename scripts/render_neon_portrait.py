@@ -9,6 +9,7 @@ from PIL import Image,ImageDraw
 from v5_pedestrian import draw_secondary_story, save_character_cels
 from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spray
 from v5_sky_courier import paint_sky_courier, save_courier_cels
+from v5_neon_activation import paint_neon_activation, save_sign_cels
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -42,6 +43,7 @@ from v5_streamline_tram import save_tram_cels
 sprites=save_tram_cels(OUT)
 courier_cels=save_courier_cels(OUT)
 save_character_cels(OUT)
+sign_cels=save_sign_cels(OUT)
 rng=random.Random(79523)
 rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,6),rng.randrange(20,60)) for _ in range(55)]
 glints=[(rng.randrange(W),rng.randrange(390,475),rng.randrange(1,6),
@@ -84,15 +86,8 @@ def frame(f):
   pulse=.5+.5*math.sin(.17*f+ix*1.6)
   d.line((xx,yy,min(W-1,xx+round(length*(.3+pulse))),yy),
          fill=(c[0],c[1],c[2],round(30+70*pulse)))
- if f>110:
-  b=min(1,(f-110)/15)
-  d.rectangle((int(SIGN['x']),int(SIGN['y']),int(SIGN['x']+SIGN['width']-1),int(SIGN['y']+SIGN['height'])),fill=(9,29,48,220),
-              outline=(30,177,211,round(110+120*b)),width=2)
-  d.text((int(SIGN['x']+5),int(SIGN['y']+2)),'OPEN',fill=(96,241,250,round(100+155*b)))
-  for k in range(13):
-   yy=382+k*6
-   d.line((222-k//2,yy,261+k//2,yy),
-          fill=(35,194,206,max(0,round((90-k*6)*b))))
+ # Native six-cel storefront OPEN reveal, controlled by the Tiled sign fixture.
+ paint_neon_activation(canvas,f,SIGN)
  for ix,(xx,yy,length,speed) in enumerate(rain):
   q=(yy+f*speed//30)%H
   d.line((xx,q,xx,q+length),fill=(98,161,192,52 if ix%3 else 71))
@@ -139,6 +134,8 @@ assert len(set(hashes))==30
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
  'original_sprite_cels':len(sprites),'courier_sprite_cels':len(courier_cels),
+ 'open_sign_sprite_cels':len(sign_cels),
+ 'story_payoff':'six-step original typographic OPEN neon sequence and localized wet-road light reflections',
  'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
  'skyline_motion_source':'Tiled objects courier-start and courier-finish',
  'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
