@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="9" height="16" tilewidth="30" tileheight="30" infinite="0" nextlayerid="4" nextobjectid="8">
+<map version="1.10" tiledversion="1.12.2" orientation="orthogonal" renderorder="right-down" width="9" height="16" tilewidth="30" tileheight="30" infinite="0" nextlayerid="5" nextobjectid="10">
  <properties>
   <property name="art_provenance" value="Ansimuz Cyberpunk Street Environment (CC BY 3.0)"/>
   <property name="native_size" value="270x480"/>
@@ -17,5 +17,9 @@
  <objectgroup id="3" name="source-art-blocking">
   <object id="4" name="building-atmosphere" x="0" y="44" width="270" height="384"/>
   <object id="5" name="foreground-pavement" x="0" y="429" width="270" height="51"/>
+ </objectgroup>
+ <objectgroup id="4" name="sky-courier">
+  <object id="8" name="courier-start" x="286" y="60"/>
+  <object id="9" name="courier-finish" x="-72" y="88"/>
  </objectgroup>
 </map>
