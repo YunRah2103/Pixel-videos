@@ -1,0 +1,452 @@
+[
+  {
+    "number": 5,
+    "title": "POCKET WOODLAND",
+    "technique": "4 COLOURS / COARSE TILE GRID",
+    "tree": "block",
+    "palette": [
+      "#d6e5ae",
+      "#9dbb83",
+      "#d6e5ae",
+      "#9dbb83",
+      "#638464",
+      "#355b55",
+      "#638464",
+      "#9dbb83",
+      "#355b55",
+      "#638464",
+      "#9dbb83",
+      "#d6e5ae",
+      "#355b55",
+      "#638464",
+      "#638464",
+      "#d6e5ae"
+    ],
+    "options": {
+      "coarse": true,
+      "mono": true,
+      "detail": 0,
+      "prop": "cabin"
+    },
+    "native": [
+      135,
+      240
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 6,
+    "title": "CLEAN ARCADE",
+    "technique": "OUTLINES / 3-TONE CANOPIES",
+    "tree": "oak",
+    "palette": [
+      "#9acfe0",
+      "#b0d9e5",
+      "#fff6d7",
+      "#719fbd",
+      "#77ab91",
+      "#285b50",
+      "#559554",
+      "#99bc69",
+      "#193e44",
+      "#32704b",
+      "#67a557",
+      "#bbd47b",
+      "#394744",
+      "#937651",
+      "#586173",
+      "#e8dfb7"
+    ],
+    "options": {
+      "outline": true,
+      "detail": 1,
+      "prop": "barn",
+      "recommended": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 7,
+    "title": "CLASSIC GROVE",
+    "technique": "STEPPED LEAF CLUSTERS / 16-BIT",
+    "tree": "oak",
+    "palette": [
+      "#a0c8cf",
+      "#b2c5ce",
+      "#f1e6cd",
+      "#7998a4",
+      "#72a084",
+      "#35594a",
+      "#6b9257",
+      "#c2be77",
+      "#203e42",
+      "#3e6b4d",
+      "#7b9b59",
+      "#d0ce84",
+      "#494b41",
+      "#a28b60",
+      "#616568",
+      "#e3d6b2"
+    ],
+    "options": {
+      "detail": 2,
+      "prop": "windmill",
+      "recommended": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 8,
+    "title": "AUTUMN BIRCH",
+    "technique": "SLENDER TRUNKS / GOLDEN CLUSTERS",
+    "tree": "birch",
+    "palette": [
+      "#c9c9c5",
+      "#d5c9c0",
+      "#f5e4c8",
+      "#a7aaa5",
+      "#999f84",
+      "#575e46",
+      "#a19c61",
+      "#d9c17c",
+      "#704b49",
+      "#b17743",
+      "#dfaa54",
+      "#f8d589",
+      "#68635c",
+      "#e7d9b9",
+      "#706c6c",
+      "#e5d1ac"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "cabin",
+      "petals": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 9,
+    "title": "ALPINE POSTCARD",
+    "technique": "TIERED PINES / ANGULAR PEAKS",
+    "tree": "pine",
+    "palette": [
+      "#a2ccda",
+      "#c1dae0",
+      "#f4eee2",
+      "#7d9aaf",
+      "#779795",
+      "#355754",
+      "#6d997a",
+      "#b8c09b",
+      "#243d46",
+      "#3f6a60",
+      "#769883",
+      "#b3cbb0",
+      "#4d5655",
+      "#9b9076",
+      "#676c78",
+      "#e5ded0"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "chalet",
+      "mountains": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 10,
+    "title": "DUSK SILHOUETTES",
+    "technique": "FLAT SHAPES / STRONG CONTRAST",
+    "tree": "willow",
+    "palette": [
+      "#c5a7b2",
+      "#dcb6b1",
+      "#ffe1bc",
+      "#a68b9d",
+      "#7f7b91",
+      "#353f55",
+      "#646277",
+      "#a49395",
+      "#27384a",
+      "#3d4d5b",
+      "#5b6970",
+      "#a9ab98",
+      "#293847",
+      "#6d6871",
+      "#4c4d65",
+      "#d5bcb0"
+    ],
+    "options": {
+      "detail": 0,
+      "prop": "cabin",
+      "sunset": true,
+      "recommended": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 11,
+    "title": "RAINY WOODLAND",
+    "technique": "COOL PALETTE / PIXEL RAIN",
+    "tree": "oak",
+    "palette": [
+      "#899da9",
+      "#98abb0",
+      "#b6c2bc",
+      "#718d97",
+      "#658b85",
+      "#294e50",
+      "#517c6a",
+      "#a2ad83",
+      "#243c48",
+      "#3a615a",
+      "#648b70",
+      "#a1b29a",
+      "#394f51",
+      "#8d9b86",
+      "#475b69",
+      "#b0bbb1"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "cabin",
+      "rain": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 12,
+    "title": "COASTAL SUMMER",
+    "technique": "PALM SILHOUETTES / WATER TILES",
+    "tree": "palm",
+    "palette": [
+      "#88cadd",
+      "#aedbe0",
+      "#fff3d2",
+      "#82b2c5",
+      "#639fa0",
+      "#3d7a69",
+      "#7eae79",
+      "#d4c48c",
+      "#215751",
+      "#3d805a",
+      "#88b565",
+      "#d0d68a",
+      "#756647",
+      "#c7aa72",
+      "#777d85",
+      "#f3e7c1"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "lighthouse",
+      "coast": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 13,
+    "title": "SNOW COUNTRY",
+    "technique": "LIMITED SHADING / SNOW CAPS",
+    "tree": "pine",
+    "palette": [
+      "#b9cfdb",
+      "#d0dce0",
+      "#f6f1e7",
+      "#95afc1",
+      "#a7bec1",
+      "#719495",
+      "#c9d8d4",
+      "#f8f0df",
+      "#3d5d68",
+      "#5f8287",
+      "#a7c2bf",
+      "#e8eee1",
+      "#4c6670",
+      "#b4c4c1",
+      "#697e8c",
+      "#f0eee0"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "chalet",
+      "mountains": true,
+      "snow": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 14,
+    "title": "DESERT EVENING",
+    "technique": "CACTUS SPRITES / MESA LAYERS",
+    "tree": "cactus",
+    "palette": [
+      "#e4b3a0",
+      "#efc4aa",
+      "#ffe1b6",
+      "#b68d95",
+      "#b17f72",
+      "#966e5f",
+      "#c69b75",
+      "#edc799",
+      "#405e58",
+      "#68816a",
+      "#a3ad7d",
+      "#d0c494",
+      "#595d52",
+      "#ac9d75",
+      "#7e7375",
+      "#e1c4a1"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "adobe",
+      "desert": true,
+      "sunset": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 15,
+    "title": "MOSAIC MEADOW",
+    "technique": "SQUARE CLUSTERS / SOFT COLOURS",
+    "tree": "block",
+    "palette": [
+      "#b7c6d2",
+      "#c8ced7",
+      "#f5e6d2",
+      "#9ba8bb",
+      "#91b3aa",
+      "#567d76",
+      "#8fac8c",
+      "#d0cf9d",
+      "#436464",
+      "#6f957d",
+      "#a4bc93",
+      "#d9dba6",
+      "#5d6868",
+      "#afa48b",
+      "#828c98",
+      "#e6debf"
+    ],
+    "options": {
+      "detail": 1,
+      "prop": "barn",
+      "coarse": true
+    },
+    "native": [
+      135,
+      240
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  },
+  {
+    "number": 16,
+    "title": "INK & PAPER",
+    "technique": "LIMITED INKS / ORDERED DITHER",
+    "tree": "willow",
+    "palette": [
+      "#e8dfc5",
+      "#c4bea9",
+      "#e8dfc5",
+      "#b5b3a0",
+      "#8b988d",
+      "#3e585b",
+      "#8b988d",
+      "#c4bea9",
+      "#3e585b",
+      "#657e77",
+      "#a6ad98",
+      "#e8dfc5",
+      "#3e585b",
+      "#8b988d",
+      "#8b988d",
+      "#e8dfc5"
+    ],
+    "options": {
+      "detail": 0,
+      "prop": "windmill",
+      "mono": true,
+      "dither": true
+    },
+    "native": [
+      270,
+      480
+    ],
+    "seconds": 4,
+    "source": "scripts/render_style_variants.py",
+    "licence": "Original authored code/pixels; repository MIT",
+    "reproducibility": "Small palette, modular sprite shapes, pure frame animation. Not benchmarked against other agents."
+  }
+]
