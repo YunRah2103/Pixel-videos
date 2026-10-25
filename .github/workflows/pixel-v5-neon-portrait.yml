@@ -7,6 +7,7 @@ on:
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
       - 'scripts/v5_streamline_tram.py'
+      - 'scripts/v5_sky_courier.py'
       - 'studio/v5/neon-portrait.tmx'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   pull_request:
@@ -15,6 +16,7 @@ on:
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
       - 'scripts/v5_streamline_tram.py'
+      - 'scripts/v5_sky_courier.py'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   workflow_dispatch:
 permissions:
@@ -29,7 +31,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
-          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py scripts/v5_sky_courier.py
       - name: Fetch original artist layered assets, preserving CC BY source and provenance
         run: |
           python3 scripts/setup_free_pixel_v5.py --art
@@ -43,7 +45,7 @@ jobs:
           import json
           data=json.load(open('out/pixel-v5-portrait/tiled-layout.json'))
           objects=[obj['name'] for layer in data['layers'] for obj in layer.get('objects',[])]
-          assert {'tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop'} <= set(objects), objects
+          assert {'tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop','courier-start','courier-finish'} <= set(objects), objects
           print('TILED_EXPORTED_REAL_MAP',objects)
           PY
       - name: Render a 5s portrait video from independent native-pixel art and trolley cels
@@ -54,11 +56,14 @@ jobs:
           test -s out/pixel-v5-portrait/contact-sheet.png
           test -s out/pixel-v5-portrait/hero-still.png
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'trolley-cel-*.png' | wc -l)" -eq 8
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'courier-cel-*.png' | wc -l)" -eq 8
           test -s out/pixel-v5-portrait/render-qa.json
           python3 - <<'PY'
           import json
           qa=json.load(open('out/pixel-v5-portrait/render-qa.json'))
           assert qa.get('original_sprite_cels') == 8, 'New eight-frame trolley not used'
+          assert qa.get('courier_sprite_cels') == 8, 'Skyline animation cels not exported'
+          assert qa.get('skyline_motion_source'), 'Skyline path must come from exported Tiled storyboard'
           assert qa.get('native_puddle_reflections'), 'Missing sprite-linked wet-road composition evidence'
           assert len(qa.get('original_directed_pixel_lights',[]))==3
           print('NATIVE_REFLECTIONS_AND_REAL_MOVING_LIGHTS',qa['native_puddle_reflections'])
@@ -73,6 +78,7 @@ jobs:
             out/pixel-v5-portrait/hero-still.png
             out/pixel-v5-portrait/contact-sheet.png
             out/pixel-v5-portrait/trolley-cel-*.png
+            out/pixel-v5-portrait/courier-cel-*.png
             out/pixel-v5-portrait/pedestrian-cel-*.png
             out/pixel-v5-portrait/pedestrian-reveal-cel.png
             out/pixel-v5-portrait/render-qa.json
