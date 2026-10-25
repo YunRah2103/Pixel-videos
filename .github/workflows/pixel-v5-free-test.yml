@@ -1,0 +1,56 @@
+name: Pixel Studio V5 — download free tools and artist assets
+on:
+  push:
+    branches: [feat/pixel-studio-v5-free-art-test]
+    paths:
+      - 'scripts/setup_pixel_art_v5.py'
+      - 'scripts/render_v5_art_test.py'
+      - '.github/workflows/pixel-v5-free-test.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  free-art-install-and-film:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check installer for syntax errors
+        run: python3 -m py_compile scripts/setup_pixel_art_v5.py
+      - name: Install free image/video dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg python3-pil
+          python3 -c "from PIL import Image; print('Pillow ready')"
+      - name: Download four free authoring tools
+        run: python3 scripts/setup_pixel_art_v5.py --tools
+      - name: Download two licensed artist packs and curated Lospec palette
+        run: python3 scripts/setup_pixel_art_v5.py --assets
+      - name: Inspect actual files and executable availability
+        run: |
+          python3 scripts/setup_pixel_art_v5.py --check
+          test -s out/pixel-v5/tool-install-manifest.json
+          test -s out/pixel-v5/free-asset-provenance.json
+          test -s .tools/pixel-v5/assets/apollo-lospec.json
+          find .tools/pixel-v5/assets/ansimuz-cyberpunk-street -type f | sort | head -60
+          find .tools/pixel-v5/assets/kenney-tiny-city -type f | sort | head -45
+      - name: Render genuine layered-art 5-second pixel movie if renderer exists
+        run: |
+          if test -s scripts/render_v5_art_test.py; then
+            python3 scripts/render_v5_art_test.py
+            ffprobe -v error -show_entries stream=codec_name,width,height,nb_frames,r_frame_rate -show_entries format=duration -of json out/pixel-v5/v5-free-pixel-film.mp4
+            ffmpeg -v error -xerror -i out/pixel-v5/v5-free-pixel-film.mp4 -f null -
+          else
+            echo "Stage 1 installed tools and downloaded art; no video yet"
+          fi
+      - name: Upload actual source artwork, provenance and movie proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-studio-v5-free-tools-and-film
+          path: |
+            out/pixel-v5/**
+            .tools/pixel-v5/assets/ansimuz-cyberpunk-street/**/*.png
+            .tools/pixel-v5/assets/kenney-tiny-city/**/*.png
+            .tools/pixel-v5/assets/apollo-lospec.json
+          if-no-files-found: error
+          retention-days: 30
