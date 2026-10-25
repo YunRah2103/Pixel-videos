@@ -12,7 +12,7 @@ function run(bin,args){
  if(r.error||r.status!==0)throw Error(bin+' failed: '+(r.stderr||r.error||r.status));
  return r.stdout||'';
 }
-run('node',['studio/countryside/car/build-car-v2.mjs']);
+run('node',['studio/countryside/car/build-car-v3.mjs']);
 run(process.platform==='win32'?'npx.cmd':'npx',['remotion','render','src/countryside-v2-car-proof.tsx',
  'CountrysideCarV2Proof',native,'--codec','h264','--concurrency','2','--log','error']);
 run('ffmpeg',['-v','error','-y','-i',native,'-vf','scale=1080:1920:flags=neighbor,format=yuv420p',
@@ -42,4 +42,4 @@ const report={verified:true,scope:'isolated car-only PROOF, not final countrysid
  codec:v.codec_name,pixelFormat:v.pix_fmt,fullDecode:true,distinctCapturedFrames:sha.length,
  contactSheet:sheet,video:final,bytes:statSync(final).size};
 writeFileSync(dir+'/verification.json',JSON.stringify(report,null,2)+'\n');
-console.log('COUNTRYSIDE_CAR_V2_PROOF_PASS '+JSON.stringify(report));
+console.log('COUNTRYSIDE_CAR_V3_PIXELORAMA_REMOTION_PROOF_PASS '+JSON.stringify(report));
