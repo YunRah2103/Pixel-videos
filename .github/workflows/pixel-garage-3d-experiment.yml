@@ -16,7 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify FFmpeg and lightweight X11/GL dependencies
         run: |
-          command -v ffmpeg && ffmpeg -version | head -2
+          command -v ffprobe || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+          ffmpeg -version | head -2
+          ffprobe -version | head -1
           command -v xvfb-run || (sudo apt-get update -qq && sudo apt-get install -y xvfb)
           command -v glxinfo || (sudo apt-get update -qq && sudo apt-get install -y mesa-utils libgl1-mesa-dri)
       - name: Download official Godot 4.4.1 binary
@@ -45,5 +47,6 @@ jobs:
           if-no-files-found: warn
           path: |
             experiments/pixel-garage-godot-3d/render/output/*.mp4
+            experiments/pixel-garage-godot-3d/render/output/*.avi
             experiments/pixel-garage-godot-3d/render/output/proof-*.png
             experiments/pixel-garage-godot-3d/render/output/verification.json
