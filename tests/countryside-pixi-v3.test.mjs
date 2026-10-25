@@ -46,10 +46,12 @@ test('Pixi scene renders moving sky, prominent original foreground bush sprites 
  assert.notEqual(moving,0);
 });
 test('Pixel-perfect wheel detail shot introduces an observable visual cut, then goes wide',()=>{
- assert.equal(getCinematicMotion(0,15.5).shot,'wide');
+ assert.equal(getCinematicMotion(0,15.5).shot,'wheel-closeup');
+ assert.equal(getCinematicMotion(44,15.5).shot,'wheel-closeup');
+ assert.equal(getCinematicMotion(45,15.5).shot,'wide');
  assert.equal(getCinematicMotion(204,15.5).shot,'wide');
- assert.equal(getCinematicMotion(205,15.5).shot,'wheel-closeup');
- assert.equal(getCinematicMotion(270,15.5).shot,'wheel-closeup');
+ assert.equal(getCinematicMotion(205,15.5).shot,'rear-closeup');
+ assert.equal(getCinematicMotion(270,15.5).shot,'rear-closeup');
  assert.equal(getCinematicMotion(271,15.5).shot,'wide');
  const scene=readFileSync('src/scenes/countryside/CountrysideDrive.tsx','utf8');
  assert.match(scene,/transform:close\?'scale\(2\)'/);
