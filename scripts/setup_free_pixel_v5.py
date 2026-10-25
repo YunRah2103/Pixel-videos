@@ -107,15 +107,15 @@ def download_editor(name):
    source.parent.mkdir(parents=True,exist_ok=True)
    run(["git","clone","--depth","1","--branch","1.14.0","https://github.com/azagaya/laigter.git",source],timeout=120)
   if not (source/"laigter.pro").is_file():raise RuntimeError("Laigter source missing qmake project")
-  qmake=shutil.which("qmake")
+  qmake=shutil.which("qmake6")
   if not qmake:
-   print("LAIGTER_SOURCE_READY but qmake absent. Install qtbase5-dev qt5-qmake libqt5opengl5-dev for free source build.")
+   print("LAIGTER_SOURCE_READY but Qt6 qmake absent. Install qt6-base-dev qt6-base-dev-tools for free source build.")
    return source
   binary=DEST/"build"/"laigter"/"laigter"
   if not binary.is_file():
    folder=binary.parent;folder.mkdir(parents=True,exist_ok=True)
    run(["qmake",str(source/"laigter.pro")],env=None,timeout=90) if False else None
-   subprocess.run(["qmake",str(source/"laigter.pro")],cwd=folder,check=True,timeout=90)
+   subprocess.run([qmake,str(source/"laigter.pro")],cwd=folder,check=True,timeout=90)
    jobs=min(4,os.cpu_count() or 2)
    subprocess.run(["make","-j",str(jobs)],cwd=folder,check=True,timeout=420)
   if not binary.is_file():

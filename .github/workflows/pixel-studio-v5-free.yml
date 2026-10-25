@@ -29,7 +29,7 @@ jobs:
       - name: Install open-source build tools
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y git qtbase5-dev qt5-qmake libgl1-mesa-dev libqt5opengl5-dev libqt5svg5-dev qttools5-dev-tools
+          sudo apt-get install -y git build-essential qt6-base-dev qt6-base-dev-tools qt6-tools-dev-tools libgl1-mesa-dev libqt6opengl6-dev libqt6svg6-dev
       - name: Check Python syntax
         run: python3 -m py_compile scripts/setup_free_pixel_v5.py scripts/render_free_pixel_v5.py
       - name: Download LibreSprite, Tiled, SpookyGhost, and Laigter — no API fees
