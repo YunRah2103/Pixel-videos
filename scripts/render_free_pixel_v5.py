@@ -147,7 +147,7 @@ def make_frames(layers):
    speed=(0.18,0.39,0.77,1.08)[idx]
    shift=int(f*speed)
    width=layer["tile"]
-   crop=layer["image"].crop((width//2+shift,width//2+shift*0+0,W+width//2+shift,H))
+   crop=layer["image"].crop((width//2+shift,0,W+width//2+shift,H))
    # use native pixel art source as-is: exact canvas, true alpha
    base.alpha_composite(crop)
   # The independent tram/cel moves noticeably through the street, over real buildings.
