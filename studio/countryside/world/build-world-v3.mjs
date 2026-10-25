@@ -28,52 +28,106 @@ function hill(c,phase,base,shade){
  for(let x=0;x<c.w;x+=4){const slope=Math.round(Math.sin((x+phase)*.012)*9+Math.sin((x+phase)*.031)*3);
  block(c,x,base+slope,4,c.h-base-slope,shade)}
 }
-function leaves(c,x,y,rx,ry,dark,main,light,seed){
- const widths=[.36,.60,.78,.91,1,.97,.86,.68,.43];
- for(let j=0;j<widths.length;j++){
-   const yy=y-ry+Math.round(j*ry*2/(widths.length-1)),half=Math.round(rx*widths[j]);
-   block(c,x-half-2,yy-1,half*2+4,Math.max(3,Math.floor(ry/5)),dark);
-   block(c,x-half,yy,half*2,Math.max(2,Math.floor(ry/6)),main);
+/** Individual organic sprite silhouettes: hand-tuned stepped contours, not rectangular canopies. */
+function blob(c,cx,cy,rx,ry,dark,main,light,seed){
+ const step=3;
+ for(let y=-ry;y<=ry;y+=step){
+  const unit=Math.abs(y)/ry;
+  if(unit>=.99)continue;
+  const w=Math.max(2,Math.round(rx*Math.sqrt(1-unit*unit)));
+  const irregular=(mod(seed*37+Math.floor(y/step)*11,9)-4);
+  const left=Math.round(cx-w+irregular+Math.sin((y+seed*7)*.21)*3);
+  const right=Math.round(cx+w+irregular/2);
+  block(c,left-2,cy+y,right-left+4,3,dark);
+  block(c,left+2,cy+y,right-left-3,3,main);
+  if(mod(y+seed,5)===0){
+   block(c,left+5,cy+y,Math.max(3,Math.floor(w*.28)),2,light);
+   block(c,right-Math.round(w*.46),cy+y,Math.max(2,Math.floor(w*.25)),1,light);
+  }
  }
- for(let j=0;j<10;j++){
-  const a=mod(j*13+seed*11,37)/37,b=mod(j*7+seed*5,29)/29;
-  const px=x-rx+Math.round(a*rx*1.7),py=y-ry+Math.round(b*ry*1.65);
-  block(c,px,py,3+(j%3)*2,2+(j%2),j%5===0?dark:light);
+ // Directional three-tone leaf clusters make every crown feel hand-shaded.
+ for(let i=0;i<11;i++){
+  const px=cx-rx+mod(i*31+seed*17,Math.max(4,rx*2-12));
+  const py=cy-ry+mod(i*13+seed*7,Math.max(4,ry*2-8));
+  const nx=(px-cx)/rx,ny=(py-cy)/ry;
+  if(nx*nx+ny*ny>.72)continue;
+  block(c,px,py,5+mod(i+seed,7),3+mod(i,3),i%4===0?dark:light);
+  block(c,px+3,py+3,3+mod(seed,3),1,main);
  }
- for(let j=0;j<6;j++){
-  const px=x-rx+mod(j*19+seed*13,rx*2),py=y+mod(j*7+seed,Math.max(4,ry))-2;
-  block(c,px,py,3+(j%2),2,dark);
+ // Intentional irregular leaf cluster boundaries and carefully placed glints.
+ for(let i=0;i<26;i++){
+  const xx=mod(seed*17+i*37,rx*2)-rx, yy=mod(seed*11+i*19,ry*2)-ry;
+  if((xx*xx)/(rx*rx)+(yy*yy)/(ry*ry)>.83)continue;
+  const lightKey=i%7===0?dark:i%4===0?light:main;
+  block(c,cx+xx,cy+yy,2+mod(i,4),2+mod(i+seed,2),lightKey);
+ }
+}
+function needleTier(c,x,yy,rx,ry,shade,main,light,seed){
+ for(let dy=0;dy<ry;dy+=3){
+  const wide=Math.max(1,Math.round(rx*(dy/ry)));
+  const rag=mod(seed*11+dy*7,7)-3;
+  block(c,x-wide-rag,yy+dy,wide*2+rag+2,3,shade);
+  block(c,x-wide+2-rag,yy+dy,Math.max(3,wide*2-3),2,main);
+  if(dy%9===0)block(c,x-wide+5,yy+dy,Math.max(3,wide*.45),1,light);
  }
 }
 function tree(c,{x,y,kind,scale=1,depth=1,seed=1}){
  const dark=depth===0?'farDark':depth===1?'midDark':'nearDark';
  const fill=depth===0?'far':depth===1?'mid':'near';
  const light=depth===0?'farLight':depth===1?'midLight':'nearLight';
- const stem=depth===0?'farDark':'bark';
- const h=Math.round((kind==='pine'?128:kind==='poplar'?132:kind==='birch'?108:96)*scale),
-  width=Math.max(3,Math.round((kind==='pine'?5:7)*scale));
- block(c,x-width/2-1,y-h+22,width+2,h-20,dark);
- block(c,x-width/2,y-h+21,width,h-19,stem);
- if(depth>0){block(c,x+1,y-h+25,2,h-29,'barkLight');block(c,x-2,y-17,2,9,'barkDark')}
- if(kind==='pine'){
-  for(let i=0;i<5;i++){
-   const top=y-h+10+i*Math.round(h/6),rx=Math.round((12+i*5)*scale);
-   leaves(c,x+(i%2?2:-2),top+9,rx,Math.round(13*scale),dark,fill,light,seed+i);
-  }
- } else if(kind==='poplar'){
-  for(let i=0;i<5;i++)leaves(c,x+(i%2?4:-4),y-h+16+i*Math.round(h/6),
-   Math.round(14*scale),Math.round(24*scale),dark,fill,light,seed+i);
- } else {
-  const crown=kind==='oak'?[[0,-.62,.58,.27],[-.44,-.49,.42,.26],[.43,-.46,.40,.26],[-.19,-.77,.36,.24],[.23,-.75,.39,.26]]:
-   kind==='maple'?[[0,-.64,.58,.25],[-.46,-.55,.35,.24],[.45,-.51,.42,.24],[-.1,-.81,.34,.23],[.28,-.72,.34,.22]]:
-   [[0,-.61,.57,.24],[-.43,-.48,.43,.23],[.45,-.44,.39,.22],[0,-.77,.43,.22]];
-  for(let i=0;i<crown.length;i++){
-   const [dx,dy,rX,rY]=crown[i];leaves(c,x+Math.round(dx*68*scale),y+Math.round(dy*h),
-     Math.round(rX*60*scale),Math.round(rY*h*scale),dark,fill,light,seed+i);
+ const h=Math.round((depth===2?kind==='pine'?198:kind==='poplar'?194:173:depth===1?153:146)*scale);
+ const stemW=Math.max(3,Math.round((kind==='poplar'||kind==='pine'?5:8)*scale));
+ const top=y-h;
+ // Bark first, foliage later, so branch junctions are naturally hidden.
+ block(c,x-stemW/2-1,top+24,stemW+2,h-22,dark);
+ block(c,x-stemW/2,top+25,stemW,h-22,depth===0?'farDark':'bark');
+ if(depth!==0){
+  block(c,x+1,top+31,2,h-36,'barkLight');
+  for(const [dx,dy,w] of [[-1,.48,28],[1,.61,23],[-1,.74,18]]){
+   const yy=Math.round(top+h*dy);
+   block(c,x+(dx<0?-w:0),yy,w,3,'barkDark');
+   block(c,x+(dx<0?-w:x+w-4),yy-6,4,8,'bark');
   }
  }
- if(depth===2)for(let j=0;j<3;j++)block(c,x-32+j*24,y-5-(j%2)*2,6,3,'grassDark');
+ const cx=Math.round(x+(seed%3-1)*3);
+ if(kind==='pine'){
+  for(let i=0;i<5;i++){
+   const py=top+Math.round(8+i*h*.137),rx=Math.round((15+i*6)*scale),ry=Math.round(29*scale);
+   needleTier(c,cx+(i%2),py,rx,ry,dark,fill,light,seed+i);
+  }
+  block(c,x-1,top-3,2,19,light);
+ } else if(kind==='poplar'){
+  for(let i=0;i<5;i++){
+   const ty=top+Math.round((.19+i*.12)*h);
+   blob(c,cx+(i%2?4:-3),ty,Math.round((18+(i%3)*3)*scale),Math.round(31*scale),dark,fill,light,seed+i);
+  }
+ }else {
+  const crowned=kind==='oak'?[[-.42,.43,.39,.25],[.26,.36,.44,.27],[0,.24,.43,.25],[-.13,.58,.47,.24],[.4,.57,.32,.19]]:
+   kind==='maple'?[[-.32,.38,.4,.24],[.29,.37,.4,.23],[0,.2,.39,.25],[-.08,.61,.48,.22]]:
+   kind==='birch'?[[-.19,.31,.32,.22],[.26,.35,.32,.23],[0,.5,.39,.24],[-.35,.59,.25,.15]]:
+   [[-.37,.41,.38,.2],[.31,.45,.4,.22],[0,.31,.45,.2],[.03,.62,.46,.19]];
+  const crownWidth=Math.round((kind==='oak'?100:kind==='maple'?88:kind==='birch'?70:94)*scale);
+  for(let i=0;i<crowned.length;i++){
+   const [dx,dy,wx,hy]=crowned[i];
+   const rx=Math.max(12,Math.round(crownWidth*wx)),ry=Math.round(h*hy);
+   blob(c,cx+Math.round(dx*crownWidth),top+Math.round(dy*h),rx,ry,dark,fill,light,seed*3+i*7);
+  }
+  if(kind==='birch'&&depth>0){
+   block(c,x-2,y-54,4,45,'cloud');
+   for(let k=0;k<5;k++)block(c,x-2+(k%2)*2,y-50+k*8,3,2,'nearDark');
+  }
+ }
+ // Native-pixel tufts and root cast shadow rather than a boxy shared platform.
+ if(depth===2){
+  block(c,x-19,y-3,35,3,'nearDark');
+  for(let j=0;j<6;j++){
+   const tx=x-28+j*11,hh=4+mod(j*seed,7);
+   block(c,tx,y-hh,2,hh,'grassDark');
+   block(c,tx-2,y-hh+3,5,2,j%3===0?'spark':'nearLight');
+  }
+ }
 }
+
 const groves={
  farTrees:[['poplar',12,300,.72],['pine',98,300,.73],['oak',184,300,.77],['birch',273,300,.76],['maple',364,300,.78],['poplar',455,300,.71],['beech',556,300,.82],['pine',654,300,.78]],
  midTrees:[['oak',6,265,1.01],['birch',110,265,.96],['pine',202,265,1.03],['maple',307,265,1.00],['poplar',414,265,.94],['beech',516,265,.99],['pine',613,265,1.02],['oak',711,265,1.03],['birch',819,265,.94]],
@@ -95,8 +149,10 @@ function paint(id){const [w,h]=size[id],c=canvas(w,h);
  if(id==='sky'){
   block(c,0,0,w,110,'skyHigh');block(c,0,110,w,155,'sky');block(c,0,265,w,h-265,'skyLow');
   for(let yy=100;yy<118;yy+=5)block(c,0,yy,w,1,'sky');
-  cloud(c,26,98,65);cloud(c,244,154,82);cloud(c,-15,220,46);
-  hill(c,23,404,'hill');hill(c,100,441,'farLight');
+  cloud(c,12,55,58);cloud(c,230,113,96);cloud(c,-10,186,78);
+  cloud(c,140,247,73);
+  block(c,0,302,w,2,'skyLow');
+  hill(c,23,379,'hill');hill(c,100,435,'farLight');
  } else if(groves[id]){
   const depth=id==='farTrees'?0:id==='midTrees'?1:2;
   for(const [i,t] of groves[id].entries())tree(c,{x:t[1],y:t[2],kind:t[0],scale:t[3],depth,seed:i*3+1});
@@ -109,6 +165,7 @@ function paint(id){const [w,h]=size[id],c=canvas(w,h);
   block(c,0,9,w,2,'roadLight');block(c,0,84,w,3,'roadLight');block(c,0,94,w,4,'roadDark');
   for(let x=13;x<w;x+=96){block(c,x,54,39,4,'line');block(c,x+3,58,32,1,'roadDark')}
   for(let x=0;x<w;x+=13){let y=16+mod(x*11,69);block(c,x+2,y,2+mod(x,5),1,mod(x,3)?'roadDark':'roadLight')}
+  for(let x=0;x<w;x+=64){block(c,x+4,22,5,1,'roadLight');block(c,x+23,77,4,1,'roadDark')}
   block(c,0,98,w,62,'grass');block(c,0,98,w,4,'soil');block(c,0,102,w,2,'grassLight');
   for(let x=0;x<w;x+=13){const y=107+mod(x*7,52);block(c,x,y,5,2,'grassDark');block(c,x+2,y-4,2,5,'grassLight')}
  }else if(id==='verge'){
