@@ -26,7 +26,7 @@ export const getCinematicRoadTravel=(frame:number):number=>{
 export type CinematicMotion=CountrysideMotion&{
  velocityPx:number;
  foregroundTravelPx:number;
- shot:'wide'|'wheel-closeup';
+ shot:'wide'|'wheel-closeup'|'rear-closeup';
 };
 /**
  * Exact arithmetic and bounded tracking. The road is the only speed clock.
@@ -57,6 +57,6 @@ export function getCinematicMotion(frame:number,wheelRadiusPx:number):CinematicM
     verge:-nearest(travel*.93),
     road:-travel,
   },
-  shot:f>=205&&f<271?'wheel-closeup':'wide',
+  shot:f<45?'wheel-closeup':f>=205&&f<271?'rear-closeup':'wide',
  };
 }
