@@ -54,6 +54,30 @@ jobs:
                 print('IMAGE_DIMENSIONS',name,p.relative_to(root),im.size,im.mode)
               except Exception as e:print('IMAGE_ERROR',p,str(e))
           PY
+      - name: Install fully free frame renderer and FFmpeg
+        run: |
+          sudo apt-get install -y -qq ffmpeg python3-pil
+          ffprobe -version | head -n 1
+      - name: Render a genuine moving five-second artist-led animation
+        run: |
+          /usr/bin/python3 scripts/render_pixel_studio_v5.py
+          test -s out/studio-v5-test/pixel-studio-v5-artist-led-5s.mp4
+          test -s out/studio-v5-test/first-frame.png
+          test -s out/studio-v5-test/contact-sheet.png
+          test -s out/studio-v5-test/render-qa.json
+          ffprobe -v error -show_entries stream=width,height,nb_frames,r_frame_rate -of json out/studio-v5-test/pixel-studio-v5-artist-led-5s.mp4
+      - name: Upload playable proof, editable-source provenance, art still and contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-studio-v5-artist-led-five-second-film
+          path: |
+            out/studio-v5-test/pixel-studio-v5-artist-led-5s.mp4
+            out/studio-v5-test/first-frame.png
+            out/studio-v5-test/contact-sheet.png
+            out/studio-v5-test/render-qa.json
+            out/studio-v5-test/ATTRIBUTION.txt
+          if-no-files-found: error
+          retention-days: 30
       - uses: actions/upload-artifact@v4
         with:
           name: pixel-studio-v5-free-install-manifest
