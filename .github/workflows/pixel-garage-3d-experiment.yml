@@ -1,0 +1,50 @@
+name: Pixel Garage real-3D isolated rendering experiment
+on:
+  push:
+    branches: [experiment/pixel-garage-godot-3d-oct25]
+    paths:
+      - '.github/workflows/pixel-garage-3d-experiment.yml'
+      - 'experiments/pixel-garage-godot-3d/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  godot-real-3d:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender, FFmpeg, software OpenGL and Xvfb
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y blender ffmpeg xvfb libgl1-mesa-dri mesa-utils unzip python3-pip
+          blender -b --version | head -3
+          ffmpeg -version | head -2
+      - name: Download official Godot 4.4.1 binary
+        run: |
+          curl -fL --retry 4 --retry-delay 3 -o /tmp/godot.zip 'https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip'
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.4.1-stable_linux.x86_64
+          /tmp/Godot_v4.4.1-stable_linux.x86_64 --version
+      - name: Install procedural mesh generator dependencies
+        run: python3 -m pip install --break-system-packages numpy trimesh pillow
+      - name: Ensure isolated experiment only
+        run: |
+          test -f experiments/pixel-garage-godot-3d/project.godot
+          test -f experiments/pixel-garage-godot-3d/shaders/intentional_pixel_art.gdshader
+          test -f experiments/pixel-garage-godot-3d/tools/build_models.py
+      - name: Render genuine Godot 3D frames into MP4
+        env:
+          GODOT_BIN: /tmp/Godot_v4.4.1-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: bash experiments/pixel-garage-godot-3d/render/render.sh
+      - name: Upload MP4 and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-garage-godot-3d-real-render
+          if-no-files-found: warn
+          path: |
+            experiments/pixel-garage-godot-3d/render/output/*.mp4
+            experiments/pixel-garage-godot-3d/render/output/proof-*.png
+            experiments/pixel-garage-godot-3d/render/output/verification.json
