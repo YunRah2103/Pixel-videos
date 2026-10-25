@@ -1,0 +1,22 @@
+; Godot 4.x genuine 3D standalone experiment
+config_version=5
+
+[application]
+config/name="PIXEL GARAGE — Godot 3D Experiment"
+run/main_scene="res://scenes/film.tscn"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+
+[display]
+window/size/viewport_width=360
+window/size/viewport_height=640
+window/size/window_width_override=720
+window/size/window_height_override=1280
+window/stretch/mode="viewport"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=0
+anti_aliasing/quality/screen_space_aa=0
+anti_aliasing/quality/use_taa=false
+environment/defaults/default_clear_color=Color(0.50, 0.70, 0.68, 1)
