@@ -14,7 +14,7 @@ for(const [id,[w,h,y]] of Object.entries(tiles)){
  for(let py=0;py<h;py++)for(let px=0;px<w;px++){
   const at=(py*w+px)*4;
   if(data[at+3]===0)continue;
-  painted++;if(py<h*.35)upper++;
+  painted++;if(py<(id==='farTrees'?245:id==='midTrees'?190:id==='nearTrees'?120:h*.35))upper++;
   colors.add([data[at],data[at+1],data[at+2]].join('-'));
  }
  if(colors.size<2)throw Error('Unfinished single-colour layer '+id);
