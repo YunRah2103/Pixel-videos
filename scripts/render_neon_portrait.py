@@ -7,6 +7,7 @@ import hashlib,json,math,random,struct,subprocess,wave
 from pathlib import Path
 from PIL import Image,ImageDraw
 from v5_pedestrian import draw_secondary_story, save_character_cels
+from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spray
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -89,12 +90,16 @@ def frame(f):
  for j in range(24):
   yy=430+j*3;xx=(j*57+29)%W
   d.line((xx,yy,min(W-1,xx+5+j//5),yy),fill=(83,61,83,90))
- position=min(1,max(0,(t-.28)/4.25))
+ position=min(1,max(0,(t-.15)/4.15))
  x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*(position*position*(3-2*position)))
  ty=round(TRAM_START['y']+math.sin(t*6)*1.3)
- if t>=.28:
+ if t>=.15:
   d.ellipse((max(-20,x+7),ty+57,min(290,x+158),ty+65),fill=(1,6,17,140))
-  canvas.alpha_composite(sprites[int(t*16)%4],(x,ty))
+  moving_cel=sprites[int(t*16)%4]
+  reflect_sprite(canvas,moving_cel,x,ty,f,ground_y=421)
+  passing_headlight(canvas,x,ty,f,min(1,max(0,(t-3.65)*1.45)))
+  canvas.alpha_composite(moving_cel,(x,ty))
+  wheel_contact_spray(canvas,x,ty,f)
   d=ImageDraw.Draw(canvas,'RGBA')
   if 0<x<250:
    for k in range(9):
@@ -164,6 +169,9 @@ assert len(set(hashes))==30
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
+ 'native_puddle_reflections':'Current moving trolley sprite cel mirrored in broken native-pixel bands; not a static still',
+ 'original_directed_pixel_lights':['tracked trolley headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
+ 'artistic_review_note':'Compare storyboard still + moving light interactions; source is licensed and final approval remains pending.',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
  'artistic_approval':'pending human visual review'},indent=2))
 (OUT/'ATTRIBUTION.txt').write_text(
