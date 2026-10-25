@@ -1,10 +1,10 @@
 {
   "agent": "agent3",
   "branch": "agent/countryside-v3-motion-pixi",
-  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869",
-  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095",
+  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147018895",
+  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147018895/artifacts/12581312687",
   "proofArtifact": "agent3-countryside-v3-real-pixi-1080p",
-  "commitVerified": "088392835e4960c0caa2ad52f1ea4395ff58d04f",
+  "commitVerified": "b4ea75bb16c253970d314f5767f9194ec857fa44",
   "pixiRuntimeEvidence": {
     "productionEntry": "src/scenes/countryside/CountrysideDrive.tsx",
     "scene": "src/scenes/countryside/PixiCountrysideWorld.tsx",
@@ -30,9 +30,20 @@
     "blackIntervals": 0,
     "contentSha256": "778650d881c0695dec8d3d6ac1796b0ba72619b960035a3bf7cabfa77e656339",
     "contactSheet": "out/countryside-final-qa/countryside-contact-sheet.png",
-    "verification": "out/countryside-final-qa/verification.json"
+    "verification": "out/countryside-final-qa/verification.json",
+    "bytes": 4382336,
+    "output": "1080x1920",
+    "renderRun": "40147018895",
+    "visualShotTimes": [
+      "0–1.5s front wheel closeup",
+      "1.5–6.83s accelerating wide shot",
+      "6.83–9.03s rear wheel closeup",
+      "9.03–12s wide finish"
+    ],
+    "motionQuality": "24 decoded representative frames inspected from final MP4; both macro shots render cleanly"
   },
-  "pixelStudioV3Evidence": "GitHub run 40145928869 step ACTUALLY use Pixel Studio V3 passed, building atlas/environment and rendering V3 moving toolkit proof; this is separate from the integrated Pixi film",
-  "manualReview": "Opened actual nine-frame decoded contact sheet and full-resolution frame 135; pixel edges crisp, character/car grounded, parallax layers distinct; human final artistic approval remains false",
-  "noMainMerge": true
+  "pixelStudioV3Evidence": "Successful run 40147018895: Pixel Studio V3 setup, TypeScript and 360-frame motion tests PASS, then actual native Remotion+PixiJS film and FFmpeg H264 proof PASS",
+  "manualReview": "Inspected full-resolution final frames, 9-frame contact sheet and 24-frame filmstrip for shot continuity, motion, wheel visibility, correct car contact and absence of blank gaps. Still requires user artistic approval.",
+  "noMainMerge": true,
+  "revision": "VISIBLE major motion upgrade: fast car tracking, opening front-wheel and mid-film rear-wheel 2x native crop, moving foreground shrubs, Pixi Graphics moving shade and leaves"
 }
