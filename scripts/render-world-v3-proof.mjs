@@ -2,6 +2,7 @@
  * No still-frame loops, SVG or pixelated 3D. Does not include car footage.
  */
 import sharp from 'sharp';
+import {createHash} from 'node:crypto';
 import {mkdirSync,readFileSync,writeFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 const m=JSON.parse(readFileSync('public/countryside/world/manifest.json','utf8'));
@@ -47,11 +48,23 @@ const info=JSON.parse(cmd('ffprobe',['-v','error','-count_frames','-show_entries
 const v=info.streams.find(x=>x.codec_name==='h264');
 if(v?.width!==1080||v?.height!==1920||v?.r_frame_rate!=='30/1'||Number(v?.nb_read_frames)!==FRAMES)throw Error('Proof video failed frame/dimension checks');
 cmd('ffmpeg',['-v','error','-xerror','-i',mp4,'-f','null','-']);
-const hashes=new Set([0,15,30,60,90,119].map(f=>Buffer.from(at(f)).subarray(0).toString('base64').slice(0,256)));
-if(hashes.size===0)throw Error('No sampled frames');
+// Whole native frames, including road/forest, must genuinely differ. The
+// previous check sampled only the static sky and could never detect freezing.
+const indices=[0,5,15,30,45,60,75,90,105,119];
+const sampleHashes=indices.map(f=>createHash('sha256').update(at(f)).digest('hex'));
+if(new Set(sampleHashes).size!==indices.length)throw Error('Proof contains repeated/frozen checkpoints');
+let changedPairs=0;
+for(let f=0;f<FRAMES-1;f++){
+ const a=at(f),b=at(f+1);let moved=false;
+ for(let y=265;y<575&&!moved;y+=3){
+  for(let x=0;x<W;x+=3){let p=(y*W+x)*4;if(a[p]!==b[p]||a[p+1]!==b[p+1]){moved=true;break}}
+ }
+ if(moved)changedPairs++;
+}
+if(changedPairs<FRAMES-5)throw Error('Too many non-moving frame transitions: '+changedPairs);
 for(const name of Object.keys(rates)){
  const t=m.tiles[name];if(planes[name].length!==t.width*t.height*4)throw Error('Invalid RGBA tile '+name);
 }
-const qa={source:'V3 art planes generated from authoritative LDtk layout + Sharp pixel painter',frames:FRAMES,fps:FPS,fullyDecoded:true,ffprobe:info,sampledFrames:steps};
+const qa={source:'V3 art planes generated from authoritative LDtk layout + Sharp pixel painter',frames:FRAMES,fps:FPS,fullyDecoded:true,ffprobe:info,sampledFrames:steps,distinctFrames:new Set(sampleHashes).size,animatedTransitions:changedPairs};
 writeFileSync(out+'/verification.json',JSON.stringify(qa,null,2)+'\n');
 console.log('COUNTRYSIDE_V3_MOVING_PROOF_PASS',JSON.stringify(qa));
