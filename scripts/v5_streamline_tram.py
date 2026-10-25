@@ -1,4 +1,4 @@
-"""Original detailed, separately editable eight-cel streamlined retro tram artwork.
+"""Original detailed, separately editable twenty-four-cel streamlined retro tram artwork.
 Native 164x66 RGBA; hand-specified vector-of-pixel polygons and discrete brushwork.
 Uses only Pillow; no paid image generation, account, API or hidden source assets.
 """
@@ -22,11 +22,15 @@ def tram_cel(phase):
         d.ellipse((cx-12,45,cx+12,65),fill=(5,9,24),outline=(155,91,97),width=2)
         d.ellipse((cx-8,49,cx+8,62),fill=(20,35,48),outline=(185,168,148))
         for spoke in range(4):
-            angle=(phase%8)*math.pi/4+spoke*math.pi/2
-            dx=round(math.cos(angle)*5)
-            dy=round(math.sin(angle)*4)
+            angle=(phase%24)*2*math.pi/24+spoke*math.pi/2
+            dx=round(math.cos(angle)*6)
+            dy=round(math.sin(angle)*5)
             d.line((cx-dx,56-dy,cx+dx,56+dy),fill=GOLD,width=1)
         d.ellipse((cx-2,54,cx+2,58),fill=CREAM)
+        # The single valve marker has a full 24-frame orbit; it does not
+        # repeat every quarter-turn like the symmetric four-spoke design.
+        theta=(phase%24)*2*math.pi/24
+        d.point((cx+round(8*math.cos(theta)),56+round(6*math.sin(theta))),fill=(255,194,130))
         d.point((cx,56),fill=(78,174,186))
     # Tilted body-panel endpoints and layered sculpted nose, not rectangle primitives.
     d.polygon([(3,33),(6,27),(13,19),(22,13),(38,9),(56,8),(110,8),
@@ -80,11 +84,23 @@ def tram_cel(phase):
     d.line((78,0,101,0),fill=(249,183,132))
     d.point((70,9),fill=CYAN)
     d.point((110,9),fill=CYAN)
+    # Carefully limited material accents and stepped clusters; no soft glow.
+    d.line((17,34,21,34),fill=(245,132,131),width=1)
+    d.line((49,13,75,13),fill=(206,110,119),width=1)
+    d.line((103,13,119,15),fill=(232,139,129),width=1)
+    d.line((121,41,140,41),fill=(109,186,192),width=1)
+    for px in (38,59,80,100,120):
+        d.point((px,44),fill=(249,205,143))
+    # Hand-placed passenger silhouettes and occasional interior motion.
+    if 5 <= phase%24 <= 13:
+        d.line((70,28,71,30),fill=(216,155,112),width=1)
+    else:
+        d.point((70,29),fill=(165,116,98))
     return im
 
 def save_tram_cels(folder):
     folder.mkdir(parents=True,exist_ok=True)
-    frames=[tram_cel(i) for i in range(8)]
+    frames=[tram_cel(i) for i in range(24)]
     for i,sprite in enumerate(frames):
         sprite.save(folder/('trolley-cel-%d.png'%i))
     return frames
