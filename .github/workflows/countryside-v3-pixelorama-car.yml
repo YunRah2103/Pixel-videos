@@ -1,0 +1,77 @@
+name: Countryside V3 - Agent 2 Pixelorama-native car art + Remotion proof
+on:
+  push:
+    branches:
+      - agent/countryside-v3-car-pixelorama
+  workflow_dispatch:
+jobs:
+  car-v3-pixelorama:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install 16-bit art authoring and FFmpeg dependencies
+        run: |
+          python -m pip install Pillow==11.3.0
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg xvfb xauth libgl1-mesa-dri libfontconfig1 libx11-6 libxcursor1 libxrandr2 libxi6
+          ffprobe -version | head -3
+      - name: Install JS production tools
+        run: npm install --no-audit --no-fund
+      - name: Actually exercise Pixel Studio V3 tooling
+        run: |
+          npm run studio:setup
+          npm run atlas:build
+          npm run rigs:test
+          npm run visual:qa
+      - name: Create editable original native pixel-art layers (body and wheel project)
+        run: npm run car:v3:art
+      - name: Import original editable OpenRaster layers and export ACTUAL PNGs using Pixelorama 1.1.10
+        run: npm run car:v3:pixelorama
+      - name: Verify Sharp's production sprites, palette and eight distinct wheel frames
+        run: npm run car:v3:build
+      - name: Type-check standalone native car and Remotion composition
+        run: npx tsc --project tsconfig.car-v2.json --noEmit
+      - name: Native 120-frame Remotion render, true x3 nearest-neighbour upscale, full FFmpeg decode and nine video captures
+        run: npm run car:v3:proof
+      - name: Additional car-art mobile legibility and PNG pixel-geometry check
+        run: |
+          python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          p=Path('public/countryside/car')
+          body=Image.open(p/'coupe-v2-body.png').convert('RGBA')
+          wheels=Image.open(p/'coupe-v2-wheels-8.png').convert('RGBA')
+          assert body.size==(192,80) and wheels.size==(256,32)
+          assert body.getbbox() is not None and len(body.getcolors(192*80))>=10
+          assert len({wheels.crop((i*32,0,(i+1)*32,32)).tobytes() for i in range(8)})==8
+          print('PIXEL_MOBILE_LEGIBILITY_PASS body_native=192x80 wheel_animation=8 original_layered_art=2')
+          PY
+      - name: Upload genuine Pixelorama logs, editable originals, PNGs and 1080p moving Remotion proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v3-agent2-pixelorama-car
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            studio/countryside/car/v3-source/*.ora
+            studio/countryside/car/v3-source/manifest.json
+            public/countryside/car/coupe-v3*.png
+            public/countryside/car/coupe-v2-body.png
+            public/countryside/car/coupe-v2-wheels-8.png
+            out/car-v3-proof/*.log
+            out/car-v3-proof/pixelorama-export-validation.json
+            out/car-v2-proof/coupe-v2-1080x1920.mp4
+            out/car-v2-proof/contact-sheet.png
+            out/car-v2-proof/frame-*.png
+            out/car-v2-proof/verification.json
+            out/studio-v3/visual-qa.json

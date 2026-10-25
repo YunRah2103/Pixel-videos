@@ -28,7 +28,11 @@
     "studio:build": "npm run assets:build && npm run atlas:build && npm run environment:build && npm run rigs:test",
     "studio:verify": "npm run studio:build && npm run environment:proof && npm run visual:qa && npm run typecheck:toolkit",
     "car:v2:build": "node studio/countryside/car/build-car-v2.mjs",
-    "car:v2:proof": "node scripts/render-car-v2-proof.mjs"
+    "car:v2:proof": "node scripts/render-car-v2-proof.mjs",
+    "car:v3:art": "python3 studio/countryside/car/build-car-v3.py",
+    "car:v3:pixelorama": "bash scripts/pixelorama-export-car-v3.sh",
+    "car:v3:build": "node studio/countryside/car/build-car-v3.mjs",
+    "car:v3:proof": "node scripts/render-car-v2-proof.mjs"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
