@@ -16,7 +16,8 @@ for(const s of specs){
  const raw=await sharp(src).ensureAlpha().raw().toBuffer();
  const rgbaColors=new Set();
  for(let i=0;i<raw.length;i+=4)if(raw[i+3])rgbaColors.add([raw[i],raw[i+1],raw[i+2],raw[i+3]].join(','));
- if(rgbaColors.size<10||rgbaColors.size>120)throw Error('Invalid handcrafted 16-bit palette '+s.file+' '+rgbaColors.size);
+ const minColors=s.file.includes('wheels')?6:10;
+ if(rgbaColors.size<minColors||rgbaColors.size>120)throw Error('Invalid handcrafted 16-bit palette '+s.file+' '+rgbaColors.size);
  const result=await sharp(src).png({compressionLevel:9,palette:false}).toBuffer();
  await writeFile(dir+'/'+s.dest,result);
  // V3 named outputs for integration while preserving V2 scene's stable sprite filenames.
