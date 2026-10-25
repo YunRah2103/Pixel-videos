@@ -13,6 +13,16 @@ OUT=ROOT/'out/pixel-v5-portrait'
 FRAME_DIR=OUT/'frames'
 FRAME_DIR.mkdir(parents=True,exist_ok=True)
 W,H,FPS,N,SCALE=270,480,30,150,4
+LAYOUT_FILE=OUT/'tiled-layout.json'
+if not LAYOUT_FILE.is_file():
+ raise RuntimeError('Tiled-exported storyboard missing: export studio/v5/neon-portrait.tmx with tiled --export-map')
+TILED=json.loads(LAYOUT_FILE.read_text())
+OBJECTS={o.get('name'):o for layer in TILED['layers'] for o in layer.get('objects',[])}
+for required in ('tram-start','tram-finish','open-sign'):
+ if required not in OBJECTS:raise RuntimeError('Missing Tiled stage object '+required)
+TRAM_START=OBJECTS['tram-start']
+TRAM_FINISH=OBJECTS['tram-finish']
+SIGN=OBJECTS['open-sign']
 if not all((ART/x).exists() for x in ('far-buildings.png','back-buildings.png','foreground.png')):
  raise RuntimeError('Real licensed artist planes missing: run python3 scripts/setup_free_pixel_v5.py --art')
 planes=[Image.open(ART/n).convert('RGBA') for n in ('far-buildings.png','back-buildings.png','foreground.png')]
@@ -78,8 +88,8 @@ def frame(f):
   yy=430+j*3;xx=(j*57+29)%W
   d.line((xx,yy,min(W-1,xx+5+j//5),yy),fill=(83,61,83,90))
  position=min(1,max(0,(t-.28)/4.25))
- x=round(-165+380*(position*position*(3-2*position)))
- ty=359+round(math.sin(t*6)*1.3)
+ x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*(position*position*(3-2*position)))
+ ty=round(TRAM_START['y']+math.sin(t*6)*1.3)
  if t>=.28:
   d.ellipse((max(-20,x+7),ty+57,min(290,x+158),ty+65),fill=(1,6,17,140))
   canvas.alpha_composite(sprites[int(t*16)%4],(x,ty))
@@ -94,9 +104,9 @@ def frame(f):
          fill=(c[0],c[1],c[2],round(30+70*pulse)))
  if f>110:
   b=min(1,(f-110)/15)
-  d.rectangle((221,216,264,232),fill=(9,29,48,220),
+  d.rectangle((int(SIGN['x']),int(SIGN['y']),int(SIGN['x']+SIGN['width']-1),int(SIGN['y']+SIGN['height'])),fill=(9,29,48,220),
               outline=(30,177,211,round(110+120*b)),width=2)
-  d.text((226,218),'OPEN',fill=(96,241,250,round(100+155*b)))
+  d.text((int(SIGN['x']+5),int(SIGN['y']+2)),'OPEN',fill=(96,241,250,round(100+155*b)))
   for k in range(13):
    yy=382+k*6
    d.line((222-k//2,yy,261+k//2,yy),
@@ -146,8 +156,8 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':4,'actual_tools':['Pillow','FFmpeg','FFprobe'],
- 'not_claimed_as_used':['Tiled editor','Laigter editor','LibreSprite editor','SpookyGhost editor'],
+ 'original_sprite_cels':4,'tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
+ 'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
  'artistic_approval':'pending human visual review'},indent=2))
 (OUT/'ATTRIBUTION.txt').write_text(
