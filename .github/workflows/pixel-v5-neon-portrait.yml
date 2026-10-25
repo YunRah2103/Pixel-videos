@@ -9,6 +9,7 @@ on:
       - 'scripts/v5_streamline_tram.py'
       - 'scripts/v5_sky_courier.py'
       - 'scripts/v5_neon_activation.py'
+      - 'scripts/v5_cinematic_shots.py'
       - 'studio/v5/neon-portrait.tmx'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   pull_request:
@@ -19,6 +20,7 @@ on:
       - 'scripts/v5_streamline_tram.py'
       - 'scripts/v5_sky_courier.py'
       - 'scripts/v5_neon_activation.py'
+      - 'scripts/v5_cinematic_shots.py'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   workflow_dispatch:
 permissions:
@@ -33,7 +35,26 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
-          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py scripts/v5_sky_courier.py scripts/v5_neon_activation.py
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py scripts/v5_sky_courier.py scripts/v5_neon_activation.py scripts/v5_cinematic_shots.py
+      - name: Assert integer-only shot direction, no smoothing or faux animation
+        run: |
+          PYTHONPATH=scripts /usr/bin/python3 - <<'PY'
+          from PIL import Image
+          from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST
+          sample=Image.new('RGB',(270,480))
+          p=sample.load()
+          for y in range(480):
+            for x in range(270):p[x,y]=(x%256,y%256,0)
+          wide=apply_cinematic_camera(sample,57,128)
+          close=apply_cinematic_camera(sample,58,128)
+          return_wide=apply_cinematic_camera(sample,105,128)
+          assert wide.tobytes()==sample.tobytes()
+          assert return_wide.tobytes()==sample.tobytes()
+          assert len(SHOT_LIST)==3
+          expected=sample.crop((135,230,270,470)).resize((270,480),Image.Resampling.NEAREST)
+          assert close.tobytes()==expected.tobytes()
+          print('INTEGER_SHOT_DIRECTION_VERIFIED',SHOT_LIST)
+          PY
       - name: Fetch original artist layered assets, preserving CC BY source and provenance
         run: |
           python3 scripts/setup_free_pixel_v5.py --art
