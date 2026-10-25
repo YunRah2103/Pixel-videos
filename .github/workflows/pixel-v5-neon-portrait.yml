@@ -1,7 +1,7 @@
 name: Pixel Studio V5 — portrait art-first motion test
 on:
   push:
-    branches: [feat/pixel-studio-v5-neon-portrait-art-pass]
+    branches: [feat/pixel-studio-v5-neon-portrait-art-pass, feat/v5-car-focused-hero-polish]
     paths:
       - 'scripts/render_neon_portrait.py'
       - 'scripts/v5_pedestrian.py'
@@ -48,13 +48,14 @@ jobs:
           p=sample.load()
           for y in range(480):
             for x in range(270):p[x,y]=(x%256,y%256,0)
-          wide=apply_cinematic_camera(sample,57,128)
-          close=apply_cinematic_camera(sample,58,128)
-          return_wide=apply_cinematic_camera(sample,105,128)
+          wide=apply_cinematic_camera(sample,35,128)
+          close=apply_cinematic_camera(sample,36,128)
+          return_wide=apply_cinematic_camera(sample,114,128)
           assert wide.tobytes()==sample.tobytes()
           assert return_wide.tobytes()==sample.tobytes()
           assert len(SHOT_LIST)==3
-          expected=sample.crop((135,230,270,470)).resize((270,480),Image.Resampling.NEAREST)
+          assert [(x['start_frame'],x['end_frame_exclusive']) for x in SHOT_LIST]==[(0,36),(36,114),(114,150)]
+          expected=sample.crop((135,240,270,480)).resize((270,480),Image.Resampling.NEAREST)
           assert close.tobytes()==expected.tobytes()
           print('INTEGER_SHOT_DIRECTION_VERIFIED',SHOT_LIST)
           PY
@@ -119,6 +120,7 @@ jobs:
           ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames,r_frame_rate -of json out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
           test -s out/pixel-v5-portrait/contact-sheet.png
           test -s out/pixel-v5-portrait/hero-still.png
+          test -s out/pixel-v5-portrait/final-car-hero-still.png
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'car-cel-*.png' | wc -l)" -eq 24
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'courier-cel-*.png' | wc -l)" -eq 8
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'open-sign-cel-*.png' | wc -l)" -eq 6
@@ -131,6 +133,7 @@ jobs:
           assert qa.get('car_sprite_cels') == 24
           assert qa.get('genuine_editor_pipeline',{}).get('actual_editor_atlas_used_to_derive_final_cels') is True
           assert qa.get('hero_vehicle_type') == 'two-door neo-retro GT coupe'
+          assert [(x['start_frame'],x['end_frame_exclusive']) for x in qa['editorial_shot_list']]==[(0,36),(36,114),(114,150)]
           assert qa.get('courier_sprite_cels') == 8, 'Skyline animation cels not exported'
           assert qa.get('walking_poses') == 12, 'Twelve distinct pedestrian poses not used'
           assert qa.get('pedestrian_sprite_cels') == 13, 'Pedestrian pose sprites not packaged'
@@ -157,6 +160,7 @@ jobs:
             out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
             out/pixel-v5-portrait/preview-still.png
             out/pixel-v5-portrait/hero-still.png
+            out/pixel-v5-portrait/final-car-hero-still.png
             out/pixel-v5-portrait/contact-sheet.png
             out/pixel-v5-portrait/car-cel-*.png
             out/pixel-v5-portrait/car-detail-source.ora

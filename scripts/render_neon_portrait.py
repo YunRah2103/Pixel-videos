@@ -10,7 +10,7 @@ from v5_pedestrian import draw_secondary_story, save_character_cels
 from v5_reflections import reflect_sprite, passing_headlight, wheel_contact_spray
 from v5_sky_courier import paint_sky_courier, save_courier_cels
 from v5_neon_activation import paint_neon_activation, save_sign_cels
-from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST
+from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST, CLOSE_START, CLOSE_END
 from v5_micro_life import paint_micro_life
 
 ROOT=Path(__file__).resolve().parent.parent
@@ -48,18 +48,18 @@ courier_cels=save_courier_cels(OUT)
 save_character_cels(OUT)
 sign_cels=save_sign_cels(OUT)
 rng=random.Random(79523)
-rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,6),rng.randrange(20,60)) for _ in range(55)]
+rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,5),rng.randrange(15,34)) for _ in range(14)]
 glints=[(rng.randrange(W),rng.randrange(390,475),rng.randrange(1,6),
-         rng.choice(((73,215,238),(235,66,115),(255,188,99)))) for _ in range(115)]
+         rng.choice(((73,215,238),(235,66,115),(255,188,99)))) for _ in range(14)]
 
 def frame(f):
  t=f/FPS
- cam=int(16*(f/(N-1))**1.6)
+ cam=int(48*(f/(N-1))**1.12)
  canvas=Image.new('RGBA',(W,H),(6,12,28,255))
  for layer_index,(src,offset) in enumerate(zip(planes,(168+int(cam*.25),230+int(cam*.52),268+cam))):
   canvas.alpha_composite(moving_plane(src,offset,44))
-  if layer_index == 0:
-   # Hand-authored eight-cel aerial vehicle, naturally occluded by near architecture.
+  if layer_index == 0 and f < CLOSE_START:
+   # A little skyline motion is enough; never compete with hero car coverage.
    paint_sky_courier(canvas,f,OBJECTS['courier-start'],OBJECTS['courier-finish'])
  canvas.alpha_composite(planes[0].crop((0,0,270,44)),(0,0))
  pavement=planes[2].crop((260,345,530,384)).resize((270,51),Image.Resampling.NEAREST)
@@ -68,16 +68,33 @@ def frame(f):
  for j in range(24):
   yy=430+j*3;xx=(j*57+29)%W
   d.line((xx,yy,min(W-1,xx+5+j//5),yy),fill=(83,61,83,90))
- paint_micro_life(canvas,f)
- position=min(1,max(0,(t-.15)/4.15))
- # Gentle lead-in/lead-out without the earlier overlong slow creep.
- eased=position-.065*math.sin(2*math.pi*position)
+ if f < 18:
+  paint_micro_life(canvas,f)
+ # Coupe begins visible at frame ZERO and brakes only for the final neon.
+ progress=f/(N-1)
+ if progress <= .76:
+  eased=.91*(progress/.76)**.92
+ else:
+  tail=(progress-.76)/.24
+  eased=.91+.09*(1-(1-tail)**3)
  x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*eased)
+ # Subdued architecture, composited BEFORE the untouched hero sprite.
+ canvas.alpha_composite(Image.new('RGBA',(W,385),(4,8,23,76 if f>=CLOSE_START else 57)),(0,44))
  # Two road frequencies create small suspension response, never subpixel blur.
  ty=round(TRAM_START['y']+.9*math.sin(t*8)+.55*math.sin(t*15+.6))
- if t>=.15:
+ if True:
   d.ellipse((max(-20,x+7),ty+57,min(290,x+158),ty+65),fill=(1,6,17,140))
-  moving_cel=sprites[f%len(sprites)]
+  moving_cel=sprites[f%len(sprites)].copy()
+  if f >= CLOSE_END:
+   # Restricted native-pixel light ramps: no bloom or frame interpolation.
+   strength=round(100*min(1,(f-CLOSE_END)/20))
+   light=Image.new('RGBA',moving_cel.size)
+   ld=ImageDraw.Draw(light,'RGBA')
+   ld.line((52,37,111,37),fill=(42,217,222,strength),width=2)
+   ld.line((117,34,143,37),fill=(245,112,181,strength),width=2)
+   ld.line((63,16,96,16),fill=(255,186,166,strength),width=1)
+   ld.line((51,49,114,49),fill=(68,178,201,strength//2),width=1)
+   moving_cel.alpha_composite(light)
   reflect_sprite(canvas,moving_cel,x,ty,f,ground_y=421)
   passing_headlight(canvas,x,ty,f,min(1,max(0,(t-3.65)*1.45)))
   canvas.alpha_composite(moving_cel,(x,ty))
@@ -88,16 +105,17 @@ def frame(f):
     d.line((x+150-k,ty+72+k*3,x+151+k,ty+72+k*3),
            fill=(255,170,87,max(12,102-k*11)))
  # An original independently animated character crosses beneath the shop lights.
- draw_secondary_story(canvas,f,FPS,OBJECTS['pedestrian-start']['x'],OBJECTS['pedestrian-stop']['x'],OBJECTS['pedestrian-start']['y'])
+ if f < CLOSE_START:
+  draw_secondary_story(canvas,f,FPS,OBJECTS['pedestrian-start']['x'],OBJECTS['pedestrian-stop']['x'],OBJECTS['pedestrian-start']['y'])
  for ix,(xx,yy,length,c) in enumerate(glints):
   pulse=.5+.5*math.sin(.17*f+ix*1.6)
   d.line((xx,yy,min(W-1,xx+round(length*(.3+pulse))),yy),
-         fill=(c[0],c[1],c[2],round(30+70*pulse)))
+         fill=(c[0],c[1],c[2],round(10+27*pulse)))
  # Native six-cel storefront OPEN reveal, controlled by the Tiled sign fixture.
  paint_neon_activation(canvas,f,SIGN)
  for ix,(xx,yy,length,speed) in enumerate(rain):
   q=(yy+f*speed//30)%H
-  d.line((xx,q,xx,q+length),fill=(98,161,192,52 if ix%3 else 71))
+  d.line((xx,q,xx,q+length),fill=(98,161,192,20 if ix%3 else 31))
  # Art-led three-shot direction: crop only AFTER independently animating all source layers.
  # Shot 2 is an integer 2x trolley-tracking close-up, not an enlarged still.
  return apply_cinematic_camera(canvas,f,x).convert('RGB')
@@ -111,6 +129,7 @@ for f in range(N):
  large.save(FRAME_DIR/('frame_%04d.png'%f))
  if f==0:large.save(OUT/'preview-still.png')
  if f==90:large.save(OUT/'hero-still.png')
+ if f==144:large.save(OUT/'final-car-hero-still.png')
  if f%5==0:hashes.append(hashlib.sha256(im.tobytes()).hexdigest())
 sheet=Image.new('RGB',(W*3,H*3),(10,11,22))
 for i,im in enumerate(selected):sheet.paste(im,((i%3)*W,(i//3)*H))
@@ -143,23 +162,23 @@ assert len(set(hashes))==30
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
  'original_sprite_cels':len(sprites),'car_sprite_cels':len(sprites),'hero_vehicle_type':'two-door neo-retro GT coupe','courier_sprite_cels':len(courier_cels),
- 'polish_pass':'replaced tram with original 24-cel low two-door GT coupe, retained 12-pose pedestrian, native-pixel micro-life and puddles',
- 'hero_motion_timing':'GT coupe with continuous lead-in/lead-out, 24 distinct rim phases and two-frequency one-pixel suspension movement; walker smoothstep arrival',
+ 'polish_pass':'car-first 0-35 entrance, 36-113 two-times side tracking, 114-149 neon hero brake; stronger GT detail and restrained environment',
+ 'hero_motion_timing':'coupe visible from frame zero, tracked for 2.6 seconds, decelerates into neon, 24 rotating alloy rim phases',
  'no_blur_or_interpolation':True,
  'genuine_editor_pipeline':EDITOR_EVIDENCE,
  'artist_tools_executed':['Krita CLI OpenRaster export','LibreSprite CLI real layered detail and sprite atlas','Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'open_sign_sprite_cels':len(sign_cels),
- 'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x coupe tracking at frames 58-104; full scene at 0-57 and 105-149',
+ 'editorial_shot_list':SHOT_LIST, 'camera_edit':'True native-pixel 2x coupe tracking at frames 36-113; car-led entrance frames 0-35 and whole-car neon payoff 114-149',
  'story_payoff':'six-step original typographic OPEN neon sequence and localized wet-road light reflections',
- 'skyline_motion':'eight frame original hand-specified peach delivery blimp, timed and placed with exported Tiled objects; naturally passes behind architecture',
+ 'skyline_motion':'opening-only eight-frame sky courier; absent from side-tracking and final car payoff',
  'skyline_motion_source':'Tiled objects courier-start and courier-finish',
- 'pedestrian_sprite_cels':13,'walking_poses':12,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
+ 'pedestrian_sprite_cels':13,'walking_poses':12,'secondary_story':'character motion limited to first 1.2 seconds; removed from primary hero car shots',
  'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Krita CLI export','LibreSprite CLI roundtrip and 24-frame atlas','Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['manual Krita brush painting','manual LibreSprite GUI painting','Tiled GUI manual drawing','Laigter','SpookyGhost','Pixelorama'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
  'car_sprite_provenance':'Original neo-retro two-door side-profile GT: 24 source-authored pixel cels; see scripts/v5_sports_car.py; no art editor falsely claimed',
  'native_puddle_reflections':'Current moving car sprite cel mirrored in irregular clustered native-pixel puddles; not a static still',
- 'independent_environment_life':'three authored gutter drips, independently phased steam and tiny persistent puddle rings; scripts/v5_micro_life.py',
+ 'independent_environment_life':'opening-only subtle environmental life; scripts/v5_micro_life.py',
  'original_directed_pixel_lights':['tracked coupe headlamp','moving wheel-contact droplets','final cyan shop-sign reflection'],
  'artistic_review_note':'Editor-generated original pixel-reflection layers now alter the actual displayed car; baseline remains code-authored and professional hand-painting is not claimed. Final approval remains pending.',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
@@ -167,5 +186,5 @@ assert len(set(hashes))==30
 (OUT/'ATTRIBUTION.txt').write_text(
  'Cyberpunk Street Environment by Luis Zuno (Ansimuz), CC BY 3.0; adapted for Pixel Videos.\n'
  'https://opengameart.org/content/cyberpunk-street-environment\n'
- 'Original independently animated trolley, umbrella-walker and lighting: Pixel Videos.\n')
+ 'Original independently animated GT coupe, umbrella-walker and lighting: Pixel Videos.\n')
 print('V5_PORTRAIT_PROOF_PASS',movie,probe,flush=True)

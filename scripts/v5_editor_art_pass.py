@@ -40,26 +40,27 @@ def png_bytes(image):
     return dst.getvalue()
 
 def specular_layers():
+    # Roof, glazing and speculars must share the rear-set cabin's geometry.
     # Deliberately clustered paint/rain highlights in three manually specified
     # layers: not a noise function and not vector smoothing.
     body=Image.new('RGBA',(W,H))
     d=ImageDraw.Draw(body,'RGBA')
     # Sloping canopy ridge/side shoulder specular; clustered paint ramps.
-    d.line((59,29,72,17),fill=(132,218,212,220),width=1)
-    d.line((73,16,88,16),fill=(244,178,165,240),width=1)
-    d.line((98,16,108,16),fill=(119,204,202,170),width=1)
-    d.line((48,37,67,37),fill=(171,224,204,150),width=1)
-    d.line((77,37,92,37),fill=(79,213,213,205),width=1)
-    d.line((103,38,114,38),fill=(85,197,209,150),width=1)
-    d.line((125,35,139,37),fill=(245,136,174,220),width=1)
+    d.line((47,29,60,17),fill=(132,218,212,220),width=1)
+    d.line((61,16,76,16),fill=(244,178,165,240),width=1)
+    d.line((86,16,96,16),fill=(119,204,202,170),width=1)
+    d.line((43,37,61,37),fill=(171,224,204,150),width=1)
+    d.line((65,37,80,37),fill=(79,213,213,205),width=1)
+    d.line((91,38,105,38),fill=(85,197,209,150),width=1)
+    d.line((124,35,139,37),fill=(245,136,174,220),width=1)
     d.line((142,39,149,40),fill=(245,192,148,230),width=1)
     d.line((18,42,26,42),fill=(230,99,142,170),width=1)
     d.line((55,45,86,45),fill=(81,193,187,110),width=1)
     d.line((98,45,118,45),fill=(57,196,208,135),width=1)
     for p,c in [((29,36),(242,185,166,220)),((31,36),(255,215,158,230)),
                 ((47,41),(255,126,167,190)),((51,42),(146,226,210,180)),
-                ((64,33),(126,214,224,160)),((76,15),(255,200,172,205)),
-                ((91,33),(235,127,151,190)),((120,35),(170,226,213,180)),
+                ((52,33),(126,214,224,160)),((64,15),(255,200,172,205)),
+                ((79,33),(235,127,151,190)),((108,35),(170,226,213,180)),
                 ((145,43),(118,238,213,190)),((151,42),(255,212,159,210))]:
         d.point(p,fill=c)
 
@@ -72,7 +73,15 @@ def specular_layers():
     m.line((10,47,15,47),fill=(221,101,127,150),width=1)
     m.line((55,49,74,49),fill=(22,63,87,195),width=1)
     m.line((99,49,113,49),fill=(16,66,80,200),width=1)
-    for x,y in ((34,35),(42,34),(109,35),(119,37)):
+    # Secondary cool neon streaks and stepped enamel bevel, authored as true
+    # sparse native-pixel clusters for the same Krita/LibreSprite pipeline.
+    m.line((44,40,64,40),fill=(58,205,211,92),width=1)
+    m.line((63,40,92,40),fill=(93,224,220,106),width=1)
+    m.line((95,40,123,40),fill=(241,111,159,91),width=1)
+    m.line((60,47,80,47),fill=(103,224,208,94),width=1)
+    m.line((93,46,114,46),fill=(155,224,215,96),width=1)
+    m.line((142,44,157,45),fill=(241,151,175,98),width=1)
+    for x,y in ((34,35),(42,34),(97,35),(107,37)):
         m.point((x,y),fill=(250,157,157,180))
     return [('Neon reflections — drawn pixel clusters',body),
             ('Paint material breaks',material)]
