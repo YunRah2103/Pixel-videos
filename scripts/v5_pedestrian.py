@@ -51,12 +51,12 @@ def save_character_cels(destination):
         cel.save(destination/('pedestrian-cel-%d.png'%i))
     REVEAL_CEL.save(destination/'pedestrian-reveal-cel.png')
 
-def draw_secondary_story(canvas,frame,fps=30):
+def draw_secondary_story(canvas,frame,fps=30,start_x=284,stop_x=178,baseline_y=358):
     t=frame/fps
     walk=min(1,max(0,(t-.2)/2.6))
     eased=1-(1-walk)**2.2
-    ax=284-round(106*eased)
-    base_y=358
+    ax=round(start_x+(stop_x-start_x)*eased)
+    base_y=round(baseline_y)
     idx=int(t*8)%4 if t<2.8 else 0
     cel=WALK_CELS[idx] if t<3.6 else REVEAL_CEL
     x=ax-22
