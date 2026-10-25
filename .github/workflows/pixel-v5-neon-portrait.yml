@@ -6,6 +6,7 @@ on:
       - 'scripts/render_neon_portrait.py'
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
+      - 'scripts/v5_streamline_tram.py'
       - 'studio/v5/neon-portrait.tmx'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   pull_request:
@@ -13,6 +14,7 @@ on:
       - 'scripts/render_neon_portrait.py'
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
+      - 'scripts/v5_streamline_tram.py'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   workflow_dispatch:
 permissions:
@@ -27,7 +29,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
-          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py
       - name: Fetch original artist layered assets, preserving CC BY source and provenance
         run: |
           python3 scripts/setup_free_pixel_v5.py --art
@@ -55,6 +57,7 @@ jobs:
           python3 - <<'PY'
           import json
           qa=json.load(open('out/pixel-v5-portrait/render-qa.json'))
+          assert qa.get('original_sprite_cels') == 8, 'New eight-frame trolley not used'
           assert qa.get('native_puddle_reflections'), 'Missing sprite-linked wet-road composition evidence'
           assert len(qa.get('original_directed_pixel_lights',[]))==3
           print('NATIVE_REFLECTIONS_AND_REAL_MOVING_LIGHTS',qa['native_puddle_reflections'])
