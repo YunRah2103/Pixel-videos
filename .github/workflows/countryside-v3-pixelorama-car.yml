@@ -34,7 +34,7 @@ jobs:
           npm run visual:qa
       - name: Create editable original native pixel-art layers (body and wheel project)
         run: npm run car:v3:art
-      - name: Import original editable OpenRaster layers and export ACTUAL PNGs using Pixelorama 1.2.3
+      - name: Import original editable OpenRaster layers and export ACTUAL PNGs using Pixelorama 1.1.10
         run: npm run car:v3:pixelorama
       - name: Verify Sharp's production sprites, palette and eight distinct wheel frames
         run: npm run car:v3:build
