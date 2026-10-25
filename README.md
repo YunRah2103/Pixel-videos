@@ -105,3 +105,7 @@ The new [Pixel Studio V3 agent guide](docs/PIXEL_STUDIO_V3.md) documents the han
 ## Pixel Studio V4 — real authoring tools and art-first films
 
 [Pixel Studio V4 workflow](docs/PIXEL_ART_V4.md) introduces a real native Sprite Fusion Pixel Snapper installer, PixelLab remote MCP onboarding, free artist-pack import with provenance, Sprite Fusion/PixelOver limitations, an objective pixel-grid audit and an **artist-first approval process**. Run `npm run art:install:snapper && npm run art:verify` for an actual native-tool proof. For the next specialist, use [Pixel V4 agent art test](docs/PIXEL_ART_V4_AGENT_TEST.md).
+
+## Pixel Studio V5 — fully free art tools and artist-led animation
+
+[Read the V5 free-only studio guide](docs/PIXEL_STUDIO_V5_FREE.md). Install real LibreSprite, Tiled, SpookyGhost, Laigter plus CC0 pixel art and the Lospec colour palette using `npm run art:v5:install` (Linux x64; binary storage ignored by Git). Generate a 5-second 1080x1920 30fps genuine layered-art test with `npm run art:v5:assets && npm run art:v5:film`. [Copy the next agent challenge](docs/PIXEL_V5_FREE_AGENT_TEST.md). No additional AI service costs.
