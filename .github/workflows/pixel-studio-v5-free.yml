@@ -1,0 +1,95 @@
+name: Pixel Studio V5 — no-fee native tools and genuine animated five-second film
+on:
+  push:
+    branches:
+      - feat/pixel-studio-v5-free-art-film
+      - production/countryside-drive
+    paths:
+      - 'scripts/setup_free_pixel_v5.py'
+      - 'scripts/render_free_pixel_v5.py'
+      - 'docs/PIXEL_STUDIO_V5_FREE.md'
+      - 'package.json'
+      - '.github/workflows/pixel-studio-v5-free.yml'
+  pull_request:
+    paths:
+      - 'scripts/setup_free_pixel_v5.py'
+      - 'scripts/render_free_pixel_v5.py'
+      - 'docs/PIXEL_STUDIO_V5_FREE.md'
+      - 'package.json'
+      - '.github/workflows/pixel-studio-v5-free.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-free-editor-downloads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install open-source build tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y git build-essential qt6-base-dev qt6-base-dev-tools qt6-tools-dev-tools libgl1-mesa-dev libqt6opengl6-dev libqt6svg6-dev
+      - name: Check Python syntax
+        run: python3 -m py_compile scripts/setup_free_pixel_v5.py scripts/render_free_pixel_v5.py
+      - name: Download LibreSprite, Tiled, SpookyGhost, and Laigter — no API fees
+        run: |
+          python3 scripts/setup_free_pixel_v5.py --editors
+          python3 scripts/setup_free_pixel_v5.py --check
+      - name: Verify real downloaded binaries and build source
+        run: |
+          test -s .tools/pixel-v5/editors/libresprite.AppImage
+          test -s .tools/pixel-v5/editors/tiled.AppImage
+          test -s .tools/pixel-v5/editors/spookyghost/.installed
+          test -s .tools/pixel-v5/sources/laigter/laigter.pro
+          file .tools/pixel-v5/editors/*.AppImage
+      - name: Upload installer proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-fully-free-editor-download-proof
+          path: out/pixel-v5/tool-readiness.json
+          retention-days: 30
+          if-no-files-found: error
+  actual-artist-based-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install free pixel-film renderer
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install --break-system-packages pillow numpy
+      - name: Get real CC0 artist-made layers, Kenney city kit and Lospec palette
+        run: |
+          python3 scripts/setup_free_pixel_v5.py --art --palette
+          test -s .tools/pixel-v5/art/ansimuz_industrial/ASSET_PROVENANCE.json
+          test -s .tools/pixel-v5/art/kenney_tiny_city/ASSET_PROVENANCE.json
+          test -s .tools/pixel-v5/art/ansimuz_cyberpunk/ASSET_PROVENANCE.json
+          test -s .tools/pixel-v5/palettes/greyt-bit.json
+      - name: Save 2017 CC-BY 3.0 Ansimuz street pack for licensed visual inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-ansimuz-cyberpunk-CCBY-source
+          path: .tools/pixel-v5/downloads/ansimuz_cyberpunk.zip
+          retention-days: 14
+          if-no-files-found: error
+      - name: Render and verify 150 moving frames with 4 independent licensed artwork layers
+        run: |
+          python3 scripts/render_free_pixel_v5.py
+          test -s out/pixel-v5/artist-led-city-5s-1080x1920.mp4
+          test -s out/pixel-v5/contact-sheet.png
+          test -s out/pixel-v5/approved-artwork-candidate.png
+          test -s out/pixel-v5/render-qa.json
+      - name: Upload genuine playable MP4 and 9-frame visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-artist-led-5-second-MP4
+          path: |
+            out/pixel-v5/artist-led-city-5s-1080x1920.mp4
+            out/pixel-v5/approved-artwork-candidate.png
+            out/pixel-v5/contact-sheet.png
+            out/pixel-v5/render-qa.json
+            out/pixel-v5/tool-readiness.json
+          retention-days: 30
+          if-no-files-found: error
