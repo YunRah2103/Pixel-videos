@@ -19,7 +19,7 @@ if not LAYOUT_FILE.is_file():
  raise RuntimeError('Tiled-exported storyboard missing: export studio/v5/neon-portrait.tmx with tiled --export-map')
 TILED=json.loads(LAYOUT_FILE.read_text())
 OBJECTS={o.get('name'):o for layer in TILED['layers'] for o in layer.get('objects',[])}
-for required in ('tram-start','tram-finish','open-sign'):
+for required in ('tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop'):
  if required not in OBJECTS:raise RuntimeError('Missing Tiled stage object '+required)
 TRAM_START=OBJECTS['tram-start']
 TRAM_FINISH=OBJECTS['tram-finish']
@@ -101,7 +101,7 @@ def frame(f):
     d.line((x+150-k,ty+72+k*3,x+151+k,ty+72+k*3),
            fill=(255,170,87,max(12,102-k*11)))
  # An original independently animated character crosses beneath the shop lights.
- draw_secondary_story(canvas,f,FPS)
+ draw_secondary_story(canvas,f,FPS,OBJECTS['pedestrian-start']['x'],OBJECTS['pedestrian-stop']['x'],OBJECTS['pedestrian-start']['y'])
  for ix,(xx,yy,length,c) in enumerate(glints):
   pulse=.5+.5*math.sin(.17*f+ix*1.6)
   d.line((xx,yy,min(W-1,xx+round(length*(.3+pulse))),yy),
@@ -160,7 +160,8 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':4,'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
+ 'original_sprite_cels':4,'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal',
+ 'pedestrian_route_source':'Tiled-authored pedestrian-start/pedestrian-stop storyboard coordinates','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
  'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
