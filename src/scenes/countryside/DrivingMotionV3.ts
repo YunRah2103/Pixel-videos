@@ -3,7 +3,7 @@
  * tracking. The V2 controller remains unchanged for Agent 4 compatibility.
  * A single integer-valued distance controls ALL Pixi layers and wheel poses.
  */
-import {springFromRoad,type CountrysideMotion} from './DrivingMotion';
+import {springFromRoad,type CountrysideMotion} from './DrivingMotion.ts';
 
 const FPS=30,FRAMES=360;
 const nearest=(v:number)=>Math.round(v);
