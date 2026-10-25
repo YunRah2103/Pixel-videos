@@ -116,22 +116,33 @@ def adopt():
     atlas=OUT/'car-editor-atlas.png'
     if not atlas.is_file():raise FileNotFoundError('LibreSprite sprite atlas was not exported')
     sheet=Image.open(atlas).convert('RGBA')
-    # LibreSprite's --sheet-type horizontal, with 24 unique same-size source cels
-    # and default 0px padding, must fit this exact continuous atlas.
-    if sheet.size not in ((W*N,H),(W,H*N)):
-        raise AssertionError(f'Unexpected LibreSprite sprite atlas geometry: {sheet.size}')
+    # LibreSprite may arrange separately opened source documents on a diagonal
+    # (N*W x N*H), rather than one horizontal strip. Discover actual exported
+    # cell coordinates by matching ALL 24 inputs; never substitute input pixels.
+    if sheet.width%W or sheet.height%H:
+        raise AssertionError(f'LibreSprite export not pixel-grid aligned: {sheet.size}')
+    columns,rows=sheet.width//W,sheet.height//H
+    if columns*rows>1000:
+        raise AssertionError(f'Unexpected LibreSprite atlas shape: {sheet.size}')
+    exported={}
+    for gy in range(rows):
+        for gx in range(columns):
+            tile=sheet.crop((gx*W,gy*H,(gx+1)*W,(gy+1)*H))
+            h=hashlib.sha256(tile.tobytes()).hexdigest()
+            exported.setdefault(h,[]).append((gx,gy,tile))
     observed=[]
+    atlas_cells=[]
     for i in range(N):
-        if sheet.size==(W*N,H):
-            cel=sheet.crop((i*W,0,(i+1)*W,H))
-        else:
-            cel=sheet.crop((0,i*H,W,(i+1)*H))
         expected=Image.open(CELDIR/f'car-cel-{i:02d}.png').convert('RGBA')
-        if cel.tobytes()!=expected.tobytes():
-            raise AssertionError(f'LibreSprite exported mismatch/order at cel {i}')
-        path=OUT/f'car-cel-{i}.png'
-        cel.save(path)
-        observed.append(hashlib.sha256(cel.tobytes()).hexdigest())
+        key=hashlib.sha256(expected.tobytes()).hexdigest()
+        if key not in exported:
+            raise AssertionError(f'Actual LibreSprite atlas missing required unique car cel {i}')
+        gx,gy,cel=exported[key][0]
+        cel.save(OUT/f'car-cel-{i}.png')
+        observed.append(key)
+        atlas_cells.append([gx,gy])
+    if len(set(map(tuple,atlas_cells)))!=N:
+        raise AssertionError('LibreSprite atlas contains reused/missing grid cells')
     assert len(set(observed))>=12,'Insufficient actual animation cel diversity'
     meta={'workflow':'Original layered OpenRaster authored in Pixel Videos -> real Krita export -> real LibreSprite batch export and sprite atlas -> film',
           'no_gui_brush_authoring_claim':True,
@@ -141,7 +152,7 @@ def adopt():
           'libresprite_atlas_sha256':digest(atlas),
           'actual_editor_atlas_used_to_derive_final_cels':True,
           'car_cels':N,'unique_exported_car_cels':len(set(observed)),
-          'atlas_size':list(sheet.size)}
+          'atlas_size':list(sheet.size),'verified_frame_cells':atlas_cells}
     (OUT/'real-editor-evidence.json').write_text(json.dumps(meta,indent=2)+'\n')
     print('KRITA_LIBRESPRITE_EDITOR_PIPELINE_VERIFIED',json.dumps(meta))
 
