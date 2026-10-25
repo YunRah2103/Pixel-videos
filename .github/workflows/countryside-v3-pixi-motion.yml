@@ -21,7 +21,7 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg
           ffprobe -version
-          node -e "console.log('PixiJS '+require('pixi.js/package.json').version)"
+          node -e "import('pixi.js').then(p=>console.log('PixiJS runtime loaded; Application='+typeof p.Application+', TilingSprite='+typeof p.TilingSprite))"
       - name: ACTUALLY use Pixel Studio V3 (atlas, sprites, rigs, environment, moving proof)
         run: npm run studio:setup
       - name: Test V3 actual Pixi scene plan and compatible artist interfaces
