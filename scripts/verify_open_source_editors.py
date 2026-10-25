@@ -26,8 +26,11 @@ def executable(folder, rule):
     return files[0]
 
 def run_version(path, args):
+    env=dict(os.environ)
+    if Path(str(path)).name.lower() == 'krita':
+        env['QT_QPA_PLATFORM']='offscreen'
     proc=subprocess.run([str(path),*args],cwd=ROOT,capture_output=True,
-                        text=True,errors='replace',timeout=65)
+                        text=True,errors='replace',timeout=65,env=env)
     output=(proc.stdout+'\n'+proc.stderr).strip()
     if proc.returncode!=0:
         raise RuntimeError(str(path)+' exited '+str(proc.returncode)+': '+output[-1400:])
@@ -43,9 +46,9 @@ results={
  'pixelorama':{'path':str(pixelorama.relative_to(ROOT)),'version_output':run_version(pixelorama,['--headless','--quit','--','--version']),'cli_executed':True},
  'godot':{'path':str(godot.relative_to(ROOT)),'version_output':run_version(godot,['--headless','--version']),'cli_executed':True},
  'krita':{'path':krita,'version_output':run_version(krita,['--version']),'cli_executed':True},
- 'ldtk':{'path':str(ldtk.relative_to(ROOT)),'binary_present_and_executable':True,
+ 'ldtk':{'path':str(ldtk.relative_to(ROOT)),'downloaded_official_installer_and_executable':True,
          'cli_executed':False,
-         'note':'LDtk is a GUI editor; checking executable on CI does not prove GUI editing or exported layouts.'},
+         'note':'The upstream Ubuntu ZIP currently contains an LDtk AppImage installer. This verifies its download and executable permission, not a completed GUI installation, launch or exported map.'},
  'limitations':['No sprite artwork was authored in these apps by this smoke test.',
                 'PixelLab MCP is a separate remote authenticated service; PixelOver paid version not included.',
                 'Editor binaries installed on this runner only and are not committed or distributed in this artifact.']
