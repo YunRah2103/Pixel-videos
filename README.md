@@ -101,3 +101,7 @@ New pixel-art tools and a reproducible agent workflow are documented in [Pixel S
 ## Studio V3 — reusable animation and visual-quality toolkit
 
 The new [Pixel Studio V3 agent guide](docs/PIXEL_STUDIO_V3.md) documents the hand-authored sprite atlas, declarative layered environment builder, frame-addressable character/vehicle rigs, local pixel lighting, real countryside demonstration MP4, nine-frame visual QA and one-command `npm run studio:setup`. These tools are usable independently of Sunset Harbor V5. Run optional desktop editors with `npm run studio:setup -- --editors` on supported Linux hosts.
+
+## Pixel Studio V4 — real authoring tools and art-first films
+
+[Pixel Studio V4 workflow](docs/PIXEL_ART_V4.md) introduces a real native Sprite Fusion Pixel Snapper installer, PixelLab remote MCP onboarding, free artist-pack import with provenance, Sprite Fusion/PixelOver limitations, an objective pixel-grid audit and an **artist-first approval process**. Run `npm run art:install:snapper && npm run art:verify` for an actual native-tool proof. For the next specialist, use [Pixel V4 agent art test](docs/PIXEL_ART_V4_AGENT_TEST.md).

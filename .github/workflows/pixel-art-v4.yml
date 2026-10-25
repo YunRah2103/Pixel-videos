@@ -1,0 +1,77 @@
+name: Pixel Art V4 — genuine native editing-tool integration
+on:
+  push:
+    branches:
+      - feat/agent-art-pipeline-v4
+      - production/countryside-drive
+    paths:
+      - 'scripts/setup_pixel_art_v4.py'
+      - 'scripts/verify-pixel-art-v4.mjs'
+      - 'scripts/import-licensed-art.py'
+      - 'scripts/audit-pixel-art.mjs'
+      - 'docs/PIXEL_ART_V4.md'
+      - 'docs/PIXEL_ART_V4_AGENT_TEST.md'
+      - 'package.json'
+      - '.github/workflows/pixel-art-v4.yml'
+  pull_request:
+    paths:
+      - 'scripts/setup_pixel_art_v4.py'
+      - 'scripts/verify-pixel-art-v4.mjs'
+      - 'scripts/import-licensed-art.py'
+      - 'scripts/audit-pixel-art.mjs'
+      - 'docs/PIXEL_ART_V4.md'
+      - 'docs/PIXEL_ART_V4_AGENT_TEST.md'
+      - 'package.json'
+      - '.github/workflows/pixel-art-v4.yml'
+  workflow_dispatch:
+    inputs:
+      install_gui_editors:
+        type: boolean
+        required: false
+        default: false
+        description: 'Also download free Pixelorama / Godot / LDtk and install Krita on the runner'
+permissions:
+  contents: read
+jobs:
+  verify-native-snapper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preflight and Python syntax checks
+        run: |
+          python3 -m py_compile scripts/setup_pixel_art_v4.py scripts/import-licensed-art.py
+          python3 scripts/setup_pixel_art_v4.py --check
+          cargo --version
+      - name: Install Node dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build original pixel source sprites
+        run: npm run assets:build
+      - name: Install and really run native Pixel Snapper from the MIT Rust crate
+        run: |
+          npm run art:install:snapper
+          npm run art:verify
+      - name: Optional full GUI editor downloads (manually opted in)
+        if: github.event_name == 'workflow_dispatch' && inputs.install_gui_editors
+        run: npm run art:install:editors
+      - name: Verify generated proof, not only tool installation
+        run: |
+          test -s out/artist-v4/sample-input.png
+          test -s out/artist-v4/sample-snapper-output.png
+          test -s out/artist-v4/tool-evidence.json
+          test -s out/artist-v4/pixel-grid-audit.json
+      - name: Upload native tool provenance and actual transformed pixel files
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-art-v4-native-snapper-proof
+          path: |
+            out/artist-v4/sample-input.png
+            out/artist-v4/sample-snapper-output.png
+            out/artist-v4/tool-evidence.json
+            out/artist-v4/pixel-grid-audit.json
+          if-no-files-found: error
+          retention-days: 30
+
