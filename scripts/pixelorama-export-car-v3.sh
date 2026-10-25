@@ -25,10 +25,10 @@ PY
 PIX="$(find .tools/editors/pixelorama -type f \( -name 'Pixelorama.x86_64' -o -name 'Pixelorama*.x86_64' -o -name 'Pixelorama' \) | head -1)"
 if [ -z "$PIX" ]; then echo 'Pixelorama release binary missing'; exit 1; fi
 chmod +x "$PIX"
-"$PIX" --headless -- --version 2>&1 | tee out/car-v3-proof/pixelorama-version.log
+timeout 30s "$PIX" --headless --quit -- --version 2>&1 | tee out/car-v3-proof/pixelorama-version.log
 set -o pipefail
-"$PIX" --headless -- --export --output "$(pwd)/public/countryside/car/coupe-v3-pixelorama-body.png" "$(pwd)/studio/countryside/car/v3-source/coupe-v3-editable.ora" 2>&1 | tee out/car-v3-proof/pixelorama-body-export.log
-"$PIX" --headless -- --export --output "$(pwd)/public/countryside/car/coupe-v3-pixelorama-wheels.png" "$(pwd)/studio/countryside/car/v3-source/coupe-v3-wheels-editable.ora" 2>&1 | tee out/car-v3-proof/pixelorama-wheels-export.log
+timeout 120s "$PIX" --headless --quit -- --export --output "$(pwd)/public/countryside/car/coupe-v3-pixelorama-body.png" "$(pwd)/studio/countryside/car/v3-source/coupe-v3-editable.ora" 2>&1 | tee out/car-v3-proof/pixelorama-body-export.log
+timeout 120s "$PIX" --headless --quit -- --export --output "$(pwd)/public/countryside/car/coupe-v3-pixelorama-wheels.png" "$(pwd)/studio/countryside/car/v3-source/coupe-v3-wheels-editable.ora" 2>&1 | tee out/car-v3-proof/pixelorama-wheels-export.log
 test -s public/countryside/car/coupe-v3-pixelorama-body.png
 test -s public/countryside/car/coupe-v3-pixelorama-wheels.png
 # The production sprite builder will also reject the wrong dimensions/invalid wheel animation.
