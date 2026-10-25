@@ -6,7 +6,7 @@ on:
       - 'scripts/render_neon_portrait.py'
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
-      - 'scripts/v5_streamline_tram.py'
+      - 'scripts/v5_sports_car.py'
       - 'scripts/v5_sky_courier.py'
       - 'scripts/v5_neon_activation.py'
       - 'scripts/v5_cinematic_shots.py'
@@ -18,7 +18,7 @@ on:
       - 'scripts/render_neon_portrait.py'
       - 'scripts/v5_pedestrian.py'
       - 'scripts/v5_reflections.py'
-      - 'scripts/v5_streamline_tram.py'
+      - 'scripts/v5_sports_car.py'
       - 'scripts/v5_sky_courier.py'
       - 'scripts/v5_neon_activation.py'
       - 'scripts/v5_cinematic_shots.py'
@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
-          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_streamline_tram.py scripts/v5_sky_courier.py scripts/v5_neon_activation.py scripts/v5_cinematic_shots.py scripts/v5_micro_life.py
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_sports_car.py scripts/v5_sky_courier.py scripts/v5_neon_activation.py scripts/v5_cinematic_shots.py scripts/v5_micro_life.py
       - name: Assert integer-only shot direction, no smoothing or faux animation
         run: |
           PYTHONPATH=scripts /usr/bin/python3 - <<'PY'
@@ -72,14 +72,14 @@ jobs:
           assert {'tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop','courier-start','courier-finish'} <= set(objects), objects
           print('TILED_EXPORTED_REAL_MAP',objects)
           PY
-      - name: Render a 5s portrait video from independent native-pixel art and trolley cels
+      - name: Render a 5s portrait video from independent native-pixel art and car cels
         run: |
           /usr/bin/python3 scripts/render_neon_portrait.py
           ffmpeg -v error -xerror -i out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4 -f null -
           ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames,r_frame_rate -of json out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
           test -s out/pixel-v5-portrait/contact-sheet.png
           test -s out/pixel-v5-portrait/hero-still.png
-          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'trolley-cel-*.png' | wc -l)" -eq 24
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'car-cel-*.png' | wc -l)" -eq 24
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'courier-cel-*.png' | wc -l)" -eq 8
           test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'open-sign-cel-*.png' | wc -l)" -eq 6
           test -s out/pixel-v5-portrait/render-qa.json
@@ -87,7 +87,9 @@ jobs:
           python3 - <<'PY'
           import json
           qa=json.load(open('out/pixel-v5-portrait/render-qa.json'))
-          assert qa.get('original_sprite_cels') == 24, 'Twenty-four frame trolley not used'
+          assert qa.get('original_sprite_cels') == 24, '24-frame two-door coupe not used'
+          assert qa.get('car_sprite_cels') == 24
+          assert qa.get('hero_vehicle_type') == 'two-door neo-retro GT coupe'
           assert qa.get('courier_sprite_cels') == 8, 'Skyline animation cels not exported'
           assert qa.get('walking_poses') == 12, 'Twelve distinct pedestrian poses not used'
           assert qa.get('pedestrian_sprite_cels') == 13, 'Pedestrian pose sprites not packaged'
@@ -99,11 +101,11 @@ jobs:
           from pathlib import Path
           from PIL import Image
           folder=Path('out/pixel-v5-portrait')
-          tram=[Image.open(folder/f'trolley-cel-{i}.png').tobytes() for i in range(24)]
+          car=[Image.open(folder/f'car-cel-{i}.png').tobytes() for i in range(24)]
           walker=[Image.open(folder/f'pedestrian-cel-{i}.png').tobytes() for i in range(12)]
-          assert len(set(tram)) >= 12, 'Tram poses still too repetitive'
+          assert len(set(car)) >= 12, 'Car wheel animation still too repetitive'
           assert len(set(walker)) >= 8, 'Walking poses still too repetitive'
-          print('FLUID_SPRITES_VERIFIED',len(set(tram)),len(set(walker)))
+          print('FLUID_SPRITES_VERIFIED',len(set(car)),len(set(walker)))
           print('NATIVE_REFLECTIONS_AND_REAL_MOVING_LIGHTS',qa['native_puddle_reflections'])
           PY
       - name: Publish the real five-second MP4, source sprites and review contact sheet
@@ -115,7 +117,7 @@ jobs:
             out/pixel-v5-portrait/preview-still.png
             out/pixel-v5-portrait/hero-still.png
             out/pixel-v5-portrait/contact-sheet.png
-            out/pixel-v5-portrait/trolley-cel-*.png
+            out/pixel-v5-portrait/car-cel-*.png
             out/pixel-v5-portrait/courier-cel-*.png
             out/pixel-v5-portrait/open-sign-cel-*.png
             out/pixel-v5-portrait/pedestrian-cel-*.png
