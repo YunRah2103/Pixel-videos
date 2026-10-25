@@ -46,6 +46,11 @@ function leaves(c,x,y,rx,ry,dark,main,light,seed){
  }
 }
 function tree(c,{x,y,kind,scale=1,depth=1,seed=1}){
+ // Agent 4 compositional polish: grow layered native-pixel canopy sizes to
+ // fill the formerly empty sky without shifting wheel or road contacts.
+ // Native LDtk x/y, species and authored palette remain authoritative.
+ // Largest near pines remain within 235px plane rather than being cut at top.
+ scale *= depth===0?1.35:depth===1?1.50:1.48;
  const dark=depth===0?'farDark':depth===1?'midDark':'nearDark';
  const fill=depth===0?'far':depth===1?'mid':'near';
  const light=depth===0?'farLight':depth===1?'midLight':'nearLight';
