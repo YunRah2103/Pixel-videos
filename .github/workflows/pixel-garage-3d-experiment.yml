@@ -32,7 +32,7 @@ jobs:
         run: |
           test -f experiments/pixel-garage-godot-3d/project.godot
           test -f experiments/pixel-garage-godot-3d/shaders/intentional_pixel_art.gdshader
-          test -f experiments/pixel-garage-godot-3d/tools/build_models.py
+          test -f experiments/pixel-garage-godot-3d/scripts/film.gd
       - name: Render genuine Godot 3D frames into MP4
         env:
           GODOT_BIN: /tmp/Godot_v4.4.1-stable_linux.x86_64
