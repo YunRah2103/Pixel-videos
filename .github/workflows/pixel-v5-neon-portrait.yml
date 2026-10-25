@@ -4,11 +4,13 @@ on:
     branches: [feat/pixel-studio-v5-neon-portrait-art-pass]
     paths:
       - 'scripts/render_neon_portrait.py'
+      - 'scripts/v5_pedestrian.py'
       - 'studio/v5/neon-portrait.tmx'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   pull_request:
     paths:
       - 'scripts/render_neon_portrait.py'
+      - 'scripts/v5_pedestrian.py'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   workflow_dispatch:
 permissions:
@@ -23,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
-          python3 -m py_compile scripts/render_neon_portrait.py
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py
       - name: Fetch original artist layered assets, preserving CC BY source and provenance
         run: |
           python3 scripts/setup_free_pixel_v5.py --art
@@ -58,6 +60,8 @@ jobs:
             out/pixel-v5-portrait/hero-still.png
             out/pixel-v5-portrait/contact-sheet.png
             out/pixel-v5-portrait/tram-cel-*.png
+            out/pixel-v5-portrait/pedestrian-cel-*.png
+            out/pixel-v5-portrait/pedestrian-reveal-cel.png
             out/pixel-v5-portrait/render-qa.json
             out/pixel-v5-portrait/ATTRIBUTION.txt
             out/pixel-v5-portrait/tiled-layout.json
