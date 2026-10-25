@@ -15,7 +15,8 @@ raw=Path('out/editor-evidence/nearTrees.raw')
 raw.parent.mkdir(parents=True,exist_ok=True)
 subprocess.run(['node','-e',"""
 const sharp=require('sharp');
-sharp(process.argv[1]).ensureAlpha().raw().toFile(process.argv[2])
+sharp(process.argv[1]).ensureAlpha().raw().toBuffer()
+ .then(data=>require('node:fs').writeFileSync(process.argv[2],data))
  .catch(e=>{console.error(e); process.exitCode=1;});
 """,str(src),str(raw)],check=True)
 width,height=960,235
