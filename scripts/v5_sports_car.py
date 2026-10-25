@@ -47,13 +47,16 @@ def car_cel(phase):
     d.ellipse((13,57,155,65),fill=(3,5,16,100))
     for cx in (36,128):
         d.ellipse((cx-15,39,cx+15,68),fill=INK)
-    contour=[(4,39),(9,35),(31,32),(43,31),(57,21),(67,15),
-             (76,11),(112,11),(120,15),(132,28),(142,33),
+    # Front points RIGHT. Shift the entire roof/cockpit 12 native pixels
+    # toward the tail (LEFT), retaining fixed 164px body and 92px wheelbase.
+    # This trades the earlier excessive rear deck for a visibly longer bonnet.
+    contour=[(4,39),(9,35),(31,32),(40,31),(45,27),(55,16),
+             (64,11),(100,11),(108,15),(122,28),(138,33),
              (154,36),(161,41),(163,47),(161,53),(153,56),
              (13,56),(5,52)]
     d.polygon(contour,fill=OUTLINE)
-    d.polygon([(7,40),(19,36),(44,34),(58,24),(71,16),(78,14),
-               (111,14),(118,19),(132,32),(150,38),(159,42),
+    d.polygon([(7,40),(19,36),(40,34),(46,27),(59,16),(66,14),
+               (99,14),(107,19),(122,32),(150,38),(159,42),
                (160,49),(153,53),(13,53),(8,49)],fill=BASE)
     d.polygon([(8,46),(23,49),(56,48),(90,49),(119,47),
                (152,47),(160,49),(154,54),(14,54)],fill=SHADOW)
@@ -65,7 +68,7 @@ def car_cel(phase):
     d.line((58,49,106,49),fill=(91,178,179,255),width=1)
     d.line((56,53,109,53),fill=(5,19,34,255),width=1)
     d.polygon([(8,39),(27,35),(43,34),(52,36),(43,39),(20,41)],fill=ROSE)
-    d.polygon([(39,35),(57,31),(89,33),(113,34),(151,39),
+    d.polygon([(39,35),(48,31),(79,33),(104,34),(151,39),
                (148,43),(115,40),(68,39),(38,41)],fill=MID)
     d.polygon([(110,32),(132,32),(152,38),(157,42),
                (127,39),(115,36)],fill=LIGHT)
@@ -75,31 +78,40 @@ def car_cel(phase):
     d.line((18,41,48,41),fill=PINK,width=1)
     d.line((52,43,112,43),fill=(83,168,173),width=1)
     d.line((148,44,160,44),fill=(255,170,144),width=1)
-    # Only TWO cockpit glazing sections. Roof sits below the bonnet's hard points.
-    d.polygon([(54,30),(67,18),(78,14),(110,14),(120,19),
-               (135,33),(119,34),(61,34)],fill=INK)
-    d.polygon([(57,30),(69,19),(79,16),(90,16),(90,31)],fill=GLASS)
-    d.polygon([(94,16),(109,16),(117,21),(130,31),(94,31)],fill=GLASS)
-    d.polygon([(58,28),(70,20),(78,17),(87,17),(84,20),
-               (71,22),(63,30)],fill=(58,116,137))
-    d.line((96,18,111,18),fill=(88,189,202),width=2)
-    d.line((113,20,126,30),fill=PEARL,width=1)
-    d.line((95,29,124,29),fill=(35,79,103),width=1)
-    d.line((77,13,110,13),fill=(248,139,146),width=1)
-    d.line((91,16,91,33),fill=OUTLINE,width=3)
-    d.line((65,31,121,32),fill=PINK,width=1)
-    d.line((81,14,106,14),fill=(255,192,160),width=1)
-    # A clearly continuous, low greenhouse crown with deliberately broken sheen.
-    d.line((76,12,109,12),fill=(101,210,208),width=1)
-    d.line((79,11,106,11),fill=(255,159,164),width=1)
-    d.line((56,32,63,26),fill=(164,229,214),width=1)
-    d.polygon([(45,33),(56,27),(58,31),(50,37)],fill=(25,72,89))
-    d.line((92,34,91,49),fill=(12,45,62),width=1)
-    d.line((92,47,95,49),fill=(17,57,75),width=1)
-    d.rectangle((96,38,102,39),fill=(247,183,148))
-    d.point((103,39),fill=INK)
-    d.polygon([(114,36),(122,36),(120,41),(114,41)],fill=(16,61,81))
-    d.line((116,37,119,37),fill=LIGHT,width=1)
+    # TRUE 2-door GT greenhouse: cabin moved 12 pixels toward the rear axle.
+    # Rear quarterglass (left) is small; driver window (right) follows raked screen.
+    # Contiguous canopy roof AND both window polygons move as one, so no
+    # paint/glass overlaps or free-floating chrome lines are introduced.
+    d.polygon([(42,30),(55,18),(66,14),(98,14),(108,19),
+               (123,33),(107,34),(49,34)],fill=INK)
+    d.polygon([(45,30),(57,19),(67,16),(76,16),(76,31)],fill=GLASS)
+    d.polygon([(80,16),(97,16),(105,21),(118,31),(80,31)],fill=GLASS)
+    # Small recessed rear quarter window and one uninterrupted main door glass.
+    d.polygon([(46,28),(58,20),(66,17),(73,17),(71,20),
+               (59,23),(51,30)],fill=(58,116,137))
+    d.line((83,18,99,18),fill=(88,189,202),width=2)
+    d.line((105,20,116,30),fill=PEARL,width=1)
+    d.line((83,29,112,29),fill=(35,79,103),width=1)
+    d.line((65,13,98,13),fill=(248,139,146),width=1)
+    # B-pillar and door shutline align; no 4-door/saloon appearance.
+    d.line((78,16,78,33),fill=OUTLINE,width=3)
+    d.line((53,31,109,32),fill=PINK,width=1)
+    d.line((69,14,94,14),fill=(255,192,160),width=1)
+    d.line((64,12,97,12),fill=(101,210,208),width=1)
+    d.line((67,11,94,11),fill=(255,159,164),width=1)
+    d.line((44,32,51,26),fill=(164,229,214),width=1)
+    # Move the side mirror, handle and full door boundary with the occupant.
+    d.polygon([(105,32),(114,33),(116,36),(108,37)],fill=(25,72,89))
+    d.line((80,34,79,49),fill=(12,45,62),width=1)
+    d.line((80,47,83,49),fill=(17,57,75),width=1)
+    d.rectangle((84,38,90,39),fill=(247,183,148))
+    d.point((91,39),fill=INK)
+    d.polygon([(103,36),(111,36),(109,41),(103,41)],fill=(16,61,81))
+    d.line((105,37,108,37),fill=LIGHT,width=1)
+    # Long front bonnet from windscreen x123 to nose x163.
+    d.line((124,33,143,35),fill=(157,233,222),width=1)
+    d.line((131,36,152,39),fill=(89,212,222),width=1)
+    d.line((126,42,146,43),fill=(37,104,133),width=1)
     # Short ducktail, rear brake lens, front headlight prism.
     d.line((7,34,21,34),fill=(244,118,148),width=2)
     d.rectangle((6,41,13,44),fill=(246,80,111))
@@ -117,7 +129,7 @@ def car_cel(phase):
               fill=(9,21,39,255))
     d.line((151,53,160,53),fill=(231,133,157),width=1)
     d.line((9,52,18,53),fill=(245,116,155),width=1)
-    d.line((135,34,143,35),fill=PINK,width=1)
+    d.line((124,34,143,35),fill=PINK,width=1)
     for cx in (36,128):
         wheel(d,cx,phase)
         d.arc((cx-16,38,cx+16,69),185,352,fill=(254,139,153),width=1)
@@ -131,9 +143,9 @@ def car_cel(phase):
                          (59,45,PEARL),(104,45,PEARL),(146,46,ROSE)):
         d.point((px,py),fill=colour)
     if phase%24 in (6,7,8):
-        d.point((104,25),fill=(237,165,133))
+        d.point((92,25),fill=(237,165,133))
     else:
-        d.point((104,26),fill=(162,115,108))
+        d.point((92,26),fill=(162,115,108))
     return im
 
 def save_car_cels(folder):
