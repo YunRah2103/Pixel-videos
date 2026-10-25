@@ -29,6 +29,29 @@ jobs:
             assert p['found'],name
             print('FREE_ONLY_CONFIRMED',name,p['file_count'],'PNG',p['png_count'])
           PY
+      - name: Inspect exactly which original pixel assets arrived
+        run: |
+          echo '--- ANSIMUZ ORIGINAL PIXEL FILES ---'
+          find .tools/v5-free/art/ansimuz_street -type f | sed 's@.*/ansimuz_street/@@' | head -80
+          echo '--- KENNEY ORIGINAL PIXEL FILES ---'
+          find .tools/v5-free/art/kenney_tiny_city -type f | sed 's@.*/kenney_tiny_city/@@' | head -80
+          echo '--- SPOOKYGHOST OFFICIAL ARTIFACT CONTENTS ---'
+          find .tools/v5-free/apps/spookyghost -maxdepth 4 -type f | sed 's@.*/spookyghost/@@' | head -50
+          echo '--- IMAGE DIMENSIONS ---'
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq python3-pil
+          /usr/bin/python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          for name in ('ansimuz_street','kenney_tiny_city'):
+            root=Path('.tools/v5-free/art')/name
+            for i,p in enumerate(root.rglob('*.png')):
+              if i>=90:break
+              try:
+                im=Image.open(p)
+                print('IMAGE_DIMENSIONS',name,p.relative_to(root),im.size,im.mode)
+              except Exception as e:print('IMAGE_ERROR',p,str(e))
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: pixel-studio-v5-free-install-manifest
