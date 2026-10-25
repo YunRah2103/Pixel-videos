@@ -92,7 +92,7 @@ def frame(f):
    ld=ImageDraw.Draw(light,'RGBA')
    ld.line((52,37,111,37),fill=(42,217,222,strength),width=2)
    ld.line((117,34,143,37),fill=(245,112,181,strength),width=2)
-   ld.line((73,16,106,16),fill=(255,186,166,strength),width=1)
+   ld.line((63,16,96,16),fill=(255,186,166,strength),width=1)
    ld.line((51,49,114,49),fill=(68,178,201,strength//2),width=1)
    moving_cel.alpha_composite(light)
   reflect_sprite(canvas,moving_cel,x,ty,f,ground_y=421)
