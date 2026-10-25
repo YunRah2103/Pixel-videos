@@ -1,48 +1,82 @@
 /**
- * Countryside V3: native-pixel plans consumed by a REAL PixiJS v8 scene graph.
- * All transforms are functions of the Remotion frame. No ticker, CSS or RNG clock.
+ * Real PixiJS world choreography, using the 6 original layered sprite PNGs.
+ * Strong depth, accelerated road, near-camera shrub parallax, dappled road
+ * shade and restrained leaf particles. Every vertex is integer pixel snapped.
  */
-import type {CountrysideMotion} from './DrivingMotion';
-
-export const PIXI_WORLD_LAYERS = [
-  {name:'sky',path:'sky.png',width:360,height:480,y:0},
-  {name:'farTrees',path:'farTrees.png',width:720,height:300,y:180},
-  {name:'midTrees',path:'midTrees.png',width:840,height:265,y:215},
-  {name:'nearTrees',path:'nearTrees.png',width:960,height:235,y:245},
-  {name:'road',path:'road.png',width:384,height:160,y:480},
-  {name:'verge',path:'verge.png',width:384,height:160,y:480},
+import type {CinematicMotion} from './DrivingMotionV3';
+export const PIXI_WORLD_LAYERS=[
+ {name:'sky',path:'sky.png',width:360,height:480,y:0},
+ {name:'farTrees',path:'farTrees.png',width:720,height:300,y:180},
+ {name:'midTrees',path:'midTrees.png',width:840,height:265,y:215},
+ {name:'nearTrees',path:'nearTrees.png',width:960,height:235,y:245},
+ {name:'road',path:'road.png',width:384,height:160,y:480},
+ {name:'verge',path:'verge.png',width:384,height:160,y:480},
 ] as const;
-export type PixiWorldLayer = typeof PIXI_WORLD_LAYERS[number]['name'];
-type WorldOffsets = Record<Exclude<PixiWorldLayer,'sky'>,number>;
+export type PixiWorldLayer=typeof PIXI_WORLD_LAYERS[number]['name'];
 const mod=(n:number,m:number)=>((n%m)+m)%m;
-const check=(x:number)=>{if(!Number.isInteger(x))throw Error('Pixi native pixel coordinate required');return x;};
-export type PixiWorldPlan = {
-  layers:ReadonlyArray<{name:PixiWorldLayer;tileX:number; y:number}>;
-  lightPixels:ReadonlyArray<{x:number;y:number;alpha:number;color:number}>;
-  contactShadow:{x:number;y:number;width:number;alpha:number};
-  frame:number;
+const snapped=(n:number)=>Math.round(n);
+export type PixiWorldPlan={
+ frame:number;
+ layers:ReadonlyArray<{name:PixiWorldLayer;tileX:number;y:number}>;
+ shrubs:ReadonlyArray<{x:number;y:number;size:number;tint:number}>;
+ shadeBands:ReadonlyArray<{x:number;width:number;alpha:number}>;
+ lightPixels:ReadonlyArray<{x:number;y:number;alpha:number;color:number}>;
+ leafMotes:ReadonlyArray<{x:number;y:number;size:number;color:number}>;
+ roadSpecks:ReadonlyArray<{x:number;y:number;width:number;color:number}>;
+ dust:ReadonlyArray<{x:number;y:number;size:number;opacity:number}>;
+ contactShadow:{x:number;y:number;width:number;alpha:number};
 };
-/** Leaves/light flecks move coherently with foreground foliage, not the camera. */
-export function planPixiWorld(frame:number,motion:CountrysideMotion):PixiWorldPlan{
-  if(!Number.isInteger(frame)||frame<0||frame!==motion.frame)throw Error('Stale world/motion frame');
-  const offsets=motion.offsets as WorldOffsets;
-  const layers=PIXI_WORLD_LAYERS.map(layer=>({
-    name:layer.name,
-    tileX:layer.name==='sky'?0:check(offsets[layer.name]),
-    y:layer.y,
-  }));
-  // A tiny fixed set of quantised sunlit leaf clusters, carried by the world.
-  // No diffuse bloom, anti-aliasing, translucent full-screen overlays or noise.
-  const leafBases=[{x:32,y:359},{x:145,y:401},{x:278,y:339},
-    {x:391,y:417},{x:526,y:371},{x:671,y:389},{x:817,y:348}];
-  const lightPixels=leafBases.map((p,i)=>({
-    x:check(mod(p.x+offsets.nearTrees,960)-0),
-    y:check(p.y+((Math.floor(frame/14+i*3)%3)===0?-1:0)),
-    alpha:[0.16,0.22,0.12][Math.floor(frame/11+i)%3],
-    color:i%3===0?0xC1CF81:0x9FBD68,
-  })).filter(p=>p.x>=0&&p.x<360);
-  return {
-    frame,layers,lightPixels,
-    contactShadow:{x:check(motion.carX-73),y:494,width:146,alpha:motion.shadowOpacity},
-  };
+/** Drawing instructions are deterministic for any seek/reverse order. */
+export function planPixiWorld(frame:number,m:CinematicMotion):PixiWorldPlan{
+ if(!Number.isInteger(frame)||frame<0||m.frame!==frame)throw Error('Stale world/motion frame');
+ const layers=PIXI_WORLD_LAYERS.map(l=>({
+  name:l.name,
+  // Clouds now move SLOWLY across the skyline, independent from the trees.
+  tileX:l.name==='sky'?-snapped(frame*.22):m.offsets[l.name],
+  y:l.y,
+ }));
+ const shrubBases=[-45,4,56,103,163,217,274,339,391,445,497,553];
+ const shrubs=shrubBases.map((x,i)=>({
+  x:mod(x-m.foregroundTravelPx,598)-65,
+  y:466+(i%3)*3,
+  size:[14,25,18,30,20,24,16,32,22,19,28,16][i],
+  tint:i%4,
+ })).filter(s=>s.x>-70&&s.x<380);
+ // Wide stepped shade falls across the actual road surface below passing trees.
+ const shadeBases=[0,112,253,379,516,640,799];
+ const shadeBands=shadeBases.map((x,i)=>({
+  x:mod(x-snapped(m.roadTravelPx*.79),886)-130,
+  width:[17,29,21,35,24,38,25][i],
+  alpha:[.13,.19,.15,.23,.17,.20,.15][i]
+ })).filter(s=>s.x>-70&&s.x<360);
+ const leafBases=[17,42,67,105,130,174,217,246,285,312,351,384,429,475,508,552];
+ const leafMotes=leafBases.map((x,i)=>({
+  x:mod(x-snapped(m.foregroundTravelPx*.72)+i*13,617)-55,
+  y:360+(i*23)%112+snapped(Math.sin(frame*.09+i*2)*3),
+  size:i%3===0?3:2,
+  color:[0xB1C87C,0xE1C87E,0x8AAC67,0xC9D77C][i%4],
+ })).filter(p=>p.x>=0&&p.x<358);
+ const glintBases=[25,63,111,158,203,251,291,330,373,413,472,511,566];
+ const lightPixels=glintBases.map((x,i)=>({
+  x:mod(x+ m.offsets.nearTrees,960),
+  y:364+(i*31)%81,
+  alpha:[.18,.3,.23][(i+Math.floor(frame/14))%3],
+  color:i%2?0xD1D58B:0x9BBC69,
+ })).filter(p=>p.x>=0&&p.x<357);
+ const roadSpecks=Array.from({length:28},(_,i)=>({
+   x:mod(31+i*53-m.roadTravelPx,523)-9,
+   y:[513,531,546,566][i%4],
+   width:[2,4,7,3][i%4],
+   color:i%5===0?0xBBC2A1:0x777C75,
+ })).filter(s=>s.x>0&&s.x<355);
+ // Dust wakes behind the rear tyre only at higher speed; never a fog screen.
+ const dust=Array.from({length:5},(_,i)=>{
+  const age=mod(frame*2+i*13,51);
+  return {x:snapped(m.carX-57-age*.62),y:493+snapped(age*.09)+(i%2)*2,
+   size:i%3===0?3:2,opacity:(m.velocityPx>=5? .25:.07)*(1-age/52)};
+ }).filter(p=>p.x>0&&p.y<512);
+ return {
+  frame,layers,shrubs,shadeBands,lightPixels,leafMotes,roadSpecks,dust,
+  contactShadow:{x:snapped(m.carX-73),y:494,width:146,alpha:m.shadowOpacity},
+ };
 }
