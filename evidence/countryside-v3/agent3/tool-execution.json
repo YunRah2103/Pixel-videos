@@ -1,0 +1,38 @@
+{
+  "agent": "agent3",
+  "branch": "agent/countryside-v3-motion-pixi",
+  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869",
+  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095",
+  "proofArtifact": "agent3-countryside-v3-real-pixi-1080p",
+  "commitVerified": "088392835e4960c0caa2ad52f1ea4395ff58d04f",
+  "pixiRuntimeEvidence": {
+    "productionEntry": "src/scenes/countryside/CountrysideDrive.tsx",
+    "scene": "src/scenes/countryside/PixiCountrysideWorld.tsx",
+    "plan": "src/scenes/countryside/PixiWorldPlan.ts",
+    "actualRenderer": "new pixi.Application(); await app.init(); app.renderer.render({container:app.stage})",
+    "textureLoading": "pixi.Assets.load for six original native PNG layer files",
+    "animation": "Pixi TilingSprite.tilePosition.x = getCountrysideMotion(frame,15.5).offsets[layer]; custom Pixi Graphics light clusters and contact shadow",
+    "synchronisation": "Remotion useCurrentFrame, useLayoutEffect per frame, delayRender/continueRender to block proof capture before Pixi is initialized",
+    "antiAliasing": "native 360x640 canvas at resolution 1, antialias:false, texture.source.scaleMode='nearest', nearest-neighbor 3x FFmpeg output",
+    "nodeUnitTests": "tests/countryside-pixi-v3.test.mjs (all 360 frames)"
+  },
+  "nativeVideoEvidence": {
+    "container": "out/countryside-drive-final-1080p.mp4",
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "frames": 360,
+    "durationSeconds": 12,
+    "codec": "H.264",
+    "pixelFormat": "yuv420p",
+    "fullFfmpegDecodePass": true,
+    "distinctCheckpoints": 9,
+    "blackIntervals": 0,
+    "contentSha256": "778650d881c0695dec8d3d6ac1796b0ba72619b960035a3bf7cabfa77e656339",
+    "contactSheet": "out/countryside-final-qa/countryside-contact-sheet.png",
+    "verification": "out/countryside-final-qa/verification.json"
+  },
+  "pixelStudioV3Evidence": "GitHub run 40145928869 step ACTUALLY use Pixel Studio V3 passed, building atlas/environment and rendering V3 moving toolkit proof; this is separate from the integrated Pixi film",
+  "manualReview": "Opened actual nine-frame decoded contact sheet and full-resolution frame 135; pixel edges crisp, character/car grounded, parallax layers distinct; human final artistic approval remains false",
+  "noMainMerge": true
+}
