@@ -1,0 +1,88 @@
+name: Countryside V3 — FINAL integrated film, editor proof and native render
+on:
+  push:
+    branches:
+      - integration/countryside-drive-v3-final
+  workflow_dispatch:
+jobs:
+  final-v3-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install native sprite, editor, Remotion and FFmpeg dependencies
+        run: |
+          python -m pip install Pillow==11.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg xvfb xauth libgl1-mesa-dri libfontconfig1 libx11-6 libxcursor1 libxrandr2 libxi6
+          npm install --no-audit --no-fund
+          ffprobe -version | head -1
+      - name: Execute Pixel Studio V3 atlas, environment, rigs and visual QA
+        run: |
+          npm run studio:setup
+          npm run atlas:build
+          npm run environment:build
+          npm run environment:proof
+          npm run visual:qa
+          npm run rigs:test
+          npm run typecheck:toolkit
+      - name: Build V3 LDtk original world and source editor files, not V2 art
+        run: |
+          node studio/countryside/world/build-world-v3.mjs
+          python3 scripts/build-v3-openraster.py
+          python3 scripts/build-v3-pixelorama.py
+          test -s studio/countryside/world/sources/sky.ora
+          test -s studio/countryside/world/sources/nearTrees.pxo
+      - name: Real Pixelorama official editor imports layered coupe and exports 8-frame wheel strip
+        run: |
+          python3 studio/countryside/car/build-car-v3.py
+          bash scripts/pixelorama-export-car-v3.sh
+          node studio/countryside/car/build-car-v3.mjs
+      - name: STRICT proof of real tool evidence, source hashes and latest Pixi cinematic
+        run: |
+          node scripts/audit-countryside-v3.mjs --strict
+          node scripts/qa-countryside-v3.mjs
+          npx tsc --project tsconfig.countryside-pixi.json --noEmit
+          node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs tests/countryside-pixi-v3.test.mjs
+      - name: Render actual final V3 composition — front and rear wheel closeups, accelerated countryside, final wide
+        env:
+          COUNTRYSIDE_V3_PRODUCTION: '1'
+        run: node scripts/render-countryside.mjs
+      - name: Independent film FFprobe and full error-fatal FFmpeg decode
+        run: |
+          node -e "const x=require('./out/countryside-final-qa/verification.json');if(!x.technicalVerified||x.revision!=='V3-world-Pixelorama-car-latest-Pixi-cinematic'||x.frames!==360||x.duration!==12||x.artisticSignoff!==false)process.exit(1);console.log('FULL_V3_FILM_CONTRACT_PASS')"
+          ffprobe -v error -count_frames -show_entries stream=codec_name,pix_fmt,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/countryside-drive-final-1080p.mp4
+          ffmpeg -v error -xerror -i out/countryside-drive-final-1080p.mp4 -f null -
+          test -s out/countryside-final-qa/countryside-contact-sheet.png
+      - name: Upload genuine 12-second final V3 MP4, original layers, proof logs, screenshots and QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-drive-v3-INTEGRATED-1080x1920
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            out/countryside-drive-final-1080p.mp4
+            out/countryside-final-qa/verification.json
+            out/countryside-final-qa/art-source-qa.json
+            out/countryside-final-qa/countryside-contact-sheet.png
+            out/countryside-final-qa/frame-*.png
+            out/countryside-v3-qa/tool-audit.json
+            out/car-v3-proof/*.log
+            out/car-v3-proof/pixelorama-export-validation.json
+            studio/countryside/car/v3-source/*.ora
+            studio/countryside/world/sources/*.ora
+            studio/countryside/world/sources/*.pxo
+            studio/countryside/world/countryside-v3.ldtk
+            public/countryside/world/*.png
+            public/countryside/world/manifest.json
+            public/countryside/car/coupe-v2-body.png
+            public/countryside/car/coupe-v2-wheels-8.png

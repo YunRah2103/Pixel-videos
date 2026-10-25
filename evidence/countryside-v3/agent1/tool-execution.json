@@ -1,0 +1,11 @@
+{
+  "agent": "agent1",
+  "sourcePR": "https://github.com/YunRah2103/Pixel-videos/pull/37",
+  "sourceCommit": "a9e99e36d2a9f53631085a7d0fcfce2c04fc18b8",
+  "pixeloramaRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516",
+  "kritaRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516",
+  "ldtkRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516",
+  "originalArtArtifactUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516/artifacts/12581455077",
+  "inspection": "Downloaded artifact, inspected Pixelorama v1.2.3 GUI screenshot of 960x235 nearTrees.pxo and inspect.log, Krita export sky-by-Krita.png, LDtk 1.5.3 GUI window log, source LDtk tree entities, moving proof. Source authoring is LDtk plus Sharp.",
+  "artisticSignoff": false
+}

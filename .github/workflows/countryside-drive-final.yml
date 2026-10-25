@@ -1,0 +1,73 @@
+name: Countryside Drive — final native render and QA
+on:
+  push:
+    branches:
+      - integration/countryside-drive-final
+      - integration/countryside-drive-v2-art
+  pull_request:
+    branches:
+      - production/countryside-drive
+  workflow_dispatch:
+jobs:
+  countryside-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify native FFmpeg and FFprobe
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: Initialize Pixel Studio V3 atlas, asset pipeline and rigs
+        run: npm run studio:setup
+      - name: Pixel Studio V3 environment and animation diagnostics
+        run: |
+          npm run atlas:build
+          npm run environment:build
+          npm run environment:proof
+          npm run visual:qa
+          npm run rigs:test
+          npm run typecheck:toolkit
+      - name: Generate authentic original V2 world and car source from PR #33 and PR #32
+        run: |
+          node studio/countryside/world/build-world-v2.mjs
+          node studio/countryside/car/build-car-v2.mjs
+      - name: Validate PR #33 and #32 native palettes, transparency and new sprite geometry
+        run: node scripts/qa-countryside-v2.mjs
+      - name: Test the wheel-speed and axle geometry compatibility
+        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs
+      - name: Stop if actual specialist car/motion and authored world assets are absent
+        run: node scripts/check-countryside-ready.mjs
+      - name: Render actual integrated Remotion film and verify decoded MP4
+        run: node scripts/render-countryside.mjs
+      - name: Upload verified final film with 9 frame captures and verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-drive-final-1080p
+          path: |
+            out/countryside-drive-final-1080p.mp4
+            out/countryside-final-qa/verification.json
+            out/countryside-final-qa/art-source-qa.json
+            out/countryside-final-qa/countryside-contact-sheet.png
+            out/countryside-final-qa/frame-*.png
+            public/countryside/world/*.png
+            public/countryside/car/*.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload missing-dependency diagnostics if blocked
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-integration-readiness
+          path: out/countryside-final-qa/readiness.json
+          if-no-files-found: warn
+          retention-days: 7

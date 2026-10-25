@@ -1,0 +1,1088 @@
+{
+  "__header__": {
+    "fileType": "LDtk Project JSON",
+    "app": "LDtk",
+    "docVersion": "1.5.3",
+    "schema": "https://ldtk.io/files/JSON_SCHEMA.json"
+  },
+  "iid": "12345678-1234-4000-8000-000000000001",
+  "jsonVersion": "1.5.3",
+  "appBuildId": 0,
+  "identifierStyle": "Capitalize",
+  "worldLayout": "Free",
+  "worldGridWidth": 960,
+  "worldGridHeight": 640,
+  "defaultLevelWidth": 960,
+  "defaultLevelHeight": 640,
+  "defaultGridSize": 8,
+  "defaultEntityWidth": 24,
+  "defaultEntityHeight": 48,
+  "bgColor": "#67AFE1",
+  "defaultLevelBgColor": "#67AFE1",
+  "levelNamePattern": "Level_%idx",
+  "levels": [
+    {
+      "identifier": "CountrysideWorldV3",
+      "iid": "12345678-1234-4000-8000-000000000002",
+      "uid": 1,
+      "pxWid": 960,
+      "pxHei": 640,
+      "worldX": 0,
+      "worldY": 0,
+      "worldDepth": 0,
+      "bgColor": "#67AFE1",
+      "bgPos": null,
+      "bgPivotX": 0.5,
+      "bgPivotY": 0.5,
+      "externalRelPath": null,
+      "fieldInstances": [],
+      "layerInstances": [
+        {
+          "__identifier": "farTrees",
+          "__type": "Entities",
+          "__gridSize": 8,
+          "__cWid": 120,
+          "__cHei": 40,
+          "__opacity": 1,
+          "__pxTotalOffsetX": 0,
+          "__pxTotalOffsetY": 0,
+          "__tilesetDefUid": null,
+          "__tilesetRelPath": null,
+          "defUid": 10,
+          "levelId": 1,
+          "layerDefUid": 10,
+          "pxOffsetX": 0,
+          "pxOffsetY": 0,
+          "visible": true,
+          "intGridCsv": [],
+          "autoLayerTiles": [],
+          "gridTiles": [],
+          "entityInstances": [
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                1,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000101",
+              "defUid": 100,
+              "px": [
+                12,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "poplar",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.72,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                12,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000102",
+              "defUid": 100,
+              "px": [
+                98,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.73,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                23,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000103",
+              "defUid": 100,
+              "px": [
+                184,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "oak",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.77,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                34,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000104",
+              "defUid": 100,
+              "px": [
+                273,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "birch",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.76,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                45,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000105",
+              "defUid": 100,
+              "px": [
+                364,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "maple",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.78,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                56,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000106",
+              "defUid": 100,
+              "px": [
+                455,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "poplar",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.71,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                69,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000107",
+              "defUid": 100,
+              "px": [
+                556,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "beech",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.82,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                81,
+                37
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000108",
+              "defUid": 100,
+              "px": [
+                654,
+                300
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.78,
+                  "defUid": 102
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__identifier": "midTrees",
+          "__type": "Entities",
+          "__gridSize": 8,
+          "__cWid": 120,
+          "__cHei": 40,
+          "__opacity": 1,
+          "__pxTotalOffsetX": 0,
+          "__pxTotalOffsetY": 0,
+          "__tilesetDefUid": null,
+          "__tilesetRelPath": null,
+          "defUid": 11,
+          "levelId": 1,
+          "layerDefUid": 11,
+          "pxOffsetX": 0,
+          "pxOffsetY": 0,
+          "visible": true,
+          "intGridCsv": [],
+          "autoLayerTiles": [],
+          "gridTiles": [],
+          "entityInstances": [
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                0,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000201",
+              "defUid": 100,
+              "px": [
+                6,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "oak",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.01,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                13,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000202",
+              "defUid": 100,
+              "px": [
+                110,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "birch",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.96,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                25,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000203",
+              "defUid": 100,
+              "px": [
+                202,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.03,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                38,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000204",
+              "defUid": 100,
+              "px": [
+                307,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "maple",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                51,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000205",
+              "defUid": 100,
+              "px": [
+                414,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "poplar",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.94,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                64,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000206",
+              "defUid": 100,
+              "px": [
+                516,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "beech",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.99,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                76,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000207",
+              "defUid": 100,
+              "px": [
+                613,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.02,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                88,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000208",
+              "defUid": 100,
+              "px": [
+                711,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "oak",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.03,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                102,
+                33
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000209",
+              "defUid": 100,
+              "px": [
+                819,
+                265
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "birch",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 0.94,
+                  "defUid": 102
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "__identifier": "nearTrees",
+          "__type": "Entities",
+          "__gridSize": 8,
+          "__cWid": 120,
+          "__cHei": 40,
+          "__opacity": 1,
+          "__pxTotalOffsetX": 0,
+          "__pxTotalOffsetY": 0,
+          "__tilesetDefUid": null,
+          "__tilesetRelPath": null,
+          "defUid": 12,
+          "levelId": 1,
+          "layerDefUid": 12,
+          "pxOffsetX": 0,
+          "pxOffsetY": 0,
+          "visible": true,
+          "intGridCsv": [],
+          "autoLayerTiles": [],
+          "gridTiles": [],
+          "entityInstances": [
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                0,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000301",
+              "defUid": 100,
+              "px": [
+                -32,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.13,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                11,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000302",
+              "defUid": 100,
+              "px": [
+                90,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "oak",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.08,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                26,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000303",
+              "defUid": 100,
+              "px": [
+                215,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "maple",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.16,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                42,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000304",
+              "defUid": 100,
+              "px": [
+                341,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "birch",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.06,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                56,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000305",
+              "defUid": 100,
+              "px": [
+                454,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "pine",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.17,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                72,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000306",
+              "defUid": 100,
+              "px": [
+                576,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "beech",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.09,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                87,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000307",
+              "defUid": 100,
+              "px": [
+                699,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "oak",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.14,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                102,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000308",
+              "defUid": 100,
+              "px": [
+                819,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "poplar",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.11,
+                  "defUid": 102
+                }
+              ]
+            },
+            {
+              "__identifier": "Tree",
+              "__grid": [
+                118,
+                29
+              ],
+              "__pivot": [
+                0.5,
+                1
+              ],
+              "__smartColor": "#367750",
+              "iid": "12345678-1234-4000-8000-000000000309",
+              "defUid": 100,
+              "px": [
+                947,
+                235
+              ],
+              "width": 24,
+              "height": 48,
+              "fieldInstances": [
+                {
+                  "__identifier": "kind",
+                  "__type": "String",
+                  "__value": "maple",
+                  "defUid": 101
+                },
+                {
+                  "__identifier": "scale",
+                  "__type": "Float",
+                  "__value": 1.08,
+                  "defUid": 102
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "neighbours": []
+    }
+  ],
+  "defs": {
+    "entities": [
+      {
+        "uid": 100,
+        "identifier": "Tree",
+        "width": 24,
+        "height": 48,
+        "color": "#367750",
+        "pivotX": 0.5,
+        "pivotY": 1,
+        "tags": [],
+        "tileId": null,
+        "fieldDefs": [
+          {
+            "uid": 101,
+            "identifier": "kind",
+            "type": "F_String",
+            "isArray": false,
+            "defaultOverride": {
+              "id": "V_String",
+              "params": [
+                "oak"
+              ]
+            }
+          },
+          {
+            "uid": 102,
+            "identifier": "scale",
+            "type": "F_Float",
+            "isArray": false,
+            "defaultOverride": {
+              "id": "V_Float",
+              "params": [
+                1
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "layers": [
+      {
+        "uid": 10,
+        "identifier": "farTrees",
+        "type": "Entities",
+        "gridSize": 8,
+        "displayOpacity": 1,
+        "pxOffsetX": 0,
+        "pxOffsetY": 0,
+        "parallaxFactorX": 1,
+        "parallaxFactorY": 1,
+        "requiredTags": [],
+        "excludedTags": []
+      },
+      {
+        "uid": 11,
+        "identifier": "midTrees",
+        "type": "Entities",
+        "gridSize": 8,
+        "displayOpacity": 1,
+        "pxOffsetX": 0,
+        "pxOffsetY": 0,
+        "parallaxFactorX": 1,
+        "parallaxFactorY": 1,
+        "requiredTags": [],
+        "excludedTags": []
+      },
+      {
+        "uid": 12,
+        "identifier": "nearTrees",
+        "type": "Entities",
+        "gridSize": 8,
+        "displayOpacity": 1,
+        "pxOffsetX": 0,
+        "pxOffsetY": 0,
+        "parallaxFactorX": 1,
+        "parallaxFactorY": 1,
+        "requiredTags": [],
+        "excludedTags": []
+      }
+    ],
+    "tilesets": [],
+    "enums": [],
+    "externalEnums": [],
+    "levelFields": []
+  },
+  "externalLevels": false,
+  "embedAtlas": [],
+  "customCommands": [],
+  "flags": [],
+  "toc": []
+}
