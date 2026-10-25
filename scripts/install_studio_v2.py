@@ -30,7 +30,7 @@ def find_executable(name,root):
     if root.is_dir():
         matches=[p for p in root.rglob('*') if p.is_file() and
                  (name.lower() in p.name.lower()) and
-                 (os.access(p,os.X_OK) or p.suffix.lower() in ('.exe','.appimage'))]
+                 (p.suffix.lower() not in ('.pck','.so','.dll','.png','.md','.txt') and (os.access(p,os.X_OK) or p.suffix.lower() in ('.exe','.appimage','.x86_64')))]
         if matches:
             return str(sorted(matches,key=lambda p:len(str(p)))[0])
     return None

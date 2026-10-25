@@ -22,7 +22,10 @@ for name,path in programs.items():
 smoke={"godot":["--headless","--version"],"krita":["--version"],"pixelorama":["--headless","--quit"]}
 for name,args in smoke.items():
  try:
-  p=subprocess.run([programs[name],*args],capture_output=True,text=True,timeout=35)
+  cmd=[programs[name],*args]
+  if name=="krita":
+   cmd=["xvfb-run","-a",*cmd]
+  p=subprocess.run(cmd,capture_output=True,text=True,timeout=35)
   report["programs"][name]["cli_exit"]=p.returncode
   report["programs"][name]["stdout"]=p.stdout[-400:]
   report["programs"][name]["stderr"]=p.stderr[-400:]

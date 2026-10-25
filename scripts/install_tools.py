@@ -84,7 +84,7 @@ def safe_extract(archive, destination):
                     raise ValueError('Refusing unsafe tar archive member')
             t.extractall(destination, filter='data')
     for path in destination.rglob('*'):
-        if path.is_file() and (path.name.startswith(('Godot','Pixelorama')) or path.suffix.lower() in ('.x86_64','.sh')):
+        if path.is_file() and (path.suffix.lower() not in ('.pck','.png','.so','.dll','.txt','.md','.json') and (path.name.startswith(('Godot','Pixelorama')) or path.suffix.lower() in ('.x86_64','.sh'))):
             try: path.chmod(path.stat().st_mode | 0o111)
             except PermissionError: pass
 
