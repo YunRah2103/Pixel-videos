@@ -40,7 +40,8 @@ def layer_paths():
   if label=="far":matches=[p for p in files if "far" in norm(p) and ("build" in norm(p) or "city" in norm(p))]
   elif label=="city":matches=[p for p in files if "build" in norm(p) and "far" not in norm(p)]
   elif label=="front":matches=[p for p in files if "foreground" in norm(p) or norm(p) in ("front","fg")]
-  else:matches=[p for p in files if norm(p) in ("bg","background","sky")]
+  else:matches=[p for p in files if norm(p) in ("bg","background","sky") or
+                   norm(p).endswith("-bg") or norm(p).endswith("-background") or norm(p).endswith("-sky")]
   if not matches:raise RuntimeError("No suitable "+label+" layer. Discovered: "+str([(p.name,Image.open(p).size) for p in files]))
   return min(matches,key=lambda p:len(p.name))
  selected=[pick(x) for x in ("sky","far","city","front")]
