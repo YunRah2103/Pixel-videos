@@ -1,0 +1,36 @@
+name: Pixel Art V4 — test four free desktop editors
+on:
+  push:
+    branches:
+      - fix/v4-free-editors-verify
+    paths:
+      - 'scripts/install_tools.py'
+      - 'scripts/install_studio_v2.py'
+      - 'scripts/verify_free_editors_v4.py'
+      - '.github/workflows/pixel-v4-free-editors.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux-free-editor-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate installers
+        run: python3 -m py_compile scripts/install_tools.py scripts/install_studio_v2.py scripts/setup_pixel_art_v4.py scripts/verify_free_editors_v4.py
+      - name: Download actual Pixelorama, Godot and LDtk official releases
+        run: |
+          python3 scripts/install_studio_v2.py --pixelorama
+          python3 scripts/install_studio_v2.py --godot
+          python3 scripts/install_studio_v2.py --ldtk
+      - name: Install Krita and run editor CLI smoke checks
+        run: |
+          python3 scripts/install_studio_v2.py --krita
+          python3 scripts/verify_free_editors_v4.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v4-free-desktop-editors-evidence
+          path: out/artist-v4/free-editors-evidence.json
+          if-no-files-found: error
+          retention-days: 30
