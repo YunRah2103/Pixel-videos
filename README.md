@@ -109,3 +109,7 @@ The new [Pixel Studio V3 agent guide](docs/PIXEL_STUDIO_V3.md) documents the han
 ## Pixel Studio V5 — fully free art tools and artist-led animation
 
 [Read the V5 free-only studio guide](docs/PIXEL_STUDIO_V5_FREE.md). Install real LibreSprite, Tiled, SpookyGhost, Laigter plus CC0 pixel art and the Lospec colour palette using `npm run art:v5:install` (Linux x64; binary storage ignored by Git). Generate a 5-second 1080x1920 30fps genuine layered-art test with `npm run art:v5:assets && npm run art:v5:film`. [Copy the next agent challenge](docs/PIXEL_V5_FREE_AGENT_TEST.md). No additional AI service costs.
+
+### V5 neon pixel-art proof (fully free)
+
+A complementary artist-made layered cyberpunk street with real animated character cels: [V5 neon proof](docs/PIXEL_STUDIO_V5_NEON_PROOF.md). Commands: `npm run v5:neon:install` and `npm run v5:neon:film`. Render/test: `.github/workflows/pixel-v5-neon-proof.yml`. It uses properly attributed CC BY street art and CC0 animated character cels. No extra AI subscriptions.
