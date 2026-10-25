@@ -42,9 +42,18 @@ def unpack(source,target,kind):
    members=t.getmembers()
    if sum(x.size for x in members)>350*1024*1024:raise RuntimeError('TAR expansion excessive')
    for x in members:
-    if not (target/x.name).resolve().is_relative_to(target.resolve()) or x.issym() or x.islnk() or x.isdev():
-     raise RuntimeError('Unsafe TAR')
-   t.extractall(target,filter='data')
+    if not (target/x.name).resolve().is_relative_to(target.resolve()):
+     raise RuntimeError('Unsafe TAR path')
+   for x in members:
+    if x.isdir():
+     (target/x.name).mkdir(parents=True,exist_ok=True)
+    elif x.isfile():
+     dst=target/x.name
+     dst.parent.mkdir(parents=True,exist_ok=True)
+     with t.extractfile(x) as inp,dst.open('wb') as out:
+      shutil.copyfileobj(inp,out)
+    else:
+     print('SKIPPED_UNTRUSTED_TAR_ENTRY',x.name,x.type,flush=True)
  for x in target.rglob('*'):
   if x.is_file() and (x.name in ('spookyghost','launch.sh') or x.suffix.lower() in ('.appimage','.x86_64')):
    x.chmod(x.stat().st_mode|0o111)
