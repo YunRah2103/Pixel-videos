@@ -56,11 +56,12 @@ jobs:
           print('PIXEL_MOBILE_LEGIBILITY_PASS body_native=192x80 wheel_animation=8 original_layered_art=2')
           PY
       - name: Upload genuine Pixelorama logs, editable originals, PNGs and 1080p moving Remotion proof
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: countryside-v3-agent2-pixelorama-car
+          if-no-files-found: warn
           retention-days: 30
-          if-no-files-found: error
           path: |
             studio/countryside/car/v3-source/*.ora
             studio/countryside/car/v3-source/manifest.json
