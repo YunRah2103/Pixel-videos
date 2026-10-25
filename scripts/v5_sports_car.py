@@ -22,15 +22,22 @@ GLASS=(13,29,53,255)
 def wheel(d,cx,phase):
     d.ellipse((cx-14,39,cx+14,67),fill=INK)
     d.ellipse((cx-12,42,cx+12,66),fill=(9,17,31,255))
-    d.ellipse((cx-10,44,cx+10,64),fill=(49,48,67,255),outline=(98,114,120,255),width=1)
-    d.ellipse((cx-8,46,cx+8,62),fill=(18,37,53,255),outline=(178,176,157,255))
+    # Recessed black tyre, machined lip, dual-material deep-dish alloy.
+    d.ellipse((cx-10,44,cx+10,64),fill=(44,48,67,255),outline=(115,140,150,255),width=1)
+    d.arc((cx-11,43,cx+11,65),188,336,fill=(190,237,222,255),width=1)
+    d.arc((cx-11,43,cx+11,65),12,159,fill=(72,164,187,255),width=1)
+    d.ellipse((cx-8,46,cx+8,62),fill=(14,35,53,255),outline=(166,203,202,255))
     angle=(phase%24)*2*math.pi/24
     for spoke in range(5):
         a=angle+spoke*2*math.pi/5
         ux,uy=round(math.cos(a)*7),round(math.sin(a)*7)
         d.line((cx+round(ux*.35),54+round(uy*.35),cx+ux,54+uy),
-               fill=(199,208,194,255),width=2)
+               fill=(203,221,215,255),width=2)
+        # Offset inner vein makes spokes legible at real integer-pixel size.
+        d.point((cx+round(ux*.73)-1,54+round(uy*.73)),
+                fill=(88,174,188,255))
     d.point((cx+round(math.cos(angle)*8),54+round(math.sin(angle)*8)),fill=PINK)
+    d.ellipse((cx-3,51,cx+3,57),fill=(32,52,68,255),outline=(180,214,201,255))
     d.ellipse((cx-2,52,cx+2,56),fill=AMBER,outline=INK)
     d.point((cx,54),fill=PEARL)
 
@@ -52,12 +59,19 @@ def car_cel(phase):
                (152,47),(160,49),(154,54),(14,54)],fill=SHADOW)
     d.line((54,50,112,50),fill=(20,79,96),width=2)
     d.line((52,52,113,52),fill=(68,149,149),width=1)
+    # Sculpted double-plane lower side skirt never intersects the tyres.
+    d.polygon([(52,48),(68,49),(97,49),(113,48),(112,51),(55,51)],
+              fill=(13,53,71,255))
+    d.line((58,49,106,49),fill=(91,178,179,255),width=1)
+    d.line((56,53,109,53),fill=(5,19,34,255),width=1)
     d.polygon([(8,39),(27,35),(43,34),(52,36),(43,39),(20,41)],fill=ROSE)
     d.polygon([(39,35),(57,31),(89,33),(113,34),(151,39),
                (148,43),(115,40),(68,39),(38,41)],fill=MID)
     d.polygon([(110,32),(132,32),(152,38),(157,42),
                (127,39),(115,36)],fill=LIGHT)
     d.line((115,35,143,37),fill=PEARL,width=1)
+    d.line((128,38,153,40),fill=(120,228,220),width=1)
+    d.line((106,39,128,39),fill=(43,196,211),width=1)
     d.line((18,41,48,41),fill=PINK,width=1)
     d.line((52,43,112,43),fill=(83,168,173),width=1)
     d.line((148,44,160,44),fill=(255,170,144),width=1)
@@ -75,6 +89,10 @@ def car_cel(phase):
     d.line((91,16,91,33),fill=OUTLINE,width=3)
     d.line((65,31,121,32),fill=PINK,width=1)
     d.line((81,14,106,14),fill=(255,192,160),width=1)
+    # A clearly continuous, low greenhouse crown with deliberately broken sheen.
+    d.line((76,12,109,12),fill=(101,210,208),width=1)
+    d.line((79,11,106,11),fill=(255,159,164),width=1)
+    d.line((56,32,63,26),fill=(164,229,214),width=1)
     d.polygon([(45,33),(56,27),(58,31),(50,37)],fill=(25,72,89))
     d.line((92,34,91,49),fill=(12,45,62),width=1)
     d.line((92,47,95,49),fill=(17,57,75),width=1)
@@ -94,12 +112,21 @@ def car_cel(phase):
     d.line((158,43,162,45),fill=PEARL,width=2)
     d.line((153,49,161,49),fill=(39,45,63),width=2)
     d.line((151,53,160,53),fill=(218,111,133),width=1)
+    # Crisp, wedge-cut front splitter, intake and low diffuser.
+    d.polygon([(144,50),(151,49),(160,49),(162,51),(158,54),(150,54)],
+              fill=(9,21,39,255))
+    d.line((151,53,160,53),fill=(231,133,157),width=1)
+    d.line((9,52,18,53),fill=(245,116,155),width=1)
     d.line((135,34,143,35),fill=PINK,width=1)
     for cx in (36,128):
         wheel(d,cx,phase)
         d.arc((cx-16,38,cx+16,69),185,352,fill=(254,139,153),width=1)
         d.point((cx-12,43),fill=LIGHT)
     d.line((51,52,113,52),fill=(15,62,76),width=1)
+    d.line((57,45,85,45),fill=(145,226,218),width=1)
+    d.line((102,45,117,44),fill=(97,207,218),width=1)
+    d.point((57,44),fill=PEARL)
+    d.point((118,43),fill=PEARL)
     for px,py,colour in ((25,38,PEARL),(30,37,PEARL),(45,43,PINK),
                          (59,45,PEARL),(104,45,PEARL),(146,46,ROSE)):
         d.point((px,py),fill=colour)
