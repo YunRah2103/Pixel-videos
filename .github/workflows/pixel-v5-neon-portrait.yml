@@ -39,7 +39,7 @@ jobs:
           import json
           data=json.load(open('out/pixel-v5-portrait/tiled-layout.json'))
           objects=[obj['name'] for layer in data['layers'] for obj in layer.get('objects',[])]
-          assert {'tram-start','tram-finish','open-sign'} <= set(objects), objects
+          assert {'tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop'} <= set(objects), objects
           print('TILED_EXPORTED_REAL_MAP',objects)
           PY
       - name: Render a 5s portrait video from independent native-pixel art and trolley cels
