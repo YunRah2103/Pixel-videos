@@ -1,0 +1,51 @@
+name: Pixel Studio V5 — portrait art-first motion test
+on:
+  push:
+    branches: [feat/pixel-studio-v5-neon-portrait-art-pass]
+    paths:
+      - 'scripts/render_neon_portrait.py'
+      - '.github/workflows/pixel-v5-neon-portrait.yml'
+  pull_request:
+    paths:
+      - 'scripts/render_neon_portrait.py'
+      - '.github/workflows/pixel-v5-neon-portrait.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portrait-art-and-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install completely free render tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg python3-pil
+          python3 -m py_compile scripts/render_neon_portrait.py
+      - name: Fetch original artist layered assets, preserving CC BY source and provenance
+        run: |
+          python3 scripts/setup_free_pixel_v5.py --art
+          test -s .tools/pixel-v5/art/ansimuz_cyberpunk/ASSET_PROVENANCE.json
+      - name: Render a 5s portrait video from independent native-pixel art and trolley cels
+        run: |
+          /usr/bin/python3 scripts/render_neon_portrait.py
+          ffmpeg -v error -xerror -i out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4 -f null -
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames,r_frame_rate -of json out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
+          test -s out/pixel-v5-portrait/contact-sheet.png
+          test -s out/pixel-v5-portrait/hero-still.png
+          test -s out/pixel-v5-portrait/render-qa.json
+      - name: Publish the real five-second MP4, source sprites and review contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-neon-portrait-five-second-proof
+          path: |
+            out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
+            out/pixel-v5-portrait/preview-still.png
+            out/pixel-v5-portrait/hero-still.png
+            out/pixel-v5-portrait/contact-sheet.png
+            out/pixel-v5-portrait/tram-cel-*.png
+            out/pixel-v5-portrait/render-qa.json
+            out/pixel-v5-portrait/ATTRIBUTION.txt
+          retention-days: 30
+          if-no-files-found: error
