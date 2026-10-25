@@ -26,7 +26,7 @@ From a branch that contains V4:
     npm run art:install:snapper
     npm run art:verify
 
-The proof runs the real native pixel snapper on one of our original palette sprites, saves before/after PNGs and evidence to out/artist-v4, and runs a numeric pixel-grid audit. This is **installation/technical evidence**, not a beautiful scene.
+The proof runs the real native pixel snapper on an enlarged copy of one of our original palette sprites and produces a new native-resolution sprite (size may change slightly). It saves before/after PNGs and tool evidence to out/artist-v4 and runs a numeric pixel-grid audit at native scale 1. Enlarge the processed sprite separately with integer nearest-neighbour filtering for a video; never compare the before/after PNG dimensions as if the snapper only changed colours. This is **installation/technical evidence**, not a beautiful scene.
 
 For all existing open-source desktop tools on a supported Linux machine:
 

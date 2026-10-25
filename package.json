@@ -33,7 +33,7 @@
     "art:install:free": "python3 scripts/setup_pixel_art_v4.py --all-free",
     "art:proof": "node scripts/verify-pixel-art-v4.mjs",
     "art:audit": "node scripts/audit-pixel-art.mjs",
-    "art:verify": "npm run assets:build && npm run art:proof && npm run art:audit -- out/artist-v4/sample-snapper-output.png 6"
+    "art:verify": "npm run assets:build && npm run art:proof && npm run art:audit -- out/artist-v4/sample-snapper-output.png 1"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
