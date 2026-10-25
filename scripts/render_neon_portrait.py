@@ -6,6 +6,7 @@ Art: Luis Zuno / Ansimuz, Cyberpunk Street Environment, CC BY 3.0.
 import hashlib,json,math,random,struct,subprocess,wave
 from pathlib import Path
 from PIL import Image,ImageDraw
+from v5_pedestrian import draw_secondary_story, save_character_cels
 
 ROOT=Path(__file__).resolve().parent.parent
 ART=ROOT/'.tools/pixel-v5/art/ansimuz_cyberpunk/cyberpunk-street-files/PNG/layers'
@@ -69,6 +70,7 @@ def trolley(wheelphase):
 
 sprites=[trolley(k) for k in range(4)]
 for i,s in enumerate(sprites):s.save(OUT/('trolley-cel-%d.png'%i))
+save_character_cels(OUT)
 rng=random.Random(79523)
 rain=[(rng.randrange(W),rng.randrange(H),rng.randrange(2,6),rng.randrange(20,60)) for _ in range(55)]
 glints=[(rng.randrange(W),rng.randrange(390,475),rng.randrange(1,6),
@@ -98,6 +100,8 @@ def frame(f):
    for k in range(9):
     d.line((x+150-k,ty+72+k*3,x+151+k,ty+72+k*3),
            fill=(255,170,87,max(12,102-k*11)))
+ # An original independently animated character crosses beneath the shop lights.
+ draw_secondary_story(canvas,f,FPS)
  for ix,(xx,yy,length,c) in enumerate(glints):
   pulse=.5+.5*math.sin(.17*f+ix*1.6)
   d.line((xx,yy,min(W-1,xx+round(length*(.3+pulse))),yy),
@@ -156,12 +160,13 @@ assert len(set(hashes))==30
  'artist':'Luis Zuno / Ansimuz','license':'CC BY 3.0',
  'source':'https://opengameart.org/content/cyberpunk-street-environment',
  'independent_art_planes':['far-buildings.png','back-buildings.png','foreground.png'],
- 'original_sprite_cels':4,'tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
+ 'original_sprite_cels':4,'pedestrian_sprite_cels':5,'secondary_story':'umbrella pedestrian walks, stops, turns toward the neon OPEN reveal','tiled_export_file':str(LAYOUT_FILE.relative_to(ROOT)),'actual_tools':['Tiled CLI map export','Pillow','FFmpeg','FFprobe'],
  'not_claimed_as_used':['Tiled GUI manual drawing','Laigter editor','LibreSprite editor','SpookyGhost editor'],
+ 'pedestrian_art_provenance':'Original Pixel Videos hand-authored pixel-drawn sprite cels; see scripts/v5_pedestrian.py',
  'ffprobe':probe,'full_ffmpeg_decode':'pass','unique_sample_frames':30,
  'artistic_approval':'pending human visual review'},indent=2))
 (OUT/'ATTRIBUTION.txt').write_text(
  'Cyberpunk Street Environment by Luis Zuno (Ansimuz), CC BY 3.0; adapted for Pixel Videos.\n'
  'https://opengameart.org/content/cyberpunk-street-environment\n'
- 'Original independently animated trolley and lighting: Pixel Videos.\n')
+ 'Original independently animated trolley, umbrella-walker and lighting: Pixel Videos.\n')
 print('V5_PORTRAIT_PROOF_PASS',movie,probe,flush=True)
