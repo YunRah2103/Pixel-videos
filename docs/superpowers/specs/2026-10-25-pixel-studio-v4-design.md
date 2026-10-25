@@ -1,6 +1,6 @@
 # Pixel Studio V4 design
 
-Status: proposed; implementation and visual acceptance remain pending.
+Status: architecture approved by the user; implementation remains in progress. User selected Katana ZERO as the primary visual reference after the environment auditions. No current audition is final visual approval.
 
 Pinned audit inputs: V3 toolkit `2a366edc3e39b152705443dc6236b0b5e65f1f04`; car `ba429fbe7f8400a4014e43430bd712fa4db66d6d`; world `a8fb67fe0afc5b150e6a3ce0bfab74f06b324dd0`; motion `b4ea75bb16c253970d314f5767f9194ec857fa44`. Later branch changes require a fresh diff before integration.
 
@@ -22,9 +22,15 @@ The audited remote contains a minimal main branch and separate V3 toolkit, car, 
 2. Start an independent studio: cleaner initial layout but duplicates working rigs and risks incompatibility with existing productions.
 3. Expand generated template counts: fast breadth but fails the requirement for excellent individually designed vehicle silhouettes.
 
-The proposed design uses approach 1. This is a recommendation awaiting design approval, not a recorded user choice.
+The approved design uses approach 1.
 
 ## Style contract
+
+Primary visual reference: **Katana ZERO** (explicit user direction). Target detailed cinematic side-view game pixel art, with deliberate pixel clusters, nuanced material ramps, readable silhouettes, layered environmental detail, strong local light and fluid sprite animation. The developer's official description identifies a dark 1980s neon / neo-noir aesthetic: https://askiisoft.com/games/. Interpret this as an artistic reference; create original assets and environments rather than copying game sprites, maps or branding.
+
+The countryside setting remains valid. Carry over sprite construction, light/shadow separation and material detail; do not assume every environment must become a neon city. Tree bark, foliage, asphalt, glass and metal each need specific pixel treatment. Larger pixels, random speckle, broad flat shapes and palette swaps do not establish the intended quality. Classic Grove was described as decent, then the user clarified it lacked the desired game pixel-art appearance; it is not the final art target.
+
+Keep future-agent reproducibility through curated editable master assets, palette ramps, tile modules and scene recipes. Agents should compose and animate these assets instead of reinterpreting complex art from prose on each episode. Do not promise that any general agent will reliably redraw the reference game's quality from scratch. Judge the next original moving proof visually against this direction before expanding asset counts.
 
 Use 360×640 logical portrait frames and exact 3× output at 1080×1920. Author sprites at that same world pixel density; integer placements and nearest sampling throughout. Use curated per-material palette ramps, intentional clusters and sparse controlled dithering. No smooth artwork plus pixelation, fractional sprite zoom, antialiased rotation, or whole-image blur. Wheel motion uses discrete authored frames. Diagnostic renders include native PNGs and mobile-size previews.
 
