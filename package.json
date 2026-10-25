@@ -1,6 +1,6 @@
 {
   "name": "pixel-videos",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Agent-friendly cinematic pixel art studio (Remotion, PixiJS, Sharp, Pixelorama, Krita, LDtk, Godot)",
   "scripts": {
@@ -26,7 +26,14 @@
     "visual:qa": "node scripts/qa-visual.mjs",
     "rigs:test": "node scripts/test-studio-rigs.mjs",
     "studio:build": "npm run assets:build && npm run atlas:build && npm run environment:build && npm run rigs:test",
-    "studio:verify": "npm run studio:build && npm run environment:proof && npm run visual:qa && npm run typecheck:toolkit"
+    "studio:verify": "npm run studio:build && npm run environment:proof && npm run visual:qa && npm run typecheck:toolkit",
+    "art:check": "python3 scripts/setup_pixel_art_v4.py --check",
+    "art:install:snapper": "python3 scripts/setup_pixel_art_v4.py --snapper",
+    "art:install:editors": "python3 scripts/setup_pixel_art_v4.py --free-editors",
+    "art:install:free": "python3 scripts/setup_pixel_art_v4.py --all-free",
+    "art:proof": "node scripts/verify-pixel-art-v4.mjs",
+    "art:audit": "node scripts/audit-pixel-art.mjs",
+    "art:verify": "npm run assets:build && npm run art:proof && npm run art:audit -- out/artist-v4/sample-snapper-output.png 6"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
