@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 mkdir -p .tools/editors/pixelorama out/car-v3-proof public/countryside/car
 python3 - <<'PY'
 import json,urllib.request,tarfile,pathlib,shutil
-url='https://api.github.com/repos/Orama-Interactive/Pixelorama/releases/tags/v1.2.3'
+url='https://api.github.com/repos/Orama-Interactive/Pixelorama/releases/tags/v1.1.10'
 req=urllib.request.Request(url,headers={'User-Agent':'pixel-videos-agent2','Accept':'application/vnd.github+json'})
 with urllib.request.urlopen(req,timeout=60) as r:release=json.load(r)
 matches=[a for a in release['assets'] if 'linux-64bit' in a['name'].lower() and a['name'].endswith('.tar.gz')]
