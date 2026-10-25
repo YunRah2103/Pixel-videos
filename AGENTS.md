@@ -23,3 +23,7 @@ Do not falsely present any website as a downloaded executable.
 
 ## Starter assignment
 For a specialist first quality test, follow docs/PIXEL_ART_V4_AGENT_TEST.md in a separate branch and PR.
+
+## Free-only V5 source-art benchmark
+
+See `docs/PIXEL_STUDIO_V5_NEON_PROOF.md` for the tested artist-led pixel animation. Do not use paid PixelLab/PixelOver or generation credits, and do not claim downloaded editing programs authored art unless you can show their actual source/export outputs.

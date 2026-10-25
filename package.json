@@ -38,7 +38,9 @@
     "art:v5:install": "python3 scripts/setup_free_pixel_v5.py --all",
     "art:v5:editors": "python3 scripts/setup_free_pixel_v5.py --editors",
     "art:v5:assets": "python3 scripts/setup_free_pixel_v5.py --art --palette",
-    "art:v5:film": "python3 scripts/render_free_pixel_v5.py"
+    "art:v5:film": "python3 scripts/render_free_pixel_v5.py",
+    "v5:neon:install": "python3 scripts/install_pixel_studio_v5.py --all",
+    "v5:neon:film": "python3 scripts/render_pixel_studio_v5.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
