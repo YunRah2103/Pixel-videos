@@ -55,8 +55,10 @@ jobs:
           npm run visual:qa
           npm run rigs:test
           npm run typecheck:toolkit
-      - name: Native wheel and geometry tests
-        run: node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs
+      - name: Typecheck actual Pixi v8 scene and test EVERY native frame against shared wheel clock
+        run: |
+          npx tsc --project tsconfig.countryside-pixi.json --noEmit
+          node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs tests/countryside-pixi-v3.test.mjs
       - name: Real native Remotion film, FFprobe, full FFmpeg decode, contact sheet
         run: node scripts/render-countryside.mjs
       - name: Upload moving preview — NOT V3 artistically verified

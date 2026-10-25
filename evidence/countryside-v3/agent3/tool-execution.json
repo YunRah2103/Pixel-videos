@@ -1,0 +1,24 @@
+{
+  "sourcePR": "https://github.com/YunRah2103/Pixel-videos/pull/35",
+  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869",
+  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095",
+  "verifiedCommit": "088392835e4960c0caa2ad52f1ea4395ff58d04f",
+  "productionEntry": "src/scenes/countryside/CountrysideDrive.tsx",
+  "pixiImplementation": "src/scenes/countryside/PixiCountrysideWorld.tsx",
+  "commands": [
+    "npm run studio:setup",
+    "npx tsc --project tsconfig.countryside-pixi.json --noEmit",
+    "node --experimental-strip-types --test tests/countryside-pixi-v3.test.mjs",
+    "node scripts/render-countryside.mjs",
+    "ffprobe",
+    "ffmpeg -v error -xerror -i"
+  ],
+  "independentlyInspected": [
+    "downloaded original MP4 artifact",
+    "full independent FFmpeg -xerror decode",
+    "9 distinct frames and contact sheet",
+    "production source draws 6 sprites via PixiJS renderer"
+  ],
+  "actualAuthoringSource": "Agent 3 PR #35 (original blobs preserved)",
+  "note": "This evidence is specific to production PixiJS; it does not verify Agent 1 / Agent 2 GUI tool usage or establish final artistic signoff."
+}
