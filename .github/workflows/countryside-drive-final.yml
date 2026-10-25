@@ -1,0 +1,61 @@
+name: Countryside Drive — final native render and QA
+on:
+  push:
+    branches:
+      - integration/countryside-drive-final
+  pull_request:
+    branches:
+      - production/countryside-drive
+  workflow_dispatch:
+jobs:
+  countryside-final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Verify native FFmpeg and FFprobe
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: Audit available studio tools
+        run: npm run tools:check
+      - name: Typecheck toolkit
+        run: npm run typecheck:toolkit
+      - name: Verify native sprite pipeline and moving toolkit proof
+        run: npm run assets:verify
+      - name: Generate original native pixel art from editable integration source
+        run: node studio/countryside/world/build-world-art.mjs
+      - name: Stop if actual specialist car/motion and authored world assets are absent
+        run: node scripts/check-countryside-ready.mjs
+      - name: Render actual integrated Remotion film and verify decoded MP4
+        run: node scripts/render-countryside.mjs
+      - name: Upload verified final film with 9 frame captures and verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-drive-final-1080p
+          path: |
+            out/countryside-drive-final-1080p.mp4
+            out/countryside-final-qa/verification.json
+            out/countryside-final-qa/countryside-contact-sheet.png
+            out/countryside-final-qa/frame-*.png
+            public/countryside/world/*.png
+            public/countryside/car/*.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload missing-dependency diagnostics if blocked
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-integration-readiness
+          path: out/countryside-final-qa/readiness.json
+          if-no-files-found: warn
+          retention-days: 7
