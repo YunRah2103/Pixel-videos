@@ -1,6 +1,6 @@
 {
   "name": "pixel-videos",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "Agent-friendly cinematic pixel art studio (Remotion, PixiJS, Sharp, Pixelorama, Krita, LDtk, Godot)",
   "scripts": {
@@ -33,7 +33,12 @@
     "art:install:free": "python3 scripts/setup_pixel_art_v4.py --all-free",
     "art:proof": "node scripts/verify-pixel-art-v4.mjs",
     "art:audit": "node scripts/audit-pixel-art.mjs",
-    "art:verify": "npm run assets:build && npm run art:proof && npm run art:audit -- out/artist-v4/sample-snapper-output.png 1"
+    "art:verify": "npm run assets:build && npm run art:proof && npm run art:audit -- out/artist-v4/sample-snapper-output.png 1",
+    "art:v5:check": "python3 scripts/setup_free_pixel_v5.py --check",
+    "art:v5:install": "python3 scripts/setup_free_pixel_v5.py --all",
+    "art:v5:editors": "python3 scripts/setup_free_pixel_v5.py --editors",
+    "art:v5:assets": "python3 scripts/setup_free_pixel_v5.py --art --palette",
+    "art:v5:film": "python3 scripts/render_free_pixel_v5.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
