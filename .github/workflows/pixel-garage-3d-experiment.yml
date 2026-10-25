@@ -14,12 +14,11 @@ jobs:
     timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
-      - name: Install Blender, FFmpeg, software OpenGL and Xvfb
+      - name: Verify FFmpeg and lightweight X11/GL dependencies
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y blender ffmpeg xvfb libgl1-mesa-dri mesa-utils unzip python3-pip
-          blender -b --version | head -3
-          ffmpeg -version | head -2
+          command -v ffmpeg && ffmpeg -version | head -2
+          command -v xvfb-run || (sudo apt-get update -qq && sudo apt-get install -y xvfb)
+          command -v glxinfo || (sudo apt-get update -qq && sudo apt-get install -y mesa-utils libgl1-mesa-dri)
       - name: Download official Godot 4.4.1 binary
         run: |
           curl -fL --retry 4 --retry-delay 3 -o /tmp/godot.zip 'https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip'
