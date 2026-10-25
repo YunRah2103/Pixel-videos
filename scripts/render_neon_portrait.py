@@ -79,7 +79,7 @@ def frame(f):
   eased=.91+.09*(1-(1-tail)**3)
  x=round(TRAM_START['x']+(TRAM_FINISH['x']-TRAM_START['x'])*eased)
  # Subdued architecture, composited BEFORE the untouched hero sprite.
- d.rectangle((0,44,269,428),fill=(4,8,23,76 if f>=CLOSE_START else 57))
+ canvas.alpha_composite(Image.new('RGBA',(W,385),(4,8,23,76 if f>=CLOSE_START else 57)),(0,44))
  # Two road frequencies create small suspension response, never subpixel blur.
  ty=round(TRAM_START['y']+.9*math.sin(t*8)+.55*math.sin(t*15+.6))
  if True:
