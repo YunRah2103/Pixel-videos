@@ -1,0 +1,43 @@
+name: Pixel Studio V4 — real free editor installation verification
+on:
+  push:
+    branches:
+      - feat/pixel-studio-v4-editor-setup
+    paths:
+      - scripts/install_tools.py
+      - scripts/install_studio_v2.py
+      - scripts/setup_pixel_art_v4.py
+      - scripts/verify_open_source_editors.py
+      - .github/workflows/pixel-v4-editors.yml
+      - docs/PIXEL_ART_V4.md
+  pull_request:
+    paths:
+      - scripts/install_tools.py
+      - scripts/install_studio_v2.py
+      - scripts/setup_pixel_art_v4.py
+      - scripts/verify_open_source_editors.py
+      - .github/workflows/pixel-v4-editors.yml
+      - docs/PIXEL_ART_V4.md
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  install-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python scripts compile
+        run: |
+          python3 -m py_compile scripts/install_tools.py scripts/install_studio_v2.py scripts/setup_pixel_art_v4.py scripts/verify_open_source_editors.py
+      - name: Install the free native desktop art applications
+        run: python3 scripts/setup_pixel_art_v4.py --free-editors
+      - name: Verify real binaries and headless application versions
+        run: python3 scripts/verify_open_source_editors.py
+      - name: Publish honest tool-execution evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-videos-free-editors-verification
+          path: out/editor-toolchain/verification.json
+          if-no-files-found: error
+          retention-days: 30
