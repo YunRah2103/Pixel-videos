@@ -33,6 +33,8 @@ jobs:
           test -s studio/countryside/world/sources/sky.ora
           test -s public/countryside/world/nearTrees.png
           node -e "const j=require('./public/countryside/world/manifest.json'); if(j.version!==3||Object.keys(j.tiles).length!==6) process.exit(1); console.log('SHARP_SIX_VALID_NATIVE_PLANES',j.nativeCanvas)"
+      - name: Verify PixiJS asset compatibility, edited canopies and native-pixel layers
+        run: node scripts/qa-countryside-v3-world.mjs
       - name: Install Krita, Xvfb and compositor checks
         run: |
           sudo apt-get update -qq
@@ -126,5 +128,6 @@ jobs:
             out/countryside-v3-world/countryside-v3-world-proof.mp4
             out/countryside-v3-world/contact-sheet.png
             out/countryside-v3-world/verification.json
+            out/countryside-v3-world/art-qa.json
           if-no-files-found: warn
           retention-days: 30
