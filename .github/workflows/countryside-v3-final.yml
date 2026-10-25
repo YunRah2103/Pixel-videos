@@ -1,15 +1,13 @@
-name: Countryside V3 — evidence gate and nonfinal preview
+name: Countryside V3 — FINAL integrated film, editor proof and native render
 on:
   push:
     branches:
       - integration/countryside-drive-v3-final
-  pull_request:
-    branches:
-      - production/countryside-drive
   workflow_dispatch:
 jobs:
-  v3-tool-audit:
+  final-v3-integration:
     runs-on: ubuntu-latest
+    timeout-minutes: 85
     permissions:
       contents: read
     steps:
@@ -17,36 +15,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Perform V3 strict source and provenance audit
-        run: node scripts/audit-countryside-v3.mjs --strict
-      - name: Publish evidence report EVEN IF V3 BLOCKED
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: countryside-v3-tool-evidence-audit
-          path: out/countryside-v3-qa/tool-audit.json
-          if-no-files-found: warn
-          retention-days: 30
-
-  nonfinal-native-render:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Confirm FFmpeg / FFprobe
+          python-version: '3.11'
+      - name: Install native sprite, editor, Remotion and FFmpeg dependencies
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ffmpeg
-          ffmpeg -version
-          ffprobe -version
-      - name: Execute Pixel Studio V3 asset pipeline, rigs and visual QA
+          python -m pip install Pillow==11.3.0
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg xvfb xauth libgl1-mesa-dri libfontconfig1 libx11-6 libxcursor1 libxrandr2 libxi6
+          npm install --no-audit --no-fund
+          ffprobe -version | head -1
+      - name: Execute Pixel Studio V3 atlas, environment, rigs and visual QA
         run: |
           npm run studio:setup
           npm run atlas:build
@@ -55,20 +34,55 @@ jobs:
           npm run visual:qa
           npm run rigs:test
           npm run typecheck:toolkit
-      - name: Typecheck actual Pixi v8 scene and test EVERY native frame against shared wheel clock
+      - name: Build V3 LDtk original world and source editor files, not V2 art
         run: |
+          node studio/countryside/world/build-world-v3.mjs
+          python3 scripts/build-v3-openraster.py
+          python3 scripts/build-v3-pixelorama.py
+          test -s studio/countryside/world/sources/sky.ora
+          test -s studio/countryside/world/sources/nearTrees.pxo
+      - name: Real Pixelorama official editor imports layered coupe and exports 8-frame wheel strip
+        run: |
+          python3 studio/countryside/car/build-car-v3.py
+          bash scripts/pixelorama-export-car-v3.sh
+          node studio/countryside/car/build-car-v3.mjs
+      - name: STRICT proof of real tool evidence, source hashes and latest Pixi cinematic
+        run: |
+          node scripts/audit-countryside-v3.mjs --strict
+          node scripts/qa-countryside-v3.mjs
           npx tsc --project tsconfig.countryside-pixi.json --noEmit
           node --experimental-strip-types --test tests/countryside-motion.test.mjs tests/countryside-motion-v2.test.mjs tests/countryside-v2-geometry.test.mjs tests/countryside-pixi-v3.test.mjs
-      - name: Real native Remotion film, FFprobe, full FFmpeg decode, contact sheet
+      - name: Render actual final V3 composition — front and rear wheel closeups, accelerated countryside, final wide
+        env:
+          COUNTRYSIDE_V3_PRODUCTION: '1'
         run: node scripts/render-countryside.mjs
-      - name: Upload moving preview — NOT V3 artistically verified
+      - name: Independent film FFprobe and full error-fatal FFmpeg decode
+        run: |
+          node -e "const x=require('./out/countryside-final-qa/verification.json');if(!x.technicalVerified||x.revision!=='V3-world-Pixelorama-car-latest-Pixi-cinematic'||x.frames!==360||x.duration!==12||x.artisticSignoff!==false)process.exit(1);console.log('FULL_V3_FILM_CONTRACT_PASS')"
+          ffprobe -v error -count_frames -show_entries stream=codec_name,pix_fmt,width,height,r_frame_rate,nb_read_frames:format=duration -of json out/countryside-drive-final-1080p.mp4
+          ffmpeg -v error -xerror -i out/countryside-drive-final-1080p.mp4 -f null -
+          test -s out/countryside-final-qa/countryside-contact-sheet.png
+      - name: Upload genuine 12-second final V3 MP4, original layers, proof logs, screenshots and QA
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: countryside-v3-branch-NONFINAL-preview-1080p
+          name: countryside-drive-v3-INTEGRATED-1080x1920
+          if-no-files-found: warn
+          retention-days: 30
           path: |
             out/countryside-drive-final-1080p.mp4
             out/countryside-final-qa/verification.json
+            out/countryside-final-qa/art-source-qa.json
             out/countryside-final-qa/countryside-contact-sheet.png
             out/countryside-final-qa/frame-*.png
-          if-no-files-found: error
-          retention-days: 30
+            out/countryside-v3-qa/tool-audit.json
+            out/car-v3-proof/*.log
+            out/car-v3-proof/pixelorama-export-validation.json
+            studio/countryside/car/v3-source/*.ora
+            studio/countryside/world/sources/*.ora
+            studio/countryside/world/sources/*.pxo
+            studio/countryside/world/countryside-v3.ldtk
+            public/countryside/world/*.png
+            public/countryside/world/manifest.json
+            public/countryside/car/coupe-v2-body.png
+            public/countryside/car/coupe-v2-wheels-8.png

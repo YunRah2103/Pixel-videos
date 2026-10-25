@@ -1,46 +1,26 @@
-# Countryside Drive V3 — master integration evidence and release status
+# COUNTRYSIDE DRIVE V3 — Agent 4 integration and evidence
 
-**Status: BLOCKED pending actual V3 agent files and execution proof. This branch is intentionally NOT final and MUST NOT merge to main.**
+**State:** V3 source integrated; user artistic approval is NOT granted. Do not merge PR #34 to main.
 
-## Source baseline inspected
+## Exact specialist sources imported (not recreations)
 
-- Base `integration/countryside-drive-v2-art` at `097a00ee348d2b07ae40019916712c8343efab56`.
-- PR #31 and real CI run [40144338121](https://github.com/YunRah2103/Pixel-videos/actions/runs/40144338121) establish a genuine **V2** 1080x1920, 30fps, 12s Remotion/FFmpeg baseline. This is NOT proof of V3 tools.
-- V2 hero sprite: 192x80 native source, eight 32x32 wheel poses, measured rolling radius **15.5 native px**. Preserve exact wheel distance formula `roadTravelPx/(2*Math.PI*WHEEL_RADIUS_PX)`, fixed contact Y=495 and body-only spring offsets.
-- Original world source: `studio/countryside/world/build-world-v2.mjs`, production layers in `WorldLayers.tsx`. Keep integer/native pixel scale, no blur, vector fake art or camera shake.
+- Agent 1 original V3 world PR #37 at `a9e99e36d2a9f53631085a7d0fcfce2c04fc18b8`. GitHub Actions [40147710516](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516) SUCCESS, [actual artwork + editor logs + proof](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147710516/artifacts/12581455077). Original LDtk countryside tree layout and 6 native planes, original layered OpenRaster, editable 960x235 PXO. Pixelorama editor screenshot, Krita exported sky, LDtk editor opened layout; source LDtk entities are consumed by Sharp builder.
+- Agent 2 original Pixelorama car PR #36 at `ba429fbe7f8400a4014e43430bd712fa4db66d6d`. GitHub Actions [40147155322](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147155322) SUCCESS, [Pixelorama PNGs and native originals](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147155322/artifacts/12581028474). Real Pixelorama export, validated 192x80 car, 256x32 wheels with 8 unique poses. Wheel radius exactly 15.5 native pixels.
+- Agent 3 **LATEST major motion and camera revision** PR #35 at `eefc052a88a9efff866a2497960ace2e7d41d770`. GitHub Actions [40147247998](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147247998) SUCCESS, [real 12-second PixiJS proof](https://github.com/YunRah2103/Pixel-videos/actions/runs/40147247998/artifacts/12580798968). Independently FFprobe checked and 360 frames fully FFmpeg decoded; SHA256 d17d0a32d39a5e02607d974ab8f4439e4c56b254e7e13181dc0ce6341a3a1113.
 
-## Mandatory V3 specialist intake (not accepted on claims)
+## Integrated production contract
 
-| Specialist | Native source/evidence required | Present at branch initialization |
-| --- | --- | --- |
-| Agent 1: World | Original layered .ora or native .pxo/.kra imported/exported by real Pixelorama and Krita, .ldtk LDtk, execution logs, authored PNGs, motion proof and branch/PR | **NO** |
-| Agent 2: Car | Original layered car .ora/.pxo, Pixelorama-generated native PNG and unique wheel frames, actual editor execution log, moving proof and branch/PR | **NO** |
-| Agent 3: Motion | Production Remotion graph imports PixiJS and uses it to draw real moving frames, recorded real render/proof and PR | **YES — technically verified**: PR #35, [successful Actions 40145928869](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869). Import integrated into this branch. Owner aesthetic approval still false. |
+`CountrysideDrive.tsx` imports `DrivingMotionV3.ts` and `PixiCountrysideWorld.tsx`, NOT the original slow Pixi plan. The film has a 0–1.5 s front-wheel 2x crop, accelerating wide drive 1.5–6.83 s, rear-wheel 2x crop 6.83–9.03 s, and a final wide through 12 s. All layers and tyre rotations use one cumulative road-distance clock; source geometry is native 360x640 with exact nearest-neighbour 3x output. No fake motion, blur or second wheel clock.
 
-Merely installing Pixelorama, Krita, LDtk or PixiJS is not sufficient. Independently open and inspect native editable files and recorded execution evidence; manually check actual MP4 movement. `scripts/audit-countryside-v3.mjs --strict` blocks absent source and missing run references; **its passing is only machine preflight**, not proof of trustworthy tool usage or artistic approval.
+Execute `COUNTRYSIDE_V3_PRODUCTION=1 node scripts/render-countryside.mjs` only **after** the authentic Pixelorama exporter `scripts/pixelorama-export-car-v3.sh` generates original car PNGs. V3 render builds genuine original LDtk world and validates production car output SHA256 against accepted Agent 2 actual editor export. Regular `node scripts/render-countryside.mjs` remains V2 for older jobs.
 
-## Production integration rules
+## Release checks
 
-1. Port Agent 1 original scene, art, LDtk layout into real `CountrysideDrive` production path. Inspect layer seams, transparency, depth, canopy silhouette and countryside composition at 360x640 native.
-2. Port Agent 2 hero sprite and its measured rolling radius/wheel-frame count. Respect wheel centres and contact Y from the real updated art; no independent spin timer.
-3. Port Agent 3 actual PixiJS code into the production Remotion render. Trace imports and verify runtime render side effects. No dead/demo Pixi imports credited as implementation.
-4. Integrate with Pixel Studio V3 pipelines, single shared road-distance clock, subtle spring physics and integer nearest-neighbour scaling.
-5. Run the actual 360-frame Remotion source at 30fps, 1080x1920 H.264, full FFmpeg -xerror decode, FFprobe metadata, 9 distinct decoded frames and contact sheet. Compare opening/middle/ending visually at mobile size.
-6. Approve only after original artwork and premium pixel-art appearance meet quality bar; reject average art, missing native tool evidence, clipping, black gaps, wheel sliding, repeated bland trees or irrelevant visual effects.
+1. The final V3 Actions job runs the actual Pixel Studio V3 pipeline and a real Pixelorama editor import/export; world native LDtk + Sharp builder are executed.
+2. `scripts/audit-countryside-v3.mjs --strict` checks original-editor provenance URLs, editable sources and real PixiJS import graph. `scripts/qa-countryside-v3.mjs` checks art dimensions, LDtk entities, car hashes and eight unique wheel frames.
+3. V3 Remotion render must complete 360 frames and full FFmpeg decode, exact 1080x1920 H264 30fps, black-gap and nine-capture QA.
+4. The finished MP4 must be independently **downloaded** and actual footage inspected to judge art, contact, crop, repeating imagery and motion. Technical success does not grant artistic approval.
 
-## Audit/report location
+## Evidence limitations
 
-- `out/countryside-v3-qa/tool-audit.json` generated on CI. Failure is intentional until V3 agent evidence lands.
-- `evidence/countryside-v3/agent{1,2,3}/tool-execution.json` must identify specific real CI/tool-execution URLs and source-file provenance.
-- A separate workflow job can publish a **nonfinal V2-derived moving preview**. Do not label it as the verified V3 film.
-
-## Agent 3 independent integration / actual MP4 examination (25 Oct 2026)
-
-- Real original V3 [PR #35](https://github.com/YunRah2103/Pixel-videos/pull/35) source files imported by their **exact source blob SHA**, not reimplementations.
-- [Run #40145928869](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869) concluded SUCCESS and produced [artifact #12580342095](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095). Real `PixiCountrysideWorld` connects to active `CountrysideDrive` and performs PixiJS Application, Assets.load, six TilingSprite tile offsets, Graphics shadows and renderer.render at the exact Remotion frame. It throws rather than falling back when WebGL fails.
-- Downloaded and independently inspected actual H.264 Pixi-proven MP4 and its 9-frame contact sheet, compared frame 180 to the V2 baseline and executed full FFmpeg -xerror decode PASS; 1080x1920 30fps 360 frames 12s. These checks verify real video production, **not artistic approval**.
-- Current trees still appear blocky and too symmetrical, sky occupies excessive screen area; Agent 1 scenery and Agent 2 car must improve before release. Their source/tool proofs remain blocked.
-
-### Editable source format policy
-
-Both Pixelorama and Krita can work with the open layered raster `.ora` format. Requiring `.pxo` or `.kra` **specifically** would wrongly reject genuine exports. The integrator instead requires authentic layered source generated/committed or linked in a verified CI artifact, actual executable tool invocation and logs with resulting exported PNGs, plus LDtk's real level data. A source file or installed package alone is **not** proof those tools were used.
+Agent 1 screenshots show editor use and Krita output; they are not evidence that all pixels were manually brushed in those GUIs. Actual world pixels are deliberately generated by the LDtk-driven authored Sharp source. Agent 2 original layered ORAs are authored in code, then imported/exported with genuine Pixelorama. These facts are disclosed so the tools are credited accurately. Owner artistic signoff remains false.
