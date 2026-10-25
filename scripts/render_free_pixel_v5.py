@@ -31,7 +31,9 @@ def shell(command):
 
 def layer_paths():
  if not (ART/'ASSET_PROVENANCE.json').exists():raise RuntimeError("CC0 artist archive not downloaded; use python3 scripts/setup_free_pixel_v5.py --art")
- files=[p for p in ART.rglob("*.png") if p.is_file()]
+ files=[p for p in ART.rglob("*.png") if p.is_file() and
+         "__MACOSX" not in p.parts and not p.name.startswith("._") and
+         "preview" not in p.name.lower()]
  if not files:raise RuntimeError("Artist archive contains no actual PNG")
  def pick(label):
   def norm(p):return p.stem.lower().replace("_","-").replace(" ","-")

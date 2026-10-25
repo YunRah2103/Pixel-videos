@@ -61,7 +61,13 @@ def safe_extract(src,outdir):
   with tarfile.open(src) as tar:
    for item in tar.getmembers():
     p=Path(item.name)
-    if p.is_absolute() or ".." in p.parts or item.issym() or item.islnk():raise ValueError("Unsafe TAR entry "+str(p))
+    if p.is_absolute() or ".." in p.parts or item.islnk():raise ValueError("Unsafe TAR entry "+str(p))
+    if item.issym():
+     # Official SpookyGhost bundle contains versioned libfoo.so symlinks.
+     # Allow only relative links whose normalised targets remain inside archive.
+     target=os.path.normpath(str(p.parent / item.linkname))
+     if item.linkname.startswith("/") or target==".." or target.startswith("../"):
+      raise ValueError("Unsafe TAR symlink "+str(p)+" -> "+item.linkname)
     total+=item.size;count+=1
     if total>350_000_000 or count>10000:raise ValueError("Archive too large")
    tar.extractall(outdir,filter="data")
