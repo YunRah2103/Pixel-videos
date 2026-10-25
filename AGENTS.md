@@ -23,3 +23,7 @@ Do not falsely present any website as a downloaded executable.
 
 ## Starter assignment
 For a specialist first quality test, follow docs/PIXEL_ART_V4_AGENT_TEST.md in a separate branch and PR.
+
+## V5 free-only rule
+
+Read [docs/PIXEL_STUDIO_V5_FREE.md](docs/PIXEL_STUDIO_V5_FREE.md) before adding new pixel-art tooling. Do not require or suggest paid PixelLab API, PixelOver export purchase, proprietary image generators, paid asset packs or credits. Use real freely licensed artist sprites with accurate source/licence and test frame-by-frame. Never claim a GUI tool was used merely because its executable was installed.

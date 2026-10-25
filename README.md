@@ -105,3 +105,7 @@ The new [Pixel Studio V3 agent guide](docs/PIXEL_STUDIO_V3.md) documents the han
 ## Pixel Studio V4 — real authoring tools and art-first films
 
 [Pixel Studio V4 workflow](docs/PIXEL_ART_V4.md) introduces a real native Sprite Fusion Pixel Snapper installer, PixelLab remote MCP onboarding, free artist-pack import with provenance, Sprite Fusion/PixelOver limitations, an objective pixel-grid audit and an **artist-first approval process**. Run `npm run art:install:snapper && npm run art:verify` for an actual native-tool proof. For the next specialist, use [Pixel V4 agent art test](docs/PIXEL_ART_V4_AGENT_TEST.md).
+
+## V5 — No additional AI subscription or paid editors
+
+[Pixel Studio V5 completely free setup](docs/PIXEL_STUDIO_V5_FREE.md) downloads free editing tools and correctly licensed pixel-art assets, and renders a five-second moving source-based film. Commands: `npm run v5:install:free`, then `npm run v5:render`. The GitHub Action attaches a verified MP4 and a contact sheet; the trial is horizontal to preserve the professional source art.
