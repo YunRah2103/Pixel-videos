@@ -79,13 +79,22 @@ def safe_extract(path,dest):
             archive.extractall(dest)
     elif tarfile.is_tarfile(path):
         with tarfile.open(path) as archive:
-            members=archive.getmembers()
-            for member in members:
+            members=[]
+            skipped=0
+            for member in archive.getmembers():
                 target=(dest/member.name).resolve()
-                if not target.is_relative_to(base) or member.issym() or member.islnk():
-                    raise RuntimeError('Unsafe tar member')
+                if not target.is_relative_to(base):
+                    raise RuntimeError('Unsafe tar path')
+                if member.issym() or member.islnk():
+                    skipped+=1
+                    continue  # No symlink/hardlink extraction into our build runner.
+                if not (member.isfile() or member.isdir()):
+                    skipped+=1
+                    continue
                 if member.size>200_000_000:raise RuntimeError('Too-large tar member')
-            archive.extractall(dest,filter='data')
+                members.append(member)
+            archive.extractall(dest,members=members,filter='data')
+            print('TAR_EXTRACTED',len(members),'SKIPPED_LINKS_OR_SPECIAL_FILES',skipped,flush=True)
     else:raise RuntimeError('Unknown archive '+str(path))
 
 def release_appimage(repo,tag,keyword):
