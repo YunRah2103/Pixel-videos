@@ -3,7 +3,7 @@
  * Sharp writes real native-resolution RGBA PNGs. Never interpolate pixels.
  */
 import sharp from 'sharp';
-import {mkdirSync,writeFileSync} from 'node:fs';
+import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 const OUT='public/countryside/world';
 const size={sky:[360,480,0],farTrees:[720,300,180],midTrees:[840,265,215],nearTrees:[960,235,245],road:[384,160,480],verge:[384,160,480]};
 const P={skyHigh:'#4E99D6',sky:'#67AFE1',skyLow:'#8FC9E7',cloud:'#E9F3E7',cloudShadow:'#BCDDE0',
@@ -78,6 +78,19 @@ const groves={
  farTrees:[['poplar',12,300,.72],['pine',98,300,.73],['oak',184,300,.77],['birch',273,300,.76],['maple',364,300,.78],['poplar',455,300,.71],['beech',556,300,.82],['pine',654,300,.78]],
  midTrees:[['oak',6,265,1.01],['birch',110,265,.96],['pine',202,265,1.03],['maple',307,265,1.00],['poplar',414,265,.94],['beech',516,265,.99],['pine',613,265,1.02],['oak',711,265,1.03],['birch',819,265,.94]],
  nearTrees:[['pine',-32,235,1.13],['oak',90,235,1.08],['maple',215,235,1.16],['birch',341,235,1.06],['pine',454,235,1.17],['beech',576,235,1.09],['oak',699,235,1.14],['poplar',819,235,1.11],['maple',947,235,1.08]]};
+// The LDtk project is the authoritative tree-layout source; edit its entity placements.
+const layout=JSON.parse(readFileSync('studio/countryside/world/countryside-v3.ldtk','utf8'));
+for(const layerName of Object.keys(groves)){
+ const layer=layout.levels[0].layerInstances.find(l=>l.__identifier===layerName);
+ if(!layer||!Array.isArray(layer.entityInstances)||layer.entityInstances.length<5)
+  throw Error('Missing authored LDtk entities for '+layerName);
+ groves[layerName]=layer.entityInstances.map(e=>{
+  const field=n=>e.fieldInstances.find(x=>x.__identifier===n)?.__value;
+  const kind=field('kind'),scale=Number(field('scale'));
+  if(!['oak','maple','birch','pine','poplar','beech'].includes(kind)||!Number.isFinite(scale))throw Error('Malformed LDtk tree');
+  return [kind,e.px[0],e.px[1],scale];
+ });
+}
 function paint(id){const [w,h]=size[id],c=canvas(w,h);
  if(id==='sky'){
   block(c,0,0,w,110,'skyHigh');block(c,0,110,w,155,'sky');block(c,0,265,w,h-265,'skyLow');
