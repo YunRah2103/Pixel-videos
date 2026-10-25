@@ -1,0 +1,58 @@
+name: Countryside V3 Agent 2 - independent genuine Remotion visual proof
+on:
+  push:
+    branches:
+      - agent/countryside-v3-car-pixelorama
+  workflow_dispatch:
+jobs:
+  independent-native-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install real video production dependencies
+        run: |
+          npm install --no-audit --no-fund
+          python3 -m pip install Pillow==11.3.0
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg
+      - name: Create original editable layered body and wheel artwork
+        run: npm run car:v3:art
+      - name: Prepare PREVIEW-only production sprites, NOT Pixelorama-verified
+        run: |
+          node --input-type=module - <<'JS'
+          import sharp from 'sharp';
+          import {readFile} from 'node:fs/promises';
+          const dir='public/countryside/car/';
+          for (const [src,dst,w,h] of [['coupe-v3-preview.png','coupe-v2-body.png',192,80],['coupe-v3-wheels-preview.png','coupe-v2-wheels-8.png',256,32]]) {
+            const m=await sharp(dir+src).metadata();
+            if(m.width!==w||m.height!==h||m.format!=='png')throw Error('Bad native preview '+src);
+            await sharp(dir+src).png({palette:false}).toFile(dir+dst);
+          }
+          console.log('HONEST_PROVENANCE: Pixelorama editor export NOT VERIFIED; these are original layered-art preview sprites.');
+          JS
+      - name: TypeScript standalone car animation contract
+        run: npx tsc --project tsconfig.car-v2.json --noEmit
+      - name: Render native Remotion + full decode and 9 frame QC
+        run: npm run car:v3:proof
+      - name: Upload independent native Remotion MP4 and source artwork
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: countryside-v3-agent2-independent-remotion-proof
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            studio/countryside/car/v3-source/*.ora
+            public/countryside/car/coupe-v3-preview.png
+            public/countryside/car/coupe-v3-wheels-preview.png
+            out/car-v2-proof/coupe-v2-1080x1920.mp4
+            out/car-v2-proof/contact-sheet.png
+            out/car-v2-proof/frame-*.png
+            out/car-v2-proof/verification.json
