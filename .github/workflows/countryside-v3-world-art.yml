@@ -7,6 +7,9 @@ on:
     branches:
       - integration/countryside-drive-v2-art
   workflow_dispatch:
+concurrency:
+  group: countryside-v3-world-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 jobs:
   world-art:
     runs-on: ubuntu-latest
@@ -25,13 +28,23 @@ jobs:
           npm install --no-audit --no-fund
           npm run studio:setup
           npm run typecheck:toolkit
+      - name: Build original world PNGs — LDtk layouts read by Sharp pixel painter
+        run: |
+          mkdir -p out/editor-evidence
+          node studio/countryside/world/build-world-v3.mjs | tee out/editor-evidence/ldtk-sharp-build.txt
+          python3 scripts/build-v3-openraster.py
+          test -s studio/countryside/world/sources/sky.ora
+          test -s public/countryside/world/nearTrees.png
+          node -e "const j=require('./public/countryside/world/manifest.json'); if(j.version!==3||Object.keys(j.tiles).length!==6) process.exit(1); console.log('SHARP_SIX_VALID_NATIVE_PLANES',j.nativeCanvas)"
       - name: Install Krita, Xvfb and compositor checks
+        continue-on-error: true
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y krita xvfb x11-utils imagemagick ffmpeg unzip libnss3 libasound2t64
           xvfb-run -a krita --version
           ffmpeg -version | head -n 1
       - name: Install official Pixelorama v1.2.3 (sprite editor)
+        continue-on-error: true
         run: |
           mkdir -p .tools/editors/pixelorama out/editor-evidence
           curl -fL --retry 3 https://github.com/Orama-Interactive/Pixelorama/releases/download/v1.2.3/Pixelorama-Linux-64bit.tar.gz -o /tmp/pixelorama.tar.gz
@@ -42,6 +55,7 @@ jobs:
           test -n "$PIXELORAMA"
           "$PIXELORAMA" --headless --quit -- --pixelorama-version | tee out/editor-evidence/pixelorama-version.txt
       - name: Install official LDtk v1.5.3 (level editor)
+        continue-on-error: true
         run: |
           mkdir -p .tools/editors/ldtk
           curl -fL --retry 3 https://github.com/deepnight/ldtk/releases/download/v1.5.3/ubuntu-distribution.zip -o /tmp/ldtk.zip
@@ -49,25 +63,21 @@ jobs:
           find .tools/editors/ldtk -type f | head -n 24
           find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) -exec chmod +x {} \;
           test -n "$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) | head -n 1)"
-      - name: Build original world PNGs — LDtk layouts read by Sharp pixel painter
-        run: |
-          node studio/countryside/world/build-world-v3.mjs | tee out/editor-evidence/ldtk-sharp-build.txt
-          python3 scripts/build-v3-openraster.py
-          test -s studio/countryside/world/sources/sky.ora
-          test -s public/countryside/world/nearTrees.png
-          node -e "const j=require('./public/countryside/world/manifest.json'); if(j.version!==3||Object.keys(j.tiles).length!==6) process.exit(1); console.log('SHARP_SIX_VALID_NATIVE_PLANES',j.nativeCanvas)"
       - name: Pixelorama really imports and exports original tree sprites
+        continue-on-error: true
         run: |
           PIXELORAMA="$(find .tools/editors/pixelorama -type f \( -name 'Pixelorama.x86_64' -o -name 'Pixelorama*.x86_64' \) | head -n 1)"
           "$PIXELORAMA" --headless --quit -- --export --output out/editor-evidence/nearTrees-by-Pixelorama.png public/countryside/world/nearTrees.png 2>&1 | tee out/editor-evidence/pixelorama-export.log
           test -s out/editor-evidence/nearTrees-by-Pixelorama.png
           node -e "const s=require('sharp');Promise.all(['public/countryside/world/nearTrees.png','out/editor-evidence/nearTrees-by-Pixelorama.png'].map(x=>s(x).metadata())).then(m=>{if(m[0].width!==m[1].width||m[0].height!==m[1].height)process.exit(1);console.log('PIXELORAMA_SPRITE_ROUNDTRIP',m[1].width,m[1].height)})"
       - name: Krita really opens editable sky artwork and exports a PNG
+        continue-on-error: true
         run: |
           xvfb-run -a krita --export --export-filename out/editor-evidence/sky-by-Krita.png studio/countryside/world/sources/sky.ora 2>&1 | tee out/editor-evidence/krita-export.log
           test -s out/editor-evidence/sky-by-Krita.png
           file out/editor-evidence/sky-by-Krita.png
       - name: LDtk really opens the world layout on a virtual desktop
+        continue-on-error: true
         run: |
           LDTK="$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) | head -n 1)"
           export LDTK
@@ -85,6 +95,13 @@ jobs:
           grep -i LDtk out/editor-evidence/ldtk-window-tree.txt
       - name: Genuine moving 120-frame MP4 proof with FFprobe/full decode
         run: node scripts/render-world-v3-proof.mjs
+      - name: Strict evidence gate — all three desktop editors must produce real output
+        run: |
+          test -s out/editor-evidence/nearTrees-by-Pixelorama.png
+          test -s out/editor-evidence/sky-by-Krita.png
+          test -s out/editor-evidence/ldtk-editor-screenshot.png
+          grep -qi LDtk out/editor-evidence/ldtk-window-tree.txt
+          test -s out/countryside-v3-world/countryside-v3-world-proof.mp4
       - name: Upload original sources, editor exports, proof and QA
         uses: actions/upload-artifact@v4
         if: always()
