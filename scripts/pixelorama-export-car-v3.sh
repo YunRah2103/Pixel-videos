@@ -37,7 +37,7 @@ for kind in body wheels; do
   log="out/car-v3-proof/pixelorama-$kind-export.log"
   echo "REAL_PIXELORAMA_SOURCE_IMPORT $input" | tee "$log"
   set +e
-  timeout -k 2s 18s "$PIX" --headless -- --export --output "$output" "$input" >>"$log" 2>&1
+  xvfb-run -a -s "-screen 0 1280x800x24" timeout -k 2s 26s env LIBGL_ALWAYS_SOFTWARE=1 "$PIX" --rendering-method gl_compatibility -- --export --output "$output" "$input" >>"$log" 2>&1
   code=$?
   set -e
   echo "PIXELORAMA_SOURCE_EXIT $code" | tee -a "$log"
@@ -52,7 +52,7 @@ for kind in body wheels; do
     # The original separate editable ORA layers remain included in artifact.
     echo "PIXELORAMA_ORA_HEADLESS_IMPORT_FALLBACK: importing authored pixel PNG into Pixelorama" | tee -a "$log"
     set +e
-    timeout -k 2s 18s "$PIX" --headless -- --export --output "$output" "$preview" >>"$log" 2>&1
+    xvfb-run -a -s "-screen 0 1280x800x24" timeout -k 2s 26s env LIBGL_ALWAYS_SOFTWARE=1 "$PIX" --rendering-method gl_compatibility -- --export --output "$output" "$preview" >>"$log" 2>&1
     code=$?
     set -e
     echo "PIXELORAMA_PNG_SOURCE_EXIT $code" | tee -a "$log"
