@@ -65,7 +65,15 @@ jobs:
           python3 scripts/setup_free_pixel_v5.py --art --palette
           test -s .tools/pixel-v5/art/ansimuz_industrial/ASSET_PROVENANCE.json
           test -s .tools/pixel-v5/art/kenney_tiny_city/ASSET_PROVENANCE.json
+          test -s .tools/pixel-v5/art/ansimuz_cyberpunk/ASSET_PROVENANCE.json
           test -s .tools/pixel-v5/palettes/greyt-bit.json
+      - name: Save 2017 CC-BY 3.0 Ansimuz street pack for licensed visual inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-ansimuz-cyberpunk-CCBY-source
+          path: .tools/pixel-v5/downloads/ansimuz_cyberpunk.zip
+          retention-days: 14
+          if-no-files-found: error
       - name: Render and verify 150 moving frames with 4 independent licensed artwork layers
         run: |
           python3 scripts/render_free_pixel_v5.py

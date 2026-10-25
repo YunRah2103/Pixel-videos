@@ -65,3 +65,7 @@ For every future film: approve attractive still FIRST, then animate meaningful v
 - Additional $0 CC0 Synth Cities: https://ansimuz.itch.io/cyberpunk-street-environment ; itch requires user to click free download UI. Do not bypass checkout or claim it was auto-installed.
 
 Never sell or relicense upstream software, distribute unrelated artwork without verified permission, or invent use of art editors because they were merely installed.
+
+## Additional free neon reference artwork (attribution required)
+
+Ansimuz's original 2017 Cyberpunk Street Environment is freely downloadable from OpenGameArt under CC BY 3.0. Its source ZIP is downloaded automatically as ansimuz_cyberpunk by art:v5:install or art:v5:assets. Attribution is mandatory: Art by ansimuz.com — https://opengameart.org/content/cyberpunk-street-environment — CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/). Edited for Pixel Videos if adapted. This pack is a separate, explicitly attributed asset from the 2015 CC0 industrial background.

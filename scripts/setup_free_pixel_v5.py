@@ -16,11 +16,14 @@ URLS={
  "spookyghost_manifest":"https://raw.githubusercontent.com/SpookyGhost2D/SpookyGhost-artifacts/SpookyGhost-master-linux-gcc/manifest.json",
  "kenney_tiny_city":"https://kenney.nl/media/pages/assets/tiny-city/357bf73846-1791720771/kenney_tiny-city.zip",
  "ansimuz_industrial":"https://opengameart.org/sites/default/files/parallax-industrial-pack_0.zip",
+ "ansimuz_cyberpunk":"https://opengameart.org/sites/default/files/cyberpunk-street-files.zip",
  "lospec_greyt_bit":"https://lospec.com/palette-list/greyt-bit.json",
 }
 LICENSES={
  "kenney_tiny_city":{"author":"Kenney","license":"CC0-1.0","source":"https://kenney.nl/assets/tiny-city"},
- "ansimuz_industrial":{"author":"Luis Zuno / ansimuz","license":"CC0-1.0","source":"https://opengameart.org/content/industrial-parallax-background"}
+ "ansimuz_industrial":{"author":"Luis Zuno / ansimuz","license":"CC0-1.0","source":"https://opengameart.org/content/industrial-parallax-background"},
+ "ansimuz_cyberpunk":{"author":"Luis Zuno / ansimuz","license":"CC-BY-3.0","source":"https://opengameart.org/content/cyberpunk-street-environment",
+ "credit_required":"Art by ansimuz.com, licensed CC BY 3.0; adapted for Pixel Videos"}
 }
 def fetch(url,dst,maxbytes=120_000_000):
  dst.parent.mkdir(parents=True,exist_ok=True)
@@ -136,7 +139,7 @@ def fetch_art(name):
   meta={**LICENSES[name],"archive_sha256":sha(archive),"artist_created":True,"files":len(art),
    "notice":"Use official supplied licence and attribution notices; files remain in ignored .tools/ and are not sold."}
   (dest/"ASSET_PROVENANCE.json").write_text(json.dumps(meta,indent=2)+"\n")
- print("CC0_ART_READY",name,"PNG",len(list(dest.rglob("*.png"))))
+ print("LICENSED_ART_READY",name,LICENSES[name]["license"],"PNG",len([p for p in dest.rglob("*.png") if "__MACOSX" not in p.parts and not p.name.startswith("._")]))
 def fetch_palette():
  path=fetch(URLS["lospec_greyt_bit"],DEST/"palettes"/"greyt-bit.json",maxbytes=250_000)
  data=json.loads(path.read_text())
