@@ -61,8 +61,8 @@ jobs:
           curl -fL --retry 3 https://github.com/deepnight/ldtk/releases/download/v1.5.3/ubuntu-distribution.zip -o /tmp/ldtk.zip
           unzip -q /tmp/ldtk.zip -d .tools/editors/ldtk
           find .tools/editors/ldtk -type f | head -n 24
-          find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) -exec chmod +x {} \;
-          test -n "$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) | head -n 1)"
+          find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) -exec chmod +x {} \;
+          test -n "$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) | head -n 1)"
       - name: Pixelorama really imports and exports original tree sprites
         continue-on-error: true
         run: |
@@ -79,10 +79,11 @@ jobs:
       - name: LDtk really opens the world layout on a virtual desktop
         continue-on-error: true
         run: |
-          LDTK="$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' \) | head -n 1)"
+          LDTK="$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) | head -n 1)"
           export LDTK
+          export APPIMAGE_EXTRACT_AND_RUN=1
           xvfb-run -a bash -c '
-            "$LDTK" studio/countryside/world/countryside-v3.ldtk > out/editor-evidence/ldtk-launch.log 2>&1 &
+            "$LDTK" --no-sandbox studio/countryside/world/countryside-v3.ldtk > out/editor-evidence/ldtk-launch.log 2>&1 &
             p=$!
             sleep 9
             xwininfo -root -tree > out/editor-evidence/ldtk-window-tree.txt 2>&1
