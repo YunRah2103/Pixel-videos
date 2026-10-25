@@ -29,8 +29,9 @@ def find_executable(name,root):
         return binary
     if root.is_dir():
         matches=[p for p in root.rglob('*') if p.is_file() and
-                 (name.lower() in p.name.lower()) and
-                 ('linux' in p.name.lower() or p.suffix.lower() in ('.exe','.appimage'))]
+                 name.lower() in p.name.lower() and
+                 p.name.lower().endswith(('.x86_64','.arm64','.appimage','.exe')) and
+                 os.access(p,os.X_OK)]
         if matches:
             return str(sorted(matches,key=lambda p:len(str(p)))[0])
     return None

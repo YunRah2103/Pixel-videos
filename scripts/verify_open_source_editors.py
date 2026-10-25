@@ -35,7 +35,7 @@ def run_version(path, args):
 
 pixelorama=executable(TOOLS/'editors'/'pixelorama',lambda n:n.startswith('pixelorama') and (n.endswith('.x86_64') or n.endswith('.arm64')))
 godot=executable(TOOLS/'engines'/'godot',lambda n:n.startswith('godot') and (n.endswith('.x86_64') or n.endswith('.arm64')))
-ldtk=executable(TOOLS/'editors'/'ldtk',lambda n:n in ('ldtk','ldtk-linux64','ldtk-linux'))
+ldtk=executable(TOOLS/'editors'/'ldtk',lambda n:n in ('ldtk','ldtk-linux64','ldtk-linux') or (n.startswith('ldtk') and n.endswith('.appimage')))
 krita=shutil.which('krita')
 if not krita:raise RuntimeError('Krita is not installed')
 
