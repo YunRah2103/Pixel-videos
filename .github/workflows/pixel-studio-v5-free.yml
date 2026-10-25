@@ -1,0 +1,37 @@
+name: Pixel Studio V5 — download fully free tools and pixel assets
+on:
+  push:
+    branches:
+      - feat/pixel-studio-v5-free-only
+    paths:
+      - 'scripts/install_pixel_studio_v5.py'
+      - '.github/workflows/pixel-studio-v5-free.yml'
+      - 'scripts/render_pixel_studio_v5.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  free-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile-check installer
+        run: python3 -m py_compile scripts/install_pixel_studio_v5.py
+      - name: Install all seven free tools and asset sources
+        run: python3 scripts/install_pixel_studio_v5.py --all
+      - name: Check every download really contains files
+        run: |
+          python3 - <<'PY'
+          import json
+          data=json.load(open('out/studio-v5/free-tools.json'))
+          for name,p in data['inventory'].items():
+            assert p['found'],name
+            print('FREE_ONLY_CONFIRMED',name,p['file_count'],'PNG',p['png_count'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixel-studio-v5-free-install-manifest
+          path: out/studio-v5/free-tools.json
+          if-no-files-found: error
+          retention-days: 30
