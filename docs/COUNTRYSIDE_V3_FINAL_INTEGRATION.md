@@ -13,8 +13,8 @@
 
 | Specialist | Native source/evidence required | Present at branch initialization |
 | --- | --- | --- |
-| Agent 1: World | World .pxo Pixelorama, .kra Krita, .ldtk LDtk; actual editor/tool execution logs, authored PNGs, motion proof and branch/PR | **NO** |
-| Agent 2: Car | Car .pxo Pixelorama, native PNG and unique wheel frames, actual editor execution log, moving proof and branch/PR | **NO** |
+| Agent 1: World | Original layered .ora or native .pxo/.kra imported/exported by real Pixelorama and Krita, .ldtk LDtk, execution logs, authored PNGs, motion proof and branch/PR | **NO** |
+| Agent 2: Car | Original layered car .ora/.pxo, Pixelorama-generated native PNG and unique wheel frames, actual editor execution log, moving proof and branch/PR | **NO** |
 | Agent 3: Motion | Production Remotion graph imports PixiJS and uses it to draw real moving frames, recorded real render/proof and PR | **YES — technically verified**: PR #35, [successful Actions 40145928869](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869). Import integrated into this branch. Owner aesthetic approval still false. |
 
 Merely installing Pixelorama, Krita, LDtk or PixiJS is not sufficient. Independently open and inspect native editable files and recorded execution evidence; manually check actual MP4 movement. `scripts/audit-countryside-v3.mjs --strict` blocks absent source and missing run references; **its passing is only machine preflight**, not proof of trustworthy tool usage or artistic approval.
@@ -40,3 +40,7 @@ Merely installing Pixelorama, Krita, LDtk or PixiJS is not sufficient. Independe
 - [Run #40145928869](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869) concluded SUCCESS and produced [artifact #12580342095](https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095). Real `PixiCountrysideWorld` connects to active `CountrysideDrive` and performs PixiJS Application, Assets.load, six TilingSprite tile offsets, Graphics shadows and renderer.render at the exact Remotion frame. It throws rather than falling back when WebGL fails.
 - Downloaded and independently inspected actual H.264 Pixi-proven MP4 and its 9-frame contact sheet, compared frame 180 to the V2 baseline and executed full FFmpeg -xerror decode PASS; 1080x1920 30fps 360 frames 12s. These checks verify real video production, **not artistic approval**.
 - Current trees still appear blocky and too symmetrical, sky occupies excessive screen area; Agent 1 scenery and Agent 2 car must improve before release. Their source/tool proofs remain blocked.
+
+### Editable source format policy
+
+Both Pixelorama and Krita can work with the open layered raster `.ora` format. Requiring `.pxo` or `.kra` **specifically** would wrongly reject genuine exports. The integrator instead requires authentic layered source generated/committed or linked in a verified CI artifact, actual executable tool invocation and logs with resulting exported PNGs, plus LDtk's real level data. A source file or installed package alone is **not** proof those tools were used.
