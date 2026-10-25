@@ -22,10 +22,17 @@ const probe=(file)=>JSON.parse(exec('ffprobe',['-v','error','-count_frames',
  '-of','json',file]));
 // Regenerate the original edited native-pixel world from reproducible source
 // in every Actions render, never rely on untracked ephemeral image files.
-exec('node',['studio/countryside/world/build-world-v2.mjs']);
-exec('node',['studio/countryside/car/build-car-v2.mjs']);
-exec('node',['scripts/qa-countryside-v2.mjs']);
-exec('node',['scripts/check-countryside-ready.mjs']);
+const V3=process.env.COUNTRYSIDE_V3_PRODUCTION==='1';
+if(V3){
+ exec('node',['studio/countryside/world/build-world-v3.mjs']);
+ exec('node',['studio/countryside/car/build-car-v3.mjs']);
+ exec('node',['scripts/qa-countryside-v3.mjs']);
+}else{
+ exec('node',['studio/countryside/world/build-world-v2.mjs']);
+ exec('node',['studio/countryside/car/build-car-v2.mjs']);
+ exec('node',['scripts/qa-countryside-v2.mjs']);
+ exec('node',['scripts/check-countryside-ready.mjs']);
+}
 const npx=process.platform==='win32'?'npx.cmd':'npx';
 exec(npx,['remotion','render','src/index.ts','CountrysideDrive',NATIVE,
  '--codec','h264','--concurrency','2','--log','error']);
@@ -79,7 +86,7 @@ exec('ffmpeg',['-hide_banner','-loglevel','error','-y',
  '-frames:v','1',sheet]);
 if(!existsSync(sheet)||statSync(sheet).size<1024)throw Error('Missing decoded MP4 contact sheet');
 const result={
- technicalVerified:true,artisticSignoff:false,
+ technicalVerified:true,artisticSignoff:false,revision:V3?'V3-world-Pixelorama-car-latest-Pixi-cinematic':'V2',
  final:FINAL,sourceComposition:'CountrysideDrive',native:'360x640',
  output:'1080x1920 exact 3x nearest-neighbour',fps:FPS,frames:FRAMES,
  decodedFrames:Number(v.nb_read_frames),codec:v.codec_name,pixelFormat:v.pix_fmt,
@@ -89,7 +96,7 @@ const result={
  contactSheet:sheet,
  pendingManualReview:['visual playback at mobile scale','car shape/wheels/ground contact',
   'tree originality/variation','seamless parallax','palette and visible source-pixel grid',
-  'artistic approval of the new PR #33/#32/#30 integrated footage by owner']
+  'owner aesthetic approval pending despite valid technical proof']
 };
 writeFileSync(DIR+'/verification.json',JSON.stringify(result,null,2)+'\n');
 console.log('COUNTRYSIDE_TECHNICAL_QA_PASS '+JSON.stringify(result));

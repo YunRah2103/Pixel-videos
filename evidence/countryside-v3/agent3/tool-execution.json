@@ -1,24 +1,27 @@
 {
+  "agent": "agent3",
   "sourcePR": "https://github.com/YunRah2103/Pixel-videos/pull/35",
-  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869",
-  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40145928869/artifacts/12580342095",
-  "verifiedCommit": "088392835e4960c0caa2ad52f1ea4395ff58d04f",
-  "productionEntry": "src/scenes/countryside/CountrysideDrive.tsx",
-  "pixiImplementation": "src/scenes/countryside/PixiCountrysideWorld.tsx",
-  "commands": [
-    "npm run studio:setup",
-    "npx tsc --project tsconfig.countryside-pixi.json --noEmit",
-    "node --experimental-strip-types --test tests/countryside-pixi-v3.test.mjs",
-    "node scripts/render-countryside.mjs",
-    "ffprobe",
-    "ffmpeg -v error -xerror -i"
+  "sourceCommit": "eefc052a88a9efff866a2497960ace2e7d41d770",
+  "pixiRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147247998",
+  "proofRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147247998/artifacts/12580798968",
+  "latestVersion": "Cinematic 4-shot revision; do not use the older steady-speed Pixi motion",
+  "actualScene": "src/scenes/countryside/CountrysideDrive.tsx",
+  "actualPixi": "src/scenes/countryside/PixiCountrysideWorld.tsx",
+  "actualClock": "src/scenes/countryside/DrivingMotionV3.ts",
+  "shotPlan": [
+    "0-45 front-wheel 2x",
+    "45-205 accelerating wide",
+    "205-271 rear-wheel 2x",
+    "271-360 wide ending"
   ],
-  "independentlyInspected": [
-    "downloaded original MP4 artifact",
-    "full independent FFmpeg -xerror decode",
-    "9 distinct frames and contact sheet",
-    "production source draws 6 sprites via PixiJS renderer"
-  ],
-  "actualAuthoringSource": "Agent 3 PR #35 (original blobs preserved)",
-  "note": "This evidence is specific to production PixiJS; it does not verify Agent 1 / Agent 2 GUI tool usage or establish final artistic signoff."
+  "independentMP4": {
+    "duration": 12,
+    "fps": 30,
+    "frames": 360,
+    "width": 1080,
+    "height": 1920,
+    "sha256": "d17d0a32d39a5e02607d974ab8f4439e4c56b254e7e13181dc0ce6341a3a1113",
+    "fullFFmpegDecode": true
+  },
+  "artisticSignoff": false
 }

@@ -1,0 +1,13 @@
+{
+  "agent": "agent2",
+  "sourcePR": "https://github.com/YunRah2103/Pixel-videos/pull/36",
+  "sourceCommit": "ba429fbe7f8400a4014e43430bd712fa4db66d6d",
+  "pixeloramaRunUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147155322",
+  "originalArtArtifactUrl": "https://github.com/YunRah2103/Pixel-videos/actions/runs/40147155322/artifacts/12581028474",
+  "inspection": "Downloaded artifact. Pixelorama 1.1.10 export logs and actual exported 192x80 body and 256x32 wheel strip; original layered ORA project; Sharp validation; eight unique wheel frames; standalone Remotion MP4.",
+  "canonicalProductionHashes": {
+    "coupe-v2-body.png": "cffad6f4a75e38c2a3e4c8cb1d12b379514bcb8d75693863b14ee1747444b148",
+    "coupe-v2-wheels-8.png": "4864cc3fdaa95454fde4e01a3e912379b6c17a4f9bf9612a76625dafab70738d"
+  },
+  "artisticSignoff": false
+}
