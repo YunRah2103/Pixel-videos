@@ -24,7 +24,7 @@ def binary(name,location):
         return direct
     if location.exists():
         files=[p for p in location.rglob('*') if p.is_file() and name.lower() in p.name.lower()
-               and (os.access(p,os.X_OK) or p.suffix.lower() in ('.appimage','.exe'))]
+               and (p.suffix.lower() not in ('.pck','.so','.dll','.png','.md','.txt') and (os.access(p,os.X_OK) or p.suffix.lower() in ('.appimage','.exe','.x86_64')))]
         if files:
             return str(sorted(files,key=lambda p:len(str(p)))[0])
     raise RuntimeError(name+' unavailable; run python3 scripts/install_studio_v2.py --'+name.lower())

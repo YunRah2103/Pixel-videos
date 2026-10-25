@@ -30,7 +30,7 @@ def find_executable(name,root):
     if root.is_dir():
         matches=[p for p in root.rglob('*') if p.is_file() and
                  (name.lower() in p.name.lower()) and
-                 ('linux' in p.name.lower() or p.suffix.lower() in ('.exe','.appimage'))]
+                 (p.suffix.lower() not in ('.pck','.so','.dll','.png','.md','.txt') and (os.access(p,os.X_OK) or p.suffix.lower() in ('.exe','.appimage','.x86_64')))]
         if matches:
             return str(sorted(matches,key=lambda p:len(str(p)))[0])
     return None
@@ -43,7 +43,8 @@ def install_ldtk():
     with urllib.request.urlopen(req,timeout=30) as response:
         release=json.load(response)
     assets=release.get('assets',[])
-    matches=[a for a in assets if 'linux' in a.get('name','').lower()
+    matches=[a for a in assets if ('linux' in a.get('name','').lower()
+             or 'ubuntu' in a.get('name','').lower())
              and a['name'].lower().endswith('.zip')]
     if not matches:
         raise RuntimeError('No official Linux LDtk ZIP in latest release; install manually from https://ldtk.io')
@@ -66,7 +67,7 @@ def install_ldtk():
                 raise RuntimeError('Refusing symlink from release archive')
         z.extractall(dest)
     for p in dest.rglob('*'):
-        if p.is_file() and (p.suffix.lower() in ('.appimage','.sh') or p.name.lower() in ('ldtk','ldtk-linux64')):
+        if p.is_file() and (p.suffix.lower() in ('.appimage','.sh') or p.name.lower() in ('ldtk','ldtk-linux64','ldtk-linux')):
             p.chmod(p.stat().st_mode|0o111)
     print('LDtk installed to',dest)
 

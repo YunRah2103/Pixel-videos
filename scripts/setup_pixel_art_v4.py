@@ -34,7 +34,7 @@ def existing_editor(name, subdir):
     if not root.is_dir():
         return None
     matches=[p for p in root.rglob("*") if p.is_file() and name.lower() in p.name.lower() and
-             (os.access(p,os.X_OK) or p.suffix.lower() in (".appimage",".exe"))]
+             (p.suffix.lower() not in (".pck",".so",".dll",".png",".md",".txt") and (os.access(p,os.X_OK) or p.suffix.lower() in (".appimage",".exe",".x86_64")))]
     return str(sorted(matches,key=lambda x:len(str(x)))[0]) if matches else None
 
 def check():
