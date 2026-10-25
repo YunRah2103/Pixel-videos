@@ -1,0 +1,48 @@
+name: Render AFTERLIGHT rooftop scene
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/afterlight-rebuild-480x270
+    paths:
+      - 'scripts/afterlight.py'
+      - '.github/workflows/afterlight.yml'
+  pull_request:
+    paths:
+      - 'scripts/afterlight.py'
+      - '.github/workflows/afterlight.yml'
+
+jobs:
+  render-afterlight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare video renderer
+        run: |
+          python -m pip install -r requirements-demo.txt
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Render original 480x270 animation
+        run: python scripts/afterlight.py --seconds 8 --out out/afterlight.mp4 --poster out/afterlight.png --layers out/afterlight-layers
+      - name: Validate exact video format
+        run: |
+          test -s out/afterlight.mp4
+          python - <<'PY'
+          import subprocess,json
+          j=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','v:0','-show_entries','stream=codec_name,width,height,r_frame_rate,nb_frames','-of','json','out/afterlight.mp4']))['streams'][0]
+          assert j['codec_name']=='h264',j
+          assert (j['width'],j['height'])==(1920,1080),j
+          assert j['r_frame_rate']=='24/1',j
+          assert int(j['nb_frames'])==192,j
+          print('PASSED 192 frames / 24fps / 1920x1080 / H264')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: afterlight-original-pixel-film
+          path: |
+            out/afterlight.mp4
+            out/afterlight.png
+            out/afterlight-layers/*.png
