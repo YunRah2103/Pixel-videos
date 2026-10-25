@@ -34,14 +34,12 @@ jobs:
           test -s public/countryside/world/nearTrees.png
           node -e "const j=require('./public/countryside/world/manifest.json'); if(j.version!==3||Object.keys(j.tiles).length!==6) process.exit(1); console.log('SHARP_SIX_VALID_NATIVE_PLANES',j.nativeCanvas)"
       - name: Install Krita, Xvfb and compositor checks
-        continue-on-error: true
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y krita xvfb x11-utils imagemagick ffmpeg unzip libnss3 libasound2t64
           xvfb-run -a krita --version
           ffmpeg -version | head -n 1
       - name: Install official Pixelorama v1.2.3 (sprite editor)
-        continue-on-error: true
         run: |
           mkdir -p .tools/editors/pixelorama out/editor-evidence
           curl -fL --retry 3 https://github.com/Orama-Interactive/Pixelorama/releases/download/v1.2.3/Pixelorama-Linux-64bit.tar.gz -o /tmp/pixelorama.tar.gz
@@ -52,7 +50,6 @@ jobs:
           test -n "$PIXELORAMA"
           "$PIXELORAMA" --headless --quit -- --pixelorama-version | tee out/editor-evidence/pixelorama-version.txt
       - name: Install official LDtk v1.5.3 (level editor)
-        continue-on-error: true
         run: |
           mkdir -p .tools/editors/ldtk
           curl -fL --retry 3 https://github.com/deepnight/ldtk/releases/download/v1.5.3/ubuntu-distribution.zip -o /tmp/ldtk.zip
@@ -77,15 +74,14 @@ jobs:
             wait "$p" 2>/dev/null || true
           '
           test -s out/editor-evidence/pixelorama-editor-screenshot.png
+          node -e "const s=require('sharp');s('out/editor-evidence/pixelorama-editor-screenshot.png').stats().then(m=>{if(!m.channels.some(x=>x.stdev>5))process.exit(1);console.log('PIXELORAMA_EDITOR_VISUAL_CAPTURE_NONBLANK')})"
           grep -i Pixelorama out/editor-evidence/pixelorama-window-tree.txt
       - name: Krita really opens editable sky artwork and exports a PNG
-        continue-on-error: true
         run: |
           xvfb-run -a krita --export --export-filename out/editor-evidence/sky-by-Krita.png studio/countryside/world/sources/sky.ora 2>&1 | tee out/editor-evidence/krita-export.log
           test -s out/editor-evidence/sky-by-Krita.png
           file out/editor-evidence/sky-by-Krita.png
       - name: LDtk really opens the world layout on a virtual desktop
-        continue-on-error: true
         run: |
           LDTK="$(find .tools/editors/ldtk -type f \( -name 'LDtk' -o -name 'ldtk' -o -iname '*.AppImage' \) | head -n 1)"
           export LDTK
@@ -101,6 +97,7 @@ jobs:
           '
           test -s out/editor-evidence/ldtk-window-tree.txt
           test -s out/editor-evidence/ldtk-editor-screenshot.png
+          node -e "const s=require('sharp');s('out/editor-evidence/ldtk-editor-screenshot.png').stats().then(m=>{if(!m.channels.some(x=>x.stdev>5))process.exit(1);console.log('LDTK_EDITOR_VISUAL_CAPTURE_NONBLANK')})"
           grep -i LDtk out/editor-evidence/ldtk-window-tree.txt
       - name: Genuine moving 120-frame MP4 proof with FFprobe/full decode
         run: node scripts/render-world-v3-proof.mjs
@@ -110,6 +107,7 @@ jobs:
           test -s out/editor-evidence/pixelorama-editor-screenshot.png
           grep -qi Pixelorama out/editor-evidence/pixelorama-window-tree.txt
           test -s out/editor-evidence/sky-by-Krita.png
+          node -e "const s=require('sharp');s('out/editor-evidence/sky-by-Krita.png').metadata().then(m=>{if(m.width!==360||m.height!==480)process.exit(1);console.log('KRITA_EXPORTED_BACKGROUND_DIMENSIONS',m.width,m.height)})"
           test -s out/editor-evidence/ldtk-editor-screenshot.png
           grep -qi LDtk out/editor-evidence/ldtk-window-tree.txt
           test -s out/countryside-v3-world/countryside-v3-world-proof.mp4
