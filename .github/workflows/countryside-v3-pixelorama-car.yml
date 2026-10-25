@@ -22,7 +22,7 @@ jobs:
         run: |
           python -m pip install Pillow==11.3.0
           sudo apt-get update -y
-          sudo apt-get install -y ffmpeg libfontconfig1 libx11-6 libxcursor1 libxrandr2 libxi6
+          sudo apt-get install -y ffmpeg xvfb xauth libgl1-mesa-dri libfontconfig1 libx11-6 libxcursor1 libxrandr2 libxi6
           ffprobe -version | head -3
       - name: Install JS production tools
         run: npm install --no-audit --no-fund
