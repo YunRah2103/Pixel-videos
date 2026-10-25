@@ -1,0 +1,178 @@
+name: Pixel Studio V5 — portrait art-first motion test
+on:
+  push:
+    branches: [feat/pixel-studio-v5-neon-portrait-art-pass]
+    paths:
+      - 'scripts/render_neon_portrait.py'
+      - 'scripts/v5_pedestrian.py'
+      - 'scripts/v5_reflections.py'
+      - 'scripts/v5_sports_car.py'
+      - 'scripts/v5_editor_art_pass.py'
+      - 'scripts/v5_sky_courier.py'
+      - 'scripts/v5_neon_activation.py'
+      - 'scripts/v5_cinematic_shots.py'
+      - 'scripts/v5_micro_life.py'
+      - 'studio/v5/neon-portrait.tmx'
+      - '.github/workflows/pixel-v5-neon-portrait.yml'
+  pull_request:
+    paths:
+      - 'scripts/render_neon_portrait.py'
+      - 'scripts/v5_pedestrian.py'
+      - 'scripts/v5_reflections.py'
+      - 'scripts/v5_sports_car.py'
+      - 'scripts/v5_editor_art_pass.py'
+      - 'scripts/v5_sky_courier.py'
+      - 'scripts/v5_neon_activation.py'
+      - 'scripts/v5_cinematic_shots.py'
+      - '.github/workflows/pixel-v5-neon-portrait.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  portrait-art-and-motion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install completely free render tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb krita
+          python3 -m py_compile scripts/render_neon_portrait.py scripts/v5_pedestrian.py scripts/v5_reflections.py scripts/v5_sports_car.py scripts/v5_sky_courier.py scripts/v5_neon_activation.py scripts/v5_cinematic_shots.py scripts/v5_micro_life.py scripts/v5_editor_art_pass.py
+      - name: Assert integer-only shot direction, no smoothing or faux animation
+        run: |
+          PYTHONPATH=scripts /usr/bin/python3 - <<'PY'
+          from PIL import Image
+          from v5_cinematic_shots import apply_cinematic_camera, SHOT_LIST
+          sample=Image.new('RGB',(270,480))
+          p=sample.load()
+          for y in range(480):
+            for x in range(270):p[x,y]=(x%256,y%256,0)
+          wide=apply_cinematic_camera(sample,57,128)
+          close=apply_cinematic_camera(sample,58,128)
+          return_wide=apply_cinematic_camera(sample,105,128)
+          assert wide.tobytes()==sample.tobytes()
+          assert return_wide.tobytes()==sample.tobytes()
+          assert len(SHOT_LIST)==3
+          expected=sample.crop((135,230,270,470)).resize((270,480),Image.Resampling.NEAREST)
+          assert close.tobytes()==expected.tobytes()
+          print('INTEGER_SHOT_DIRECTION_VERIFIED',SHOT_LIST)
+          PY
+      - name: Fetch original artist layered assets, preserving CC BY source and provenance
+        run: |
+          python3 scripts/setup_free_pixel_v5.py --art
+          test -s .tools/pixel-v5/art/ansimuz_cyberpunk/ASSET_PROVENANCE.json
+      - name: Export actual authored storyboard through free Tiled CLI
+        run: |
+          mkdir -p out/pixel-v5-portrait
+          xvfb-run -a tiled --export-map studio/v5/neon-portrait.tmx out/pixel-v5-portrait/tiled-layout.json
+          test -s out/pixel-v5-portrait/tiled-layout.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('out/pixel-v5-portrait/tiled-layout.json'))
+          objects=[obj['name'] for layer in data['layers'] for obj in layer.get('objects',[])]
+          assert {'tram-start','tram-finish','open-sign','pedestrian-start','pedestrian-stop','courier-start','courier-finish'} <= set(objects), objects
+          print('TILED_EXPORTED_REAL_MAP',objects)
+          PY
+      - name: Prepare editable OpenRaster paint material layers for real Krita
+        run: |
+          /usr/bin/python3 scripts/v5_editor_art_pass.py prepare
+          test -s out/pixel-v5-portrait/car-detail-source.ora
+          file out/pixel-v5-portrait/car-detail-source.ora
+
+      - name: Actually run Krita exporter on editable layered source
+        run: |
+          xvfb-run -a timeout 150s krita out/pixel-v5-portrait/car-detail-source.ora --export --export-filename out/pixel-v5-portrait/car-detail-krita.png
+          test -s out/pixel-v5-portrait/car-detail-krita.png
+          /usr/bin/python3 - <<'PY'
+          from PIL import Image
+          from pathlib import Path
+          out=Path('out/pixel-v5-portrait')
+          img=Image.open(out/'car-detail-krita.png').convert('RGBA')
+          assert img.size==(164,66), img.size
+          assert img.getbbox(), 'Krita lost the original pixel layers'
+          assert img.tobytes()==Image.open(out/'car-detail-source-reference.png').convert('RGBA').tobytes(), 'Krita editor round-trip changed native pixel clusters'
+          print('REAL_KRITA_EDITOR_EXPORT_PASSED',img.size)
+          PY
+
+      - name: Actually run LibreSprite editor and produce final 24-frame sprite atlas
+        run: |
+          /usr/bin/python3 - <<'PY'
+          import sys
+          sys.path.insert(0,'scripts')
+          from setup_free_pixel_v5 import download_editor
+          print('LIBRESPRITE_APPIMAGE',download_editor('libresprite'))
+          PY
+          LIBRESPRITE=.tools/pixel-v5/editors/libresprite.AppImage
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run -a timeout 120s "$LIBRESPRITE" -b out/pixel-v5-portrait/car-detail-krita.png --save-as out/pixel-v5-portrait/car-detail-libresprite.png
+          test -s out/pixel-v5-portrait/car-detail-libresprite.png
+          /usr/bin/python3 scripts/v5_editor_art_pass.py cels
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run -a timeout 120s "$LIBRESPRITE" -b out/pixel-v5-portrait/editor-cels/car-cel-*.png --sheet-type horizontal --sheet out/pixel-v5-portrait/car-editor-atlas.png --data out/pixel-v5-portrait/car-editor-atlas.json
+          /usr/bin/python3 scripts/v5_editor_art_pass.py adopt
+          test -s out/pixel-v5-portrait/real-editor-evidence.json
+          test -s out/pixel-v5-portrait/car-editor-atlas.png
+
+      - name: Render a 5s portrait video from independent native-pixel art and car cels
+        run: |
+          /usr/bin/python3 scripts/render_neon_portrait.py
+          ffmpeg -v error -xerror -i out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4 -f null -
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames,r_frame_rate -of json out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
+          test -s out/pixel-v5-portrait/contact-sheet.png
+          test -s out/pixel-v5-portrait/hero-still.png
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'car-cel-*.png' | wc -l)" -eq 24
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'courier-cel-*.png' | wc -l)" -eq 8
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'open-sign-cel-*.png' | wc -l)" -eq 6
+          test -s out/pixel-v5-portrait/render-qa.json
+          test "$(find out/pixel-v5-portrait -maxdepth 1 -name 'pedestrian-cel-*.png' | wc -l)" -eq 12
+          python3 - <<'PY'
+          import json
+          qa=json.load(open('out/pixel-v5-portrait/render-qa.json'))
+          assert qa.get('original_sprite_cels') == 24, '24-frame two-door coupe not used'
+          assert qa.get('car_sprite_cels') == 24
+          assert qa.get('genuine_editor_pipeline',{}).get('actual_editor_atlas_used_to_derive_final_cels') is True
+          assert qa.get('hero_vehicle_type') == 'two-door neo-retro GT coupe'
+          assert qa.get('courier_sprite_cels') == 8, 'Skyline animation cels not exported'
+          assert qa.get('walking_poses') == 12, 'Twelve distinct pedestrian poses not used'
+          assert qa.get('pedestrian_sprite_cels') == 13, 'Pedestrian pose sprites not packaged'
+          assert qa.get('no_blur_or_interpolation') is True
+          assert qa.get('open_sign_sprite_cels') == 6, 'Six separate end-reveal cels not exported'
+          assert qa.get('skyline_motion_source'), 'Skyline path must come from exported Tiled storyboard'
+          assert qa.get('native_puddle_reflections'), 'Missing sprite-linked wet-road composition evidence'
+          assert len(qa.get('original_directed_pixel_lights',[]))==3
+          from pathlib import Path
+          from PIL import Image
+          folder=Path('out/pixel-v5-portrait')
+          car=[Image.open(folder/f'car-cel-{i}.png').tobytes() for i in range(24)]
+          walker=[Image.open(folder/f'pedestrian-cel-{i}.png').tobytes() for i in range(12)]
+          assert len(set(car)) >= 12, 'Car wheel animation still too repetitive'
+          assert len(set(walker)) >= 8, 'Walking poses still too repetitive'
+          print('FLUID_SPRITES_VERIFIED',len(set(car)),len(set(walker)))
+          print('NATIVE_REFLECTIONS_AND_REAL_MOVING_LIGHTS',qa['native_puddle_reflections'])
+          PY
+      - name: Publish the real five-second MP4, source sprites and review contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-v5-neon-portrait-five-second-proof
+          path: |
+            out/pixel-v5-portrait/pixel-v5-neon-portrait-5s.mp4
+            out/pixel-v5-portrait/preview-still.png
+            out/pixel-v5-portrait/hero-still.png
+            out/pixel-v5-portrait/contact-sheet.png
+            out/pixel-v5-portrait/car-cel-*.png
+            out/pixel-v5-portrait/car-detail-source.ora
+            out/pixel-v5-portrait/car-detail-source-reference.png
+            out/pixel-v5-portrait/car-detail-krita.png
+            out/pixel-v5-portrait/car-detail-libresprite.png
+            out/pixel-v5-portrait/car-editor-atlas.png
+            out/pixel-v5-portrait/car-editor-atlas.json
+            out/pixel-v5-portrait/real-editor-evidence.json
+            out/pixel-v5-portrait/courier-cel-*.png
+            out/pixel-v5-portrait/open-sign-cel-*.png
+            out/pixel-v5-portrait/pedestrian-cel-*.png
+            out/pixel-v5-portrait/pedestrian-reveal-cel.png
+            out/pixel-v5-portrait/render-qa.json
+            out/pixel-v5-portrait/ATTRIBUTION.txt
+            out/pixel-v5-portrait/tiled-layout.json
+            studio/v5/neon-portrait.tmx
+          retention-days: 30
+          if-no-files-found: error
