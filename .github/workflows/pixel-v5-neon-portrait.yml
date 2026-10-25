@@ -4,6 +4,7 @@ on:
     branches: [feat/pixel-studio-v5-neon-portrait-art-pass]
     paths:
       - 'scripts/render_neon_portrait.py'
+      - 'studio/v5/neon-portrait.tmx'
       - '.github/workflows/pixel-v5-neon-portrait.yml'
   pull_request:
     paths:
@@ -21,12 +22,24 @@ jobs:
       - name: Install completely free render tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg python3-pil
+          sudo apt-get install -y -qq ffmpeg python3-pil tiled xvfb
           python3 -m py_compile scripts/render_neon_portrait.py
       - name: Fetch original artist layered assets, preserving CC BY source and provenance
         run: |
           python3 scripts/setup_free_pixel_v5.py --art
           test -s .tools/pixel-v5/art/ansimuz_cyberpunk/ASSET_PROVENANCE.json
+      - name: Export actual authored storyboard through free Tiled CLI
+        run: |
+          mkdir -p out/pixel-v5-portrait
+          xvfb-run -a tiled --export-map studio/v5/neon-portrait.tmx out/pixel-v5-portrait/tiled-layout.json
+          test -s out/pixel-v5-portrait/tiled-layout.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('out/pixel-v5-portrait/tiled-layout.json'))
+          objects=[obj['name'] for layer in data['layers'] for obj in layer.get('objects',[])]
+          assert {'tram-start','tram-finish','open-sign'} <= set(objects), objects
+          print('TILED_EXPORTED_REAL_MAP',objects)
+          PY
       - name: Render a 5s portrait video from independent native-pixel art and trolley cels
         run: |
           /usr/bin/python3 scripts/render_neon_portrait.py
@@ -47,5 +60,6 @@ jobs:
             out/pixel-v5-portrait/tram-cel-*.png
             out/pixel-v5-portrait/render-qa.json
             out/pixel-v5-portrait/ATTRIBUTION.txt
+            out/pixel-v5-portrait/tiled-layout.json
           retention-days: 30
           if-no-files-found: error
