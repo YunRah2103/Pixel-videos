@@ -42,20 +42,27 @@ def choice(assets, kind):
     if arch not in ('x86_64', 'amd64', 'arm64', 'aarch64'):
         raise RuntimeError(f'Unsupported CPU architecture: {arch}')
     if system == 'linux':
-        candidates = ('linux', 'x86_64' if arch in ('x86_64','amd64') else 'arm64')
+        if kind == 'pixelorama':
+            candidates = ('linux', '64bit' if arch in ('x86_64','amd64') else 'arm64')
+        else:
+            candidates = ('linux', 'x86_64' if arch in ('x86_64','amd64') else 'arm64')
     elif system == 'windows':
-        candidates = ('win64' if arch in ('x86_64','amd64') else 'windows',)
+        if kind == 'pixelorama':
+            candidates = ('windows', '64bit' if arch in ('x86_64','amd64') else 'arm64')
+        else:
+            candidates = ('win64',) if arch in ('x86_64','amd64') else ('arm64',)
     elif system == 'darwin':
-        candidates = ('macos',) if kind == 'pixelorama' else ('macos',)
+        candidates = ('macos',)
     else:
         raise RuntimeError(f'Unsupported platform: {system}')
     matches = [a for a in assets if all(s in a['name'].lower() for s in candidates)
-               and a['name'].lower().endswith(('.zip','.tar.gz','.tar.xz'))]
+               and a['name'].lower().endswith(('.zip','.tar.gz','.tar.xz'))
+               and not (kind == 'godot' and '_mono_' in a['name'].lower())]
     if not matches and system == 'darwin':
         matches = [a for a in assets if 'osx' in a['name'].lower() and a['name'].endswith('.zip')]
     if not matches:
-        raise RuntimeError(f'No matching {kind} archive found for {system}/{arch}; download manually from the official releases page')
-    matches.sort(key=lambda a: (a['name'].lower().endswith('.zip'), a.get('size',0)), reverse=True)
+        raise RuntimeError(f'No matching {kind} archive found for {system}/{arch}; download manually from official release')
+    matches.sort(key=lambda a: (not a['name'].lower().endswith('.zip'),a.get('size',0)))
     return matches[0]
 
 
