@@ -6,8 +6,8 @@
   <property name="shot_duration_frames" type="int" value="150"/>
  </properties>
  <objectgroup id="1" name="hero-motion">
-  <object id="1" name="tram-start" x="-104" y="359"/>
-  <object id="2" name="tram-finish" x="281" y="359"/>
+  <object id="1" name="tram-start" x="-25" y="359"/>
+  <object id="2" name="tram-finish" x="97" y="359"/>
  </objectgroup>
  <objectgroup id="2" name="neon-story">
   <object id="3" name="open-sign" x="221" y="216" width="44" height="16"/>
