@@ -11,6 +11,7 @@ SOURCES={
  'laigter':('https://github.com/azagaya/laigter/releases/download/1.13.1/Laigter-x86_64.AppImage','GPL-3.0+','bin','https://github.com/azagaya/laigter/releases/tag/1.13.1'),
  'kenney_tiny_city':('https://kenney.nl/media/pages/assets/tiny-city/357bf73846-1791720771/kenney_tiny-city.zip','CC0-1.0','zip','https://kenney.nl/assets/tiny-city'),
  'ansimuz_street':('https://opengameart.org/sites/default/files/cyberpunk-street-files.zip','CC-BY-3.0','zip','https://opengameart.org/content/cyberpunk-street-environment'),
+ 'ansimuz_warped_city2':('https://opengameart.org/sites/default/files/cyberpunk_city_2_files.zip','CC0-1.0','zip','https://opengameart.org/content/warped-city-2'),
  'lospec_palette':('https://lospec.com/palette-list/endesga-32.json','author-credit-to-check','json','https://lospec.com/palette-list/endesga-32')
 }
 def get(url,out):
