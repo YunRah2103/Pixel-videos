@@ -72,6 +72,14 @@ def specular_layers():
     m.line((10,47,15,47),fill=(221,101,127,150),width=1)
     m.line((55,49,74,49),fill=(22,63,87,195),width=1)
     m.line((99,49,113,49),fill=(16,66,80,200),width=1)
+    # Secondary cool neon streaks and stepped enamel bevel, authored as true
+    # sparse native-pixel clusters for the same Krita/LibreSprite pipeline.
+    m.line((51,40,71,40),fill=(58,205,211,92),width=1)
+    m.line((73,40,102,40),fill=(93,224,220,106),width=1)
+    m.line((104,40,126,40),fill=(241,111,159,91),width=1)
+    m.line((60,47,80,47),fill=(103,224,208,94),width=1)
+    m.line((93,46,114,46),fill=(155,224,215,96),width=1)
+    m.line((142,44,157,45),fill=(241,151,175,98),width=1)
     for x,y in ((34,35),(42,34),(109,35),(119,37)):
         m.point((x,y),fill=(250,157,157,180))
     return [('Neon reflections — drawn pixel clusters',body),
