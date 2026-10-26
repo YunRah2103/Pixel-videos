@@ -211,7 +211,11 @@ func _step_frame() -> void:
         placement = Vector3(cx+8.6,4.5,z_car+20.0)
         target = Vector3(cx,1.5,z_car-8.0)
         car_name="car_rear_34"
+    # Sprite-frame wheel animation shares the exact same elapsed time as the car motion.
+    if car_name in ["car_side", "car_front_34", "car_rear_34"]:
+        car_name += "_%d" % (int(t*20.0) % 4)
     hero.texture=_tex(car_name)
+    hero.rotation.z = .016*sin(t*2.2)
     camera.position=placement
     camera.look_at(target,Vector3.UP)
     # Preserve clean cut at final frame; no outro.
