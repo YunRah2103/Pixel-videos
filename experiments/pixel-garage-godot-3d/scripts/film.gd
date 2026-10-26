@@ -128,12 +128,14 @@ func create_landscape() -> void:
         var x = path_x(z)+rng.randf_range(-2.62,2.62)
         if i % 5 == 0:
             cube(self,Vector3(x,0.012,z),Vector3(rng.randf_range(.06,.18),.014,rng.randf_range(.08,.27)),gravel[i%3])
-    var track = color_material("#786d59")
-    for i in range(180):
-        var z = 190.0-float(i)*2.1
+    # Short subdued gravel ruts, not artificial continuous railway tracks.
+    var track = color_material("#887761")
+    for i in range(130):
+        var z = 195.0-float(i)*3.35
         for side in [-1.0,1.0]:
-            var streak = cube(self,Vector3(path_x(z)+side*.89,0.008,z),Vector3(.23,.012,1.86),track)
-            streak.rotation.y = atan((path_x(z+1.0)-path_x(z-1.0))*.5)
+            if (i+int(side))%3 != 0:
+                var streak = cube(self,Vector3(path_x(z)+side*.85,0.003,z),Vector3(.10,.004,.74),track)
+                streak.rotation.y = atan((path_x(z+1.0)-path_x(z-1.0))*.5)
     create_trees()
     create_mountains()
 
