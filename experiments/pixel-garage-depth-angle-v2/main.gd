@@ -49,14 +49,13 @@ func sprite_at(name: String, x: float, z: float, physical_h: float, mirror: bool
 
 func _ready() -> void:
     Engine.max_fps = 30
-    var background_layer := CanvasLayer.new()
-    background_layer.layer = -100
-    add_child(background_layer)
-    var back := TextureRect.new()
-    back.texture = tex("sky")
-    back.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-    back.size = Vector2(360, 640)
-    background_layer.add_child(back)
+    # Colour is behind perspective geometry rather than a CanvasLayer overlay.
+    var env := Environment.new()
+    env.background_mode = Environment.BG_COLOR
+    env.background_color = Color("#819594")
+    var world := WorldEnvironment.new()
+    world.environment = env
+    add_child(world)
     floor_plane(220.0, 440.0, -0.12, "grass", 34.0, 76.0)
     floor_plane(8.3, 440.0, -0.085, "gravel", 1.0, 106.0)
     var rng := RandomNumberGenerator.new()
