@@ -9,6 +9,12 @@ const PALETTE_DARK := Color("#1a2a36")
 var hero: Sprite3D
 var exhaust: Sprite3D
 var camera: Camera3D
+var ridge: Sprite3D
+var sun: Sprite3D
+var clouds: Sprite3D
+var dust: Array[Sprite3D] = []
+var title_overlay: TextureRect
+var finishing_overlay: TextureRect
 var caption: TextureRect
 var caption_bg: ColorRect
 var shot_label: Label
@@ -25,6 +31,7 @@ func _ready() -> void:
     _create_road()
     _create_forest()
     _create_car()
+    _create_dust()
     _create_camera()
     _create_overlays()
     _step_frame()
@@ -52,16 +59,23 @@ func _create_environment() -> void:
     var world := WorldEnvironment.new()
     var env := Environment.new()
     env.background_mode = Environment.BG_COLOR
-    env.background_color = Color("#eec898")
+    env.background_color = Color("#ca947c")
     env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-    env.ambient_light_color = Color("#d6e4b1")
+    env.ambient_light_color = Color("#d7bda9")
     env.ambient_light_energy = 1.0
     env.tonemap_mode = Environment.TONE_MAPPER_LINEAR
     world.environment = env
     add_child(world)
     # The silhouette is an authored 2D sprite in a real distant 3D plane.
-    var ridge := _sprite("mountains", 0.57, Vector3(0, 48, -340), self)
-    ridge.scale = Vector3(1.5, 1.4, 1.0)
+    ridge = _sprite("mountains", 0.32, Vector3(0, 42, -320), self)
+    ridge.scale = Vector3(1.45, 1.15, 1.0)
+    ridge.render_priority = 0
+    clouds = _sprite("clouds", 0.25, Vector3(-4, 70, -314), self)
+    clouds.scale = Vector3(1.8, 1.2, 1)
+    clouds.render_priority = 0
+    sun = _sprite("sun", 0.10, Vector3(-34, 56, -300), self)
+    sun.scale = Vector3(1.4, 1.4, 1)
+    sun.render_priority = 0
 
 func _create_road() -> void:
     var ground_mesh := PlaneMesh.new()
@@ -106,34 +120,51 @@ func _tri(st: SurfaceTool, a: Vector3, uv_a: Vector2, b: Vector3, uv_b: Vector2,
 
 func _create_forest() -> void:
     # Fixed seeded positions in 3D. The camera overtakes them by actual depth.
-    for i in range(260):
+    for i in range(350):
         var z := rng.randf_range(TRACK_END, 50.0)
         var side := -1.0 if i % 2 == 0 else 1.0
-        var lane_offset := rng.randf_range(6.0, 34.0)
+        var lane_offset := rng.randf_range(6.6, 52.0)
         var x := _road_centre(z) + side * lane_offset
-        var sz := rng.randf_range(0.60, 1.95)
-        var pine := _sprite("pine_%d" % (i%6), .024, Vector3(x, 2.15*sz, z), self)
+        var sz := rng.randf_range(0.68, 2.15)
+        var pine := _sprite("pine_%d" % (i%9), .026, Vector3(x, 2.85*sz, z), self)
         pine.scale = Vector3(sz, sz, 1)
         pine.modulate = Color(1.0, 1.0, 1.0, 1.0)
-    for i in range(320):
+    for i in range(290):
         var z := rng.randf_range(TRACK_END, 50.0)
         var side := -1.0 if i % 2 == 0 else 1.0
         var x := _road_centre(z) + side*rng.randf_range(5.5, 9.8)
         var sz := rng.randf_range(.55, 1.3)
-        var bush := _sprite("bush_%d" % (i%5), .016, Vector3(x, .45*sz, z), self)
+        var bush := _sprite("bush_%d" % (i%7), .019, Vector3(x, .42*sz, z), self)
         bush.scale = Vector3(sz, sz, 1)
+    for i in range(160):
+        var z := rng.randf_range(TRACK_END, 50.0)
+        var side := -1.0 if i%2 == 0 else 1.0
+        var x := _road_centre(z) + side*rng.randf_range(6.2, 19.0)
+        var scale_f := rng.randf_range(.65, 1.45)
+        var item: Sprite3D
+        if i%3 == 0:
+            item = _sprite("rock_%d" % (i%6), .015, Vector3(x, .2*scale_f, z), self)
+        else:
+            item = _sprite("flowers_%d" % (i%8), .015, Vector3(x, .22*scale_f, z), self)
+        item.scale = Vector3(scale_f, scale_f, 1)
 
 func _create_car() -> void:
     hero = _sprite("car_rear_34", .020, Vector3(0, 1.16, 0), self)
     hero.render_priority = 3
-    exhaust = _sprite("flame", .015, Vector3(.65, .49, .14), self)
+    exhaust = _sprite("flame_0", .022, Vector3(.65, .49, .14), self)
     exhaust.visible = false
     exhaust.render_priority = 4
+
+func _create_dust() -> void:
+    for i in range(8):
+        var puff := _sprite("dust_%d" % (i%4), .019, Vector3(), self)
+        puff.render_priority = 2
+        dust.append(puff)
 
 func _create_camera() -> void:
     camera = Camera3D.new()
     camera.current = true
-    camera.fov = 47.0
+    camera.fov = 51.0
     camera.near = .1
     camera.far = 850.0
     add_child(camera)
@@ -163,62 +194,93 @@ func _create_overlays() -> void:
     shot_label.position=Vector2(15,25)
     shot_label.add_theme_color_override("font_color",Color("#eaf4cd"))
     shot_label.add_theme_font_size_override("font_size",12)
-    shot_label.text="PIXEL GARAGE  /  RALLY 07"
+    shot_label.text="PIXEL GARAGE  /  STAGE 07"
     canvas.add_child(shot_label)
+    title_overlay = TextureRect.new()
+    title_overlay.position = Vector2(10, 71)
+    title_overlay.size = Vector2(340, 46)
+    title_overlay.texture = _tex("opening_title")
+    title_overlay.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    title_overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    canvas.add_child(title_overlay)
+    finishing_overlay = TextureRect.new()
+    finishing_overlay.position = Vector2(22, 565)
+    finishing_overlay.size = Vector2(318, 46)
+    finishing_overlay.texture = _tex("final_title")
+    finishing_overlay.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    finishing_overlay.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+    canvas.add_child(finishing_overlay)
 
 func _is_flame(now: float) -> bool:
     return (now>0.58 and now<1.45) or (now>7.1 and now<8.35) or (now>10.7 and now<11.5) or (now>13.65 and now<14.33)
 
 func _step_frame() -> void:
     t = float(frame_number)/FPS
-    # Shared motion drives car, camera, wheels and exhaust. Never scroll a 2D background.
-    z_car = -17.2 * t - 0.7*sin(t*2.1)
+    # True shared forward motion; road and props remain at fixed world positions.
+    z_car = -19.4*t - 0.7*sin(t*1.4)
     var cx := _road_centre(z_car)
-    body_bounce = 0.024*sin(t*27.0) + 0.018*sin(t*45.0)
-    hero.position = Vector3(cx,1.16+body_bounce,z_car)
-    exhaust.position = Vector3(cx-1.12, .63+body_bounce, z_car+.28)
-    exhaust.visible = _is_flame(t)
-    exhaust.scale = Vector3(.72+.19*sin(t*52.0),.72+.15*cos(t*47.0),1)
+    body_bounce = 0.027*sin(t*31.0) + 0.011*sin(t*61.0)
+    hero.position = Vector3(cx, 1.16+body_bounce, z_car)
+    var target := Vector3(cx, 1.35, z_car)
+    var placement := Vector3(cx+4.3, 2.8, z_car+10.0)
+    var car_name := "car_rear_34"
+    var flame_visible := _is_flame(t)
+    title_overlay.visible = t<2.75
+    finishing_overlay.visible = t>13.35
     caption.visible = false
     caption_bg.visible = false
-    var target := Vector3(cx,1.08,z_car-2.0)
-    var placement := Vector3(cx+5.3,3.0,z_car+12.2)
-    var car_name := "car_rear_34"
-    if t < 3.0:
-        placement = Vector3(cx+5.1,2.8,z_car+12.4)
-        target = Vector3(cx,1.1,z_car-2.8)
+    if t<3.0:
+        placement=Vector3(cx+4.0+0.35*sin(t*1.5),2.7,z_car+9.8-1.2*(t/3.0))
+        target=Vector3(cx,1.34,z_car-0.2)
         car_name="car_rear_34"
     elif t<6.0:
-        placement = Vector3(cx+11.7,2.45,z_car+2.5)
-        target = Vector3(cx,1.0,z_car-2.1)
+        var u := t-3.0
+        placement=Vector3(cx+12.9,2.3+0.11*sin(u*1.3),z_car+0.4-0.65*u)
+        target=Vector3(cx,1.23,z_car)
         car_name="car_side"
+        flame_visible=false
     elif t<10.0:
-        placement = Vector3(cx+2.35,1.38,z_car+5.1)
-        target = Vector3(cx-.8,.7,z_car)
+        var u := t-6.0
+        placement=Vector3(cx+4.0,1.85,z_car+7.8+0.25*sin(u))
+        target=Vector3(cx-0.2,1.05,z_car+0.5)
         car_name="car_rear_34"
-        caption.visible = true
-        caption_bg.visible = true
-        caption.texture = _tex("caption_flame")
+        caption.visible=true
+        caption_bg.visible=true
+        caption.texture=_tex("caption_flame")
     elif t<13.0:
-        placement = Vector3(cx-7.5,2.7,z_car-6.8)
-        target = Vector3(cx,1.2,z_car+.8)
+        var u:=t-10.0
+        placement=Vector3(cx-8.9,2.5,z_car-5.3+0.35*u)
+        target=Vector3(cx,1.32,z_car-0.1)
         car_name="car_front_34"
-        exhaust.visible = false
-        caption.visible = true
-        caption_bg.visible = true
-        caption.texture = _tex("caption_antilag")
+        flame_visible=false
+        caption.visible=true
+        caption_bg.visible=true
+        caption.texture=_tex("caption_antilag")
     else:
-        placement = Vector3(cx+8.6,4.5,z_car+20.0)
-        target = Vector3(cx,1.5,z_car-8.0)
+        var u:=t-13.0
+        placement=Vector3(cx+7.2+u*.4,4.2,z_car+13.0-u*2.1)
+        target=Vector3(cx,1.0,z_car-1.3)
         car_name="car_rear_34"
-    # Sprite-frame wheel animation shares the exact same elapsed time as the car motion.
     if car_name in ["car_side", "car_front_34", "car_rear_34"]:
-        car_name += "_%d" % (int(t*20.0) % 4)
+        car_name += "_%d" % (int(t*24.0)%4)
     hero.texture=_tex(car_name)
-    hero.rotation.z = .016*sin(t*2.2)
+    hero.rotation.z=.019*sin(t*1.9)+.016*sin(t*21.0)
+    exhaust.position=Vector3(cx-1.63,.76+body_bounce,z_car+1.05)
+    exhaust.visible=flame_visible
+    if flame_visible:
+        exhaust.texture=_tex("flame_%d" % (int(t*18.0)%3))
+        exhaust.scale=Vector3(1.15+.14*sin(t*47.0),.83+.09*cos(t*53.0),1)
+    for i in range(dust.size()):
+        var puff:=dust[i]
+        var age:=fmod(t*.85+float(i)/float(dust.size()),1.0)
+        puff.position=Vector3(cx+(-1.5 if i%2==0 else 1.45)+sin(t*2.0+i)*.18,.22+age*.66,z_car+1.2+age*6.1)
+        puff.scale=Vector3(.45+age*.88,.38+age*.72,1)
+        puff.transparency=.22+age*.73
+    ridge.position=Vector3(cx*.12,43,z_car-320)
+    clouds.position=Vector3(-23+sin(t*.22)*3.0,70,z_car-332)
+    sun.position=Vector3(-38,54,z_car-325)
     camera.position=placement
     camera.look_at(target,Vector3.UP)
-    # Preserve clean cut at final frame; no outro.
 
 func _process(_delta: float) -> void:
     frame_number += 1
