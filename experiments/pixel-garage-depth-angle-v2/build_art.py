@@ -273,3 +273,56 @@ for k in range(8):
                 yy=y-round((x-120)*.28)
             if 0<=xx<src.width and 0<=yy<src.height:out[xx,yy]=color
     dest.save(pth)
+
+
+# V2's distinct final palette: blue rally hatch and autumn roadside, no copy
+# of the earlier cream/teal car or pine mountain scene.
+replacements = {
+    (244,237,212):(119,186,215), (255,242,217):(189,224,226),
+    (215,213,185):(77,139,163), (40,121,130):(38,70,115),
+    (49,95,103):(35,71,103), (62,155,146):(58,122,163),
+    (255,152,90):(246,192,74)
+}
+for k in range(8):
+    p=os.path.join(OUT,"rally_%d.png" % k)
+    im=Image.open(p).convert("RGBA");px=im.load()
+    for yy in range(im.height):
+        for xx in range(im.width):
+            r,g,b,a=px[xx,yy]
+            if (r,g,b) in replacements:px[xx,yy]=(*replacements[r,g,b],a)
+    im.save(p)
+for idx in range(5):
+    rr=random.Random(404+idx)
+    im=Image.new("RGBA",(120,230),(0,0,0,0))
+    d=ImageDraw.Draw(im);bx=58+rr.randrange(-6,7)
+    rect(d,(bx-6,107,bx+7,228),"#624b3a")
+    rect(d,(bx-4,114,bx,222),"#ad8555")
+    for sx,sy in [(-23,108),(29,112),(-11,84),(12,70)]:
+        d.line((bx,151,bx+sx,sy),fill="#715f46",width=5)
+    pal=[
+    ["#456c56","#698760","#9fa370","#e2b66d"],
+    ["#526b4f","#82905b","#b4a05f","#e1ac58"],
+    ["#465c52","#688668","#ac9c6c","#deb067"],
+    ["#4c6553","#708960","#af9d61","#e4b46c"],
+    ["#3c6b5f","#678a6f","#a8ad79","#ddba6f"]
+    ][idx]
+    for cx,cy,rx,ry in [(bx,56,31,37),(bx-25,91,31,35),(bx+22,91,30,36),(bx,115,35,27)]:
+        poly(d,[(cx-rx,cy),(cx-rx+6,cy-ry//2),(cx-17,cy-ry),(cx+16,cy-ry),(cx+rx,cy-ry//3),(cx+rx+3,cy+ry//3),(cx+rx//2,cy+ry),(cx-rx//2,cy+ry)],pal[0])
+        for j in range(48):
+            xx=cx+rr.randrange(-rx+4,rx-2);yy=cy+rr.randrange(-ry+4,ry-1)
+            if abs(xx-cx)+abs(yy-cy)>rx+ry//2:continue
+            rect(d,(xx,yy,xx+rr.randrange(2,7),yy+rr.randrange(2,5)),rr.choice(pal[1:]))
+    save(im,"pine_"+str(idx))
+im=Image.new("RGB",(360,640));d=ImageDraw.Draw(im)
+sky=["#344f6d","#456b7d","#688e91","#96a9a0","#c2b6a0","#e6c7a5","#edcfad"]
+for y in range(640):
+    d.line((0,y,360,y),fill=sky[min(6,max(0,int((y-30)/75)))])
+for rad,c in [(25,"#dfc69c"),(17,"#f0d8a7"),(10,"#fff0bc")]:
+    d.ellipse((290-rad,160-rad,290+rad,160+rad),fill=c)
+poly(d,[(0,355),(35,325),(77,341),(132,301),(182,342),(244,320),(299,344),(360,314),(360,640),(0,640)],"#668e87")
+poly(d,[(0,381),(57,344),(98,366),(148,340),(221,372),(287,345),(360,370),(360,640),(0,640)],"#6d9180")
+for j in range(60):
+    x=rng.randrange(360);y=rng.randrange(361,430)
+    rect(d,(x,y,x+rng.randrange(2,5),y+rng.randrange(1,3)),rng.choice(["#b7b493","#a39d76","#6c8c6e"]))
+save(im,"sky")
+print("V2 distinct autumn countryside and blue angled sprite assets built")
