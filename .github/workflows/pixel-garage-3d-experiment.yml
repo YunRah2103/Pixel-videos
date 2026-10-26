@@ -27,6 +27,11 @@ jobs:
           unzip -q /tmp/godot.zip -d /tmp
           chmod +x /tmp/Godot_v4.4.1-stable_linux.x86_64
           /tmp/Godot_v4.4.1-stable_linux.x86_64 --version
+      - name: Install Blender 3D automotive modelling engine
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender
+          blender -b --version | head -3
       - name: Install procedural mesh generator dependencies
         run: python3 -m pip install --break-system-packages numpy trimesh pillow
       - name: Ensure isolated experiment only
@@ -50,3 +55,4 @@ jobs:
             experiments/pixel-garage-godot-3d/render/output/*.avi
             experiments/pixel-garage-godot-3d/render/output/proof-*.png
             experiments/pixel-garage-godot-3d/render/output/verification.json
+            experiments/pixel-garage-godot-3d/assets/rally_car_body.glb
