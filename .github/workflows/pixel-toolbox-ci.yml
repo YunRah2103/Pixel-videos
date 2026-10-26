@@ -1,0 +1,61 @@
+name: Pixel toolbox - catalog, sprite, atlas and technical QA
+on:
+  push:
+    branches:
+      - "feat/pixel-toolbox-free-tools-2026"
+  pull_request:
+    paths:
+      - "studio/toolbox/**"
+      - "scripts/pixel_*.py"
+      - "scripts/setup_pixel_toolbox.sh"
+      - ".github/workflows/pixel-toolbox-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  reproducible-tools:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install free Pillow and FFmpeg (headless)
+        run: |
+          python -m pip install Pillow
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Inspect and recommend ACTUAL tools
+        run: |
+          python scripts/pixel_toolbox.py doctor
+          python scripts/pixel_toolbox.py recommend sprites --headless
+          python scripts/pixel_toolbox.py recommend processing --headless
+      - name: Tests (catalog, reproducible sprites, real atlas, integer scaling)
+        run: python -m unittest discover -s studio/toolbox/tests -v
+      - name: Generate actual transparent test sprite frames + atlas
+        run: |
+          python scripts/pixel_demo_assets.py --out out/toolbox-fixtures
+          python scripts/pixel_spritepack.py out/toolbox-fixtures/*.png --sheet out/atlas.png --data out/atlas.json --columns 2
+          python scripts/pixel_art_qa.py out/toolbox-fixtures/*.png --size 64x32 --max-colors 8
+          python - <<'PY'
+          from PIL import Image
+          image=Image.open("out/toolbox-fixtures/rally-car-00.png")
+          image.resize((256,128), Image.Resampling.NEAREST).save("out/nearest.png")
+          PY
+          python scripts/pixel_art_qa.py out/nearest.png --size 256x128 --source out/toolbox-fixtures/rally-car-00.png --scale 4
+      - name: Confirm FFmpeg can encode/decode native frames
+        run: |
+          ffmpeg -hide_banner -loglevel error -y -framerate 4 -i out/toolbox-fixtures/rally-car-%02d.png -vf 'scale=256:128:flags=neighbor' -c:v libx264 -pix_fmt yuv420p out/fixture.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json out/fixture.mp4
+          ffmpeg -v error -i out/fixture.mp4 -f null -
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixel-toolbox-verified-fixtures
+          path: |
+            out/toolbox-fixtures/
+            out/atlas.png
+            out/atlas.json
+            out/nearest.png
+            out/fixture.mp4
+          if-no-files-found: error
