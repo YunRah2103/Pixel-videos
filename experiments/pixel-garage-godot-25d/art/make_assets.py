@@ -239,6 +239,8 @@ def main():
  for i in range(6):save(draw_tree(i),f'pine_{i}.png')
  for i in range(5):save(bush(700+i),f'bush_{i}.png')
  for name,obj in [('mountains.png',mountains()),('road.png',road()),('flame.png',flame()),('ground.png',terrain()),('caption_flame.png',title_text('UNBURNED FUEL + HOT EXHAUST + OXYGEN')),('caption_antilag.png',title_text('ANTI-LAG CAN ADD MORE FUEL'))]:save(obj,name)
+ from art_v4 import upgrade
+ upgrade(OUT, side, quarter, face)
  # alpha transparent strip will be used as sprite-board flipbook too
  print('Created',len(list(OUT.glob('*.png'))),'original nearest-neighbour pixel-art assets in',OUT)
 if __name__=='__main__':main()
