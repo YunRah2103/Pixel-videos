@@ -14,7 +14,7 @@ assert 13.9<=duration<=14.1,'Duration not 14 seconds'
 # Critical regression test: Godot can encode a silent AVI track. Require audible final AAC.
 import re
 sound=subprocess.run(['ffmpeg','-hide_banner','-i',str(target),'-vn','-af','volumedetect','-f','null','-'],capture_output=True,text=True)
-peak=re.search(r'max_volume:\\s*(-?[0-9.]+) dB',sound.stderr)
+peak=re.search(r'max_volume:\s*(-?[0-9.]+) dB',sound.stderr)
 assert peak and float(peak.group(1)) > -45.0, 'Audio is effectively silent'
 results={'file':target.name,'width':1080,'height':1920,'fps':30,'frames':frames,'duration_seconds':duration,'video_codec':video['codec_name'],'audio_codec':audio['codec_name'],'size_bytes':target.stat().st_size}
 (target.parent/'verification.json').write_text(json.dumps(results,indent=2))
