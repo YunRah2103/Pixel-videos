@@ -58,8 +58,16 @@ func _road_centre(z: float) -> float:
 func _create_environment() -> void:
     var world := WorldEnvironment.new()
     var env := Environment.new()
-    env.background_mode = Environment.BG_COLOR
-    env.background_color = Color("#ca947c")
+    # True 3D sky shader, dusk gradient instead of the rejected flat peach clear colour.
+    var atmos := ProceduralSkyMaterial.new()
+    atmos.sky_top_color = Color("#213e55")
+    atmos.sky_horizon_color = Color("#d49b82")
+    atmos.ground_bottom_color = Color("#193b41")
+    atmos.ground_horizon_color = Color("#c18e75")
+    var sky_resource := Sky.new()
+    sky_resource.sky_material = atmos
+    env.background_mode = Environment.BG_SKY
+    env.sky = sky_resource
     env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
     env.ambient_light_color = Color("#d7bda9")
     env.ambient_light_energy = 1.0
@@ -70,7 +78,7 @@ func _create_environment() -> void:
     ridge = _sprite("mountains", 0.32, Vector3(0, 42, -320), self)
     ridge.scale = Vector3(1.45, 1.15, 1.0)
     ridge.render_priority = 0
-    clouds = _sprite("clouds", 0.25, Vector3(-4, 70, -314), self)
+    clouds = _sprite("clouds", 0.25, Vector3(-4, 54, -245), self)
     clouds.scale = Vector3(1.8, 1.2, 1)
     clouds.render_priority = 0
     sun = _sprite("sun", 0.10, Vector3(-34, 56, -300), self)
@@ -83,7 +91,7 @@ func _create_road() -> void:
     var m_ground := StandardMaterial3D.new()
     m_ground.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
     m_ground.albedo_texture = _tex("ground")
-    m_ground.uv1_scale = Vector3(8, 42, 1)
+    m_ground.uv1_scale = Vector3(24, 100, 1)
     m_ground.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
     m_ground.cull_mode = BaseMaterial3D.CULL_DISABLED
     var ground := MeshInstance3D.new()
@@ -151,7 +159,7 @@ func _create_forest() -> void:
 func _create_car() -> void:
     hero = _sprite("car_rear_34", .020, Vector3(0, 1.16, 0), self)
     hero.render_priority = 3
-    exhaust = _sprite("flame_0", .022, Vector3(.65, .49, .14), self)
+    exhaust = _sprite("flame_0", .015, Vector3(.65, .49, .14), self)
     exhaust.visible = false
     exhaust.render_priority = 4
 
@@ -212,7 +220,7 @@ func _create_overlays() -> void:
     canvas.add_child(finishing_overlay)
 
 func _is_flame(now: float) -> bool:
-    return (now>0.58 and now<1.45) or (now>7.1 and now<8.35) or (now>10.7 and now<11.5) or (now>13.65 and now<14.33)
+    return (now>.61 and now<.84) or (now>1.25 and now<1.43) or (now>7.32 and now<7.62) or (now>8.09 and now<8.36) or (now>13.8 and now<14.11)
 
 func _step_frame() -> void:
     t = float(frame_number)/FPS
@@ -230,18 +238,18 @@ func _step_frame() -> void:
     caption.visible = false
     caption_bg.visible = false
     if t<3.0:
-        placement=Vector3(cx+4.0+0.35*sin(t*1.5),2.7,z_car+9.8-1.2*(t/3.0))
+        placement=Vector3(cx+4.0+0.35*sin(t*1.5),2.08,z_car+10.2-0.4*(t/3.0))
         target=Vector3(cx,1.34,z_car-0.2)
         car_name="car_rear_34"
     elif t<6.0:
         var u := t-3.0
-        placement=Vector3(cx+12.9,2.3+0.11*sin(u*1.3),z_car+0.4-0.65*u)
+        placement=Vector3(cx+10.5,1.75+0.08*sin(u*1.3),z_car+0.45-0.40*u)
         target=Vector3(cx,1.23,z_car)
         car_name="car_side"
         flame_visible=false
     elif t<10.0:
         var u := t-6.0
-        placement=Vector3(cx+4.0,1.85,z_car+7.8+0.25*sin(u))
+        placement=Vector3(cx+4.0,1.44,z_car+10.0+0.12*sin(u))
         target=Vector3(cx-0.2,1.05,z_car+0.5)
         car_name="car_rear_34"
         caption.visible=true
@@ -249,7 +257,7 @@ func _step_frame() -> void:
         caption.texture=_tex("caption_flame")
     elif t<13.0:
         var u:=t-10.0
-        placement=Vector3(cx-8.9,2.5,z_car-5.3+0.35*u)
+        placement=Vector3(cx-9.8,1.95,z_car-5.8+0.35*u)
         target=Vector3(cx,1.32,z_car-0.1)
         car_name="car_front_34"
         flame_visible=false
@@ -258,7 +266,7 @@ func _step_frame() -> void:
         caption.texture=_tex("caption_antilag")
     else:
         var u:=t-13.0
-        placement=Vector3(cx+7.2+u*.4,4.2,z_car+13.0-u*2.1)
+        placement=Vector3(cx+7.0+u*.4,2.68,z_car+13.0-u*2.1)
         target=Vector3(cx,1.0,z_car-1.3)
         car_name="car_rear_34"
     if car_name in ["car_side", "car_front_34", "car_rear_34"]:
@@ -269,7 +277,7 @@ func _step_frame() -> void:
     exhaust.visible=flame_visible
     if flame_visible:
         exhaust.texture=_tex("flame_%d" % (int(t*18.0)%3))
-        exhaust.scale=Vector3(1.15+.14*sin(t*47.0),.83+.09*cos(t*53.0),1)
+        exhaust.scale=Vector3(.86+.10*sin(t*47.0),.72+.08*cos(t*53.0),1)
     for i in range(dust.size()):
         var puff:=dust[i]
         var age:=fmod(t*.85+float(i)/float(dust.size()),1.0)
@@ -277,8 +285,8 @@ func _step_frame() -> void:
         puff.scale=Vector3(.45+age*.88,.38+age*.72,1)
         puff.transparency=.22+age*.73
     ridge.position=Vector3(cx*.12,43,z_car-320)
-    clouds.position=Vector3(-23+sin(t*.22)*3.0,70,z_car-332)
-    sun.position=Vector3(-38,54,z_car-325)
+    clouds.position=Vector3(-23+sin(t*.22)*3.0,54,z_car-245)
+    sun.position=Vector3(-28,73,z_car-260)
     camera.position=placement
     camera.look_at(target,Vector3.UP)
 
