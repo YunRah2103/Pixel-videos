@@ -187,7 +187,7 @@ func create_trees() -> void:
     for i in range(410):
         var z = rng.randf_range(-244.0,244.0)
         var side = -1.0 if i%2==0 else 1.0
-        var distance = rng.randf_range(5.7,41.0)
+        var distance = rng.randf_range(16.0,42.0)
         var x = path_x(z)+side*distance
         var h = rng.randf_range(2.8,7.4)
         var trunk_y = h*.32
@@ -344,7 +344,7 @@ func create_pixel_pass() -> void:
     add_child(layer)
     var rect=ColorRect.new()
     rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-    rect.size=Vector2(360,640)
+    rect.size=Vector2(270,480)
     rect.mouse_filter=Control.MOUSE_FILTER_IGNORE
     var shader=ShaderMaterial.new()
     shader.shader=load("res://shaders/intentional_pixel_art.gdshader")
@@ -356,25 +356,25 @@ func create_caption() -> void:
     layer.layer=2
     add_child(layer)
     var settings=LabelSettings.new()
-    settings.font_size=17
+    settings.font_size=15
     settings.font_color=Color("#fff0d2")
     settings.outline_color=Color("#172b32")
-    settings.outline_size=3
+    settings.outline_size=2
     caption=Label.new()
     caption.label_settings=settings
-    caption.position=Vector2(18,46)
-    caption.size=Vector2(324,91)
+    caption.position=Vector2(13,36)
+    caption.size=Vector2(240,85)
     caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     layer.add_child(caption)
     var brand=Label.new()
     var smaller=LabelSettings.new()
-    smaller.font_size=10
+    smaller.font_size=8
     smaller.font_color=Color("#d8f5ed")
     smaller.outline_color=Color("#193540")
     smaller.outline_size=3
     brand.label_settings=smaller
     brand.text="PIXEL GARAGE / REAL GODOT 3D"
-    brand.position=Vector2(18,23)
+    brand.position=Vector2(13,18)
     layer.add_child(brand)
 
 func _process(delta: float) -> void:
@@ -430,4 +430,4 @@ func update_film(t: float) -> void:
         look=Vector3(0.0,.90,.19)
     cam.global_position=car.to_global(pos)
     cam.look_at(car.to_global(look),Vector3.UP)
-    cam.fov=44.0
+    cam.fov=48.0 if t>=2.0 and t<5.0 else 44.0
