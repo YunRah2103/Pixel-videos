@@ -7,6 +7,9 @@ cd "$ROOT"
 GODOT_BIN="${GODOT_BIN:-$(command -v godot || command -v godot4 || true)}"
 if [[ -z "$GODOT_BIN" ]]; then echo "ERROR: Godot 4 is not available"; exit 3; fi
 "$GODOT_BIN" --version
+command -v blender >/dev/null || { echo 'Blender not found: no premium car mesh possible'; exit 6; }
+blender -b -t 2 --python tools/build_rally_car.py
+test -s assets/rally_car_body.glb || { echo 'Blender model generation failed'; exit 7; }
 "$GODOT_BIN" --headless --path "$ROOT" --editor --import --quit
 ARGS=("$GODOT_BIN" --path "$ROOT" --rendering-driver opengl3 --resolution 360x640 --write-movie "$OUT/godot-actual-3d.avi" --fixed-fps 30 --quit-after 420)
 if command -v xvfb-run >/dev/null && [[ -z "${DISPLAY:-}" ]]; then
