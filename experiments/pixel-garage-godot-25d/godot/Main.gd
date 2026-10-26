@@ -81,6 +81,7 @@ func _create_environment() -> void:
     clouds = _sprite("clouds", 0.25, Vector3(-4, 54, -245), self)
     clouds.scale = Vector3(1.8, 1.2, 1)
     clouds.render_priority = 0
+    clouds.visible = false # Reject glitch-like cloud strip artwork; keep natural sky
     sun = _sprite("sun", 0.10, Vector3(-34, 56, -300), self)
     sun.scale = Vector3(1.4, 1.4, 1)
     sun.render_priority = 0
@@ -91,7 +92,7 @@ func _create_road() -> void:
     var m_ground := StandardMaterial3D.new()
     m_ground.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
     m_ground.albedo_texture = _tex("ground")
-    m_ground.uv1_scale = Vector3(24, 100, 1)
+    m_ground.uv1_scale = Vector3(65, 210, 1)
     m_ground.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
     m_ground.cull_mode = BaseMaterial3D.CULL_DISABLED
     var ground := MeshInstance3D.new()
@@ -164,7 +165,7 @@ func _create_car() -> void:
     exhaust.render_priority = 4
 
 func _create_dust() -> void:
-    for i in range(8):
+    for i in range(4):
         var puff := _sprite("dust_%d" % (i%4), .019, Vector3(), self)
         puff.render_priority = 2
         dust.append(puff)
@@ -282,8 +283,8 @@ func _step_frame() -> void:
         var puff:=dust[i]
         var age:=fmod(t*.85+float(i)/float(dust.size()),1.0)
         puff.position=Vector3(cx+(-1.5 if i%2==0 else 1.45)+sin(t*2.0+i)*.18,.22+age*.66,z_car+1.2+age*6.1)
-        puff.scale=Vector3(.45+age*.88,.38+age*.72,1)
-        puff.transparency=.22+age*.73
+        puff.scale=Vector3(.15+age*.20,.13+age*.17,1)
+        puff.transparency=.63+age*.36
     ridge.position=Vector3(cx*.12,43,z_car-320)
     clouds.position=Vector3(-23+sin(t*.22)*3.0,54,z_car-245)
     sun.position=Vector3(-28,73,z_car-260)
