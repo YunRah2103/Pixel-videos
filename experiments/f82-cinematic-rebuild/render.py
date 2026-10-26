@@ -1,6 +1,7 @@
 from PIL import Image,ImageDraw,ImageFont,ImageChops
 from pathlib import Path
 import math,subprocess,json,argparse
+from wheel_animation import spin
 P=Path(__file__).resolve().parent; A=P/'assets';W,H=360,640
 NEAR=Image.Resampling.NEAREST
 font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',19)
@@ -31,21 +32,16 @@ def environment(travel,origin=360,low=False):
  return im.convert('RGBA')
 def paintcar(im,kind,width,x,bottom,travel=0,rotation=True,headlights=1):
  source=cars[kind];scale=width/source.width
+ if rotation:
+  # Both wheels share the same physical rolling radius. Perspective changes
+  # the visible ellipse, not angular velocity.
+  angle=travel/max(1,27*scale)
+  source=spin(source,wheelcfg[kind],angle)
  car=source.resize((width,round(source.height*scale)),NEAR)
  y=bottom-car.height
  d=ImageDraw.Draw(im)
- # ground contact is tight to tyres rather than floating beneath the car
  d.ellipse((x+8,bottom-8,x+width-4,bottom+3),fill=(17,20,27,255))
  im.alpha_composite(car,(x,y))
- if rotation:
-  for cfg in wheelcfg[kind]:
-   cx,cy,rx,ry=cfg
-   rim=source.crop((cx-rx,cy-ry,cx+rx,cy+ry))
-   angle=travel/max(1,rx*scale)*180/math.pi
-   rim=rim.rotate(angle,resample=NEAR)
-   rim=rim.resize((max(2,round(2*rx*scale)),max(2,round(2*ry*scale))),NEAR)
-   mask=Image.new('L',rim.size);ImageDraw.Draw(mask).ellipse((1,1,rim.width-2,rim.height-2),fill=255);rim.putalpha(mask)
-   im.alpha_composite(rim,(round(x+(cx-rx)*scale),round(y+(cy-ry)*scale)))
  return im
 
 def label(im,s,y):
@@ -86,6 +82,6 @@ if __name__=='__main__':
  if a.stills:
   for n in [0,30,60,90,149,150,180,239,240,270,299]:frame(n).save(P/f'key_{n:03}.png')
  else:
-  enc=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s','360x640','-r','30','-i','-','-vf','scale=1080:1920:flags=neighbor','-c:v','libx264','-preset','fast','-crf','17','-pix_fmt','yuv420p','-an','-movflags','+faststart',str(P/'BMW_F82_Cinematic_Rebuild.mp4')],stdin=subprocess.PIPE)
+  enc=subprocess.Popen(['ffmpeg','-v','error','-y','-f','rawvideo','-pix_fmt','rgb24','-s','360x640','-r','30','-i','-','-vf','scale=1080:1920:flags=neighbor','-c:v','libx264','-preset','fast','-crf','17','-pix_fmt','yuv420p','-an','-movflags','+faststart',str(P/'BMW_F82_Wheels_Fixed.mp4')],stdin=subprocess.PIPE)
   for n in range(300):enc.stdin.write(frame(n).tobytes())
   enc.stdin.close();assert enc.wait()==0

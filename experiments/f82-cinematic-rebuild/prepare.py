@@ -8,5 +8,5 @@ for name,top,bottom in [('front',90,530),('side',590,970),('rear',1000,1490)]:
  b=b.resize((360,round(b.height*360/b.width)),Image.Resampling.NEAREST);b.save(P/(name+'.png'))
 bg=Image.open(P/'environment-original.png').convert('RGB').resize((960,640),Image.Resampling.NEAREST);bg.save(P/'environment.png')
 # Rim coordinates at the prepared 360px-wide sprite scale.
-w={'front':[[175,104,18,24],[324,102,11,20]],'side':[[62,84,22,22],[283,84,22,22]],'rear':[[30,113,12,23],[150,121,19,29]]}
+w={'front': [[177, 104, 14, 20, 0.1], [328, 101, 8, 17, 0.08]], 'side': [[61, 84, 19, 19, 0], [282, 84, 19, 19, 0]], 'rear': [[24, 109, 6, 18, -0.08], [154, 115, 12, 23, -0.12]]}
 (P/'wheels.json').write_text(json.dumps(w,indent=2))

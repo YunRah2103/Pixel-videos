@@ -23,3 +23,6 @@ H.264; 1080×1920; 30/1 fps; 10.000 seconds; exactly 300 decoded video frames. F
 
 ## References inspected
 197987.mp4 and 197981.mp4 were both accessible and frames inspected. Repository main at 091049c7630efabbea20fbcae91302c83ba3713a was inspected. Original productions were preserved. Work is isolated under experiments/f82-cinematic-rebuild and experiment/f82-cinematic-rebuild; main was not merged.
+
+## Wheel correction
+Replaced rectangular crop rotation with wheel-plane spoke sampling. Tyre silhouettes, outer rims and surrounding body pixels remain stationary relative to the sprite. Corrected hub coordinates and used one physical rolling radius per car rather than perspective ellipse width. Regression checks pass for zero-angle identity, unchanged alpha and unchanged pixels outside wheel interiors. Five consecutive decoded rear-shot frames were inspected. Corrected MP4 verified as 300 frames, 10.000 seconds, 1080×1920, 30 fps, H.264; full decode passed.
