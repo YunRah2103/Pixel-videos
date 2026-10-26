@@ -86,42 +86,54 @@ func _ready() -> void:
     update_film(0.0)
 
 func create_landscape() -> void:
+    # Cohesive twilight forest: deliberate dark-green pixel palette, not overexposed low-poly white.
     var world = WorldEnvironment.new()
     var e = Environment.new()
     e.background_mode = Environment.BG_SKY
-    var s = Sky.new()
+    var sky = Sky.new()
     var skies = ProceduralSkyMaterial.new()
-    skies.sky_top_color = Color("#5c95b1")
-    skies.sky_horizon_color = Color("#b4cfc7")
-    skies.ground_horizon_color = Color("#a2b59b")
-    s.sky_material = skies
-    e.sky = s
-    e.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-    e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+    skies.sky_top_color = Color("#354d69")
+    skies.sky_horizon_color = Color("#b18f7c")
+    skies.ground_bottom_color = Color("#263d3c")
+    skies.ground_horizon_color = Color("#698377")
+    sky.sky_material = skies
+    e.sky = sky
+    e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+    e.ambient_light_color = Color("#9db7b5")
+    e.ambient_light_energy = 0.36
+    e.reflected_light_source = Environment.REFLECTION_SOURCE_DISABLED
+    e.tonemap_mode = Environment.TONE_MAPPER_LINEAR
     world.environment = e
     add_child(world)
     var sun = DirectionalLight3D.new()
-    sun.light_color = Color("#ffe6c7")
-    sun.light_energy = 1.6
+    sun.light_color = Color("#ffd1a0")
+    sun.light_energy = 0.78
     sun.shadow_enabled = true
-    sun.rotation_degrees = Vector3(-58, -27, 0)
+    sun.rotation_degrees = Vector3(-42,-35,0)
     add_child(sun)
     var meadow = MeshInstance3D.new()
     var ground = PlaneMesh.new()
-    ground.size = Vector2(640, 640)
+    ground.size = Vector2(660,660)
     meadow.mesh = ground
     meadow.position.y = -0.11
-    meadow.material_override = color_material("#6d987b")
+    meadow.material_override = color_material("#2b554b")
     add_child(meadow)
-    create_road(6.4, -0.035, color_material("#738273"))
-    create_road(5.2, -0.014, color_material("#b5a98e"))
-    create_road(4.28, -0.011, color_material("#c0b294"))
-    var gravel = [color_material("#9a9885"),color_material("#d2c7a6"),color_material("#827f70")]
-    for i in range(520):
-        var z = rng.randf_range(-220.0,220.0)
-        var x = path_x(z) + rng.randf_range(-2.5,2.5)
-        if i % 13 == 0:
-            cube(self, Vector3(x,0.014,z),Vector3(0.16,0.02,0.12),gravel[i % 3])
+    create_road(7.9,-0.049,color_material("#294b44"))
+    create_road(6.4,-0.036,color_material("#726c55"))
+    create_road(5.25,-0.012,color_material("#9b8566"))
+    # Irregular gravel clusters and two subtly worn racing lines.
+    var gravel = [color_material("#b8a17e"),color_material("#5b5f50"),color_material("#89765d")]
+    for i in range(2350):
+        var z = rng.randf_range(-225.0,225.0)
+        var x = path_x(z)+rng.randf_range(-2.62,2.62)
+        if i % 5 == 0:
+            cube(self,Vector3(x,0.012,z),Vector3(rng.randf_range(.06,.18),.014,rng.randf_range(.08,.27)),gravel[i%3])
+    var track = color_material("#786d59")
+    for i in range(180):
+        var z = 190.0-float(i)*2.1
+        for side in [-1.0,1.0]:
+            var streak = cube(self,Vector3(path_x(z)+side*.89,0.008,z),Vector3(.23,.012,1.86),track)
+            streak.rotation.y = atan((path_x(z+1.0)-path_x(z-1.0))*.5)
     create_trees()
     create_mountains()
 
@@ -150,73 +162,97 @@ func create_road(width: float, y: float, material: Material) -> void:
     add_child(o)
 
 func create_trees() -> void:
-    var bark = color_material("#40544b")
-    var leaf = [color_material("#335c55"),color_material("#4c7660"),color_material("#698868")]
+    # Framing pines, independent 3D geometry for parallax; tapered tiered foliage.
     var trunk = CylinderMesh.new()
     trunk.height = 1.0
-    trunk.top_radius = 0.12
-    trunk.bottom_radius = 0.18
-    trunk.radial_segments = 5
-    var crown = SphereMesh.new()
-    crown.radial_segments = 7
-    crown.rings = 4
-    var base = MultiMesh.new()
-    base.transform_format = MultiMesh.TRANSFORM_3D
-    base.mesh = trunk
-    base.instance_count = 440
-    var crowns = []
-    for k in range(3):
-        var mm = MultiMesh.new()
-        mm.transform_format = MultiMesh.TRANSFORM_3D
-        mm.mesh = crown
-        mm.instance_count = 440
-        crowns.append(mm)
-    for i in range(440):
-        var z = rng.randf_range(-240.0,240.0)
-        var side = -1.0 if i%2==0 else 1.0
-        var x = path_x(z)+side*rng.randf_range(6.0,39.0)
-        var h = rng.randf_range(1.8,4.8)
-        base.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3(1.0,h,1.0)),Vector3(x,h/2.0,z)))
-        for j in range(3):
-            var scale = (1.14-0.19*float(j))*h/3.2
-            crowns[j].set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3(scale,scale*1.0,scale)),Vector3(x+(float(j)-1.0)*0.34,h+0.2+float(j)*0.37,z+float(j%2)*0.3)))
-    var trunks = MultiMeshInstance3D.new()
-    trunks.multimesh = base
-    trunks.material_override = bark
-    add_child(trunks)
+    trunk.top_radius = .09
+    trunk.bottom_radius = .17
+    trunk.radial_segments = 6
+    var spruces = CylinderMesh.new()
+    spruces.top_radius = .07
+    spruces.bottom_radius = .92
+    spruces.height = 1.4
+    spruces.radial_segments = 8
+    var trunks = MultiMesh.new()
+    trunks.transform_format = MultiMesh.TRANSFORM_3D
+    trunks.mesh = trunk
+    trunks.instance_count = 410
+    var needle_tiers = []
     for j in range(3):
-        var foliage = MultiMeshInstance3D.new()
-        foliage.multimesh = crowns[j]
-        foliage.material_override = leaf[j]
-        add_child(foliage)
-    var stones = color_material("#70847a")
-    for i in range(82):
-        var z = rng.randf_range(-220.0,220.0)
+        var layer = MultiMesh.new()
+        layer.transform_format = MultiMesh.TRANSFORM_3D
+        layer.mesh = spruces
+        layer.instance_count = 410
+        needle_tiers.append(layer)
+    for i in range(410):
+        var z = rng.randf_range(-244.0,244.0)
         var side = -1.0 if i%2==0 else 1.0
-        ball(self,Vector3(path_x(z)+side*rng.randf_range(3.6,9.0),0,z),Vector3(rng.randf_range(0.32,0.7),0.24,0.45),stones,6)
+        var distance = rng.randf_range(5.7,41.0)
+        var x = path_x(z)+side*distance
+        var h = rng.randf_range(2.8,7.4)
+        var trunk_y = h*.32
+        trunks.set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3(.8,h*.64,.8)),Vector3(x,trunk_y,z)))
+        for j in range(3):
+            var spread=(1.1-.20*float(j))*h*.26
+            var rise=h*(.47+.19*float(j))
+            needle_tiers[j].set_instance_transform(i,Transform3D(Basis.IDENTITY.scaled(Vector3(spread, h*.30, spread)),Vector3(x,rise,z)))
+    var trunk_obj=MultiMeshInstance3D.new()
+    trunk_obj.multimesh=trunks
+    trunk_obj.material_override=color_material("#303f3c")
+    add_child(trunk_obj)
+    var leaf_palettes = ["#24483f","#2d6151","#3e765c"]
+    for j in range(3):
+        var foliage=MultiMeshInstance3D.new()
+        foliage.multimesh=needle_tiers[j]
+        foliage.material_override=color_material(leaf_palettes[j])
+        add_child(foliage)
+    var leaf_colors=[color_material("#386d57"),color_material("#517b5e"),color_material("#304e43")]
+    var stone_colors=[color_material("#59675f"),color_material("#66746a"),color_material("#384f4b")]
+    for i in range(315):
+        var z=rng.randf_range(-228.0,228.0)
+        var side=-1.0 if i%2==0 else 1.0
+        var x=path_x(z)+side*rng.randf_range(3.65,9.8)
+        if i%3==0:
+            ball(self,Vector3(x,.13,z),Vector3(rng.randf_range(.22,.6),.22,rng.randf_range(.24,.55)),stone_colors[i%3],7)
+        else:
+            ball(self,Vector3(x,.14,z),Vector3(rng.randf_range(.24,.68),.29,.48),leaf_colors[i%3],7)
+    # Small golden roadside flowers, 3D clustered highlights.
+    var gold=color_material("#b5a374",true)
+    for i in range(110):
+        var z=rng.randf_range(-215.0,215.0)
+        var side=-1.0 if i%2==0 else 1.0
+        var x=path_x(z)+side*rng.randf_range(4.15,6.4)
+        cube(self,Vector3(x,.19,z),Vector3(.08,.08,.08),gold)
 
 func create_mountains() -> void:
-    var palette = [color_material("#8aa396"),color_material("#719285"),color_material("#648679")]
-    for i in range(21):
-        var theta = TAU*float(i)/21.0
-        var p = MeshInstance3D.new()
-        var m = PrismMesh.new()
-        m.size = Vector3(rng.randf_range(23,46),rng.randf_range(28,48),rng.randf_range(20,50))
-        p.mesh = m
-        p.position = Vector3(sin(theta)*145,8,cos(theta)*145)
-        p.rotation.y = theta
-        p.material_override = palette[i%3]
-        add_child(p)
+    # Spatial multi-ridge silhouette, avoiding isolated enormous triangular mountains.
+    var colors=[color_material("#4a6d66"),color_material("#587a73"),color_material("#728982")]
+    for layer in range(3):
+        var z=-116.0-float(layer)*46.0
+        for k in range(20):
+            var x=-180.0+float(k)*19.0
+            var rise=rng.randf_range(9,26)+float(layer)*5.0
+            polygon(self,[
+                Vector3(x-16,-.2,z),
+                Vector3(x+1,rise,z-2),
+                Vector3(x+21,-.2,z)
+            ], colors[layer])
+            polygon(self,[
+                Vector3(x-17,-.21,z+2),
+                Vector3(x+1,rise,z-2),
+                Vector3(x+1,rise*.71,z+24),
+                Vector3(x-12,-.2,z+22)
+            ],colors[max(0,layer-1)])
 
 func create_rally_car() -> void:
-    var white = color_material("#e7ece2")
-    var shade = color_material("#bccbc7")
+    var white = color_material("#e6dcc4")
+    var shade = color_material("#aebfb8")
     var ink = color_material("#1b2930")
     var dark = color_material("#101a22")
-    var glass = color_material("#31586a")
-    var shine = color_material("#6ca0a5")
-    var teal = color_material("#0cabb0")
-    var red = color_material("#e94d37")
+    var glass = color_material("#203d4a")
+    var shine = color_material("#5ca5a8")
+    var teal = color_material("#0dd0c2")
+    var red = color_material("#f16438")
     var amber = color_material("#ffba67")
     car = Node3D.new()
     car.name = "PROCEDURAL_TRUE_3D_WRC_HATCHBACK"
@@ -226,9 +262,9 @@ func create_rally_car() -> void:
     car.add_child(chassis)
     # A section-based connected polygonal shell: shaped nose, long wheelbase, upright hatch.
     var stations = [
-        [-2.20,0.58,0.61],[-2.05,0.79,0.83],[-1.65,0.87,1.03],
-        [-1.05,0.90,1.06],[-0.40,0.91,1.11],[0.45,0.91,1.12],
-        [1.27,0.89,1.10],[1.79,0.83,1.07],[2.10,0.74,0.86]]
+        [-2.20,0.59,0.60],[-2.05,0.75,0.74],[-1.65,0.86,0.92],
+        [-1.05,0.92,1.01],[-0.40,0.91,1.04],[0.45,0.91,1.04],
+        [1.27,0.90,1.02],[1.79,0.85,0.97],[2.10,0.75,0.79]]
     for i in range(stations.size()-1):
         var a = stations[i]
         var b = stations[i+1]
@@ -244,19 +280,19 @@ func create_rally_car() -> void:
     cube(chassis,Vector3(0,0.42,2.24),Vector3(1.33,0.13,0.09),ink)
     # Cabin: explicitly sloped windshield, tall roof and near-upright rear hatch.
     var front_low = -0.92
-    var front_high = -0.37
-    var rear_high = 1.30
-    var rear_low = 1.71
-    var roof_y = 1.77
+    var front_high = -0.16
+    var rear_high = 1.02
+    var rear_low = 1.78
+    var roof_y = 1.62
     polygon(chassis,[Vector3(-.78,1.10,front_low),Vector3(.78,1.10,front_low),Vector3(.69,roof_y,front_high),Vector3(-.69,roof_y,front_high)],glass)
     polygon(chassis,[Vector3(-.69,roof_y,rear_high),Vector3(.69,roof_y,rear_high),Vector3(.78,1.07,rear_low),Vector3(-.78,1.07,rear_low)],glass)
     polygon(chassis,[Vector3(-.69,roof_y,front_high),Vector3(.69,roof_y,front_high),Vector3(.69,roof_y,rear_high),Vector3(-.69,roof_y,rear_high)],white)
     for side in [-1.0,1.0]:
         var x=side
-        polygon(chassis,[Vector3(x*.815,1.13,-.81),Vector3(x*.695,1.735,-.34),Vector3(x*.695,1.735,.36),Vector3(x*.815,1.13,.32)],glass)
+        polygon(chassis,[Vector3(x*.815,1.13,-.81),Vector3(x*.695,1.59,-.34),Vector3(x*.695,1.735,.36),Vector3(x*.815,1.13,.32)],glass)
         polygon(chassis,[Vector3(x*.817,1.13,.38),Vector3(x*.697,1.735,.43),Vector3(x*.697,1.735,1.26),Vector3(x*.803,1.13,1.60)],glass)
-        polygon(chassis,[Vector3(x*.818,1.51,-.38),Vector3(x*.744,1.60,-.15),Vector3(x*.742,1.60,.25),Vector3(x*.818,1.51,.18)],shine)
-        cube(chassis,Vector3(x*.817,1.30,.38),Vector3(.045,.91,.045),white)
+        polygon(chassis,[Vector3(x*.818,1.51,-.38),Vector3(x*.744,1.60,-.15),Vector3(x*.742,1.46,.25),Vector3(x*.818,1.51,.18)],shine)
+        cube(chassis,Vector3(x*.817,1.27,.38),Vector3(.045,.72,.045),white)
         cube(chassis,Vector3(x*.81,1.12,-.65),Vector3(.28,.07,.24),ink)
         cube(chassis,Vector3(x*1.0,1.17,-.65),Vector3(.26,.11,.25),white)
         for door in [-.52,.43,1.49]:
@@ -271,40 +307,75 @@ func create_rally_car() -> void:
                     var y = .53+float(row)*.095
                     cube(chassis,Vector3(x*.941,y,z),Vector3(.013,.068,.102),teal if col<5 else red)
         polygon(chassis,[Vector3(x*.933,.70,-.58),Vector3(x*.934,.80,-.40),Vector3(x*.934,.57,.69),Vector3(x*.932,.50,.41)],red)
-        cube(chassis,Vector3(x*.84,1.60,1.63),Vector3(.12,.33,.10),dark)
+        cube(chassis,Vector3(x*.84,1.49,1.63),Vector3(.12,.33,.10),dark)
         cube(chassis,Vector3(x*.64,.89,-2.226),Vector3(.34,.13,.05),shine)
         cube(chassis,Vector3(x*.68,.89,2.219),Vector3(.32,.15,.05),red)
         cube(chassis,Vector3(x*.77,.91,2.25),Vector3(.09,.07,.06),amber)
     # Signature roof scoop and rally wing—separate 3D volumes.
-    cube(chassis,Vector3(0,1.85,0.0),Vector3(.58,.16,.43),white)
-    cube(chassis,Vector3(0,1.86,-.23),Vector3(.49,.07,.042),dark)
-    cube(chassis,Vector3(0,1.98,1.69),Vector3(1.67,.10,.31),white)
-    cube(chassis,Vector3(0,2.01,1.88),Vector3(1.72,.035,.05),red)
+    cube(chassis,Vector3(0,1.69,0.0),Vector3(.58,.16,.43),white)
+    cube(chassis,Vector3(0,1.70,-.23),Vector3(.49,.07,.042),dark)
+    cube(chassis,Vector3(0,1.82,1.69),Vector3(1.67,.10,.31),white)
+    cube(chassis,Vector3(0,1.86,1.88),Vector3(1.72,.035,.05),red)
     for side in [-1.0,1.0]:
-        cube(chassis,Vector3(side*.80,1.94,1.72),Vector3(.07,.19,.37),dark)
+        cube(chassis,Vector3(side*.80,1.81,1.72),Vector3(.07,.19,.37),dark)
     cube(chassis,Vector3(0,.71,-2.245),Vector3(.93,.22,.035),dark)
     for k in range(9):
         cube(chassis,Vector3(-.4+float(k)*.1,.70,-2.27),Vector3(.035,.17,.029),ink)
     cube(chassis,Vector3(0,.73,2.248),Vector3(.41,.10,.03),ink)
+
+    # Recessed wheel wells and arched fender accents, all modeled as physical 3D rings.
+    for side in [-1.0,1.0]:
+        for wheel_z in [-1.27,1.27]:
+            var recess=MeshInstance3D.new()
+            var dark_disc=CylinderMesh.new()
+            dark_disc.top_radius=.444
+            dark_disc.bottom_radius=.444
+            dark_disc.height=.028
+            dark_disc.radial_segments=28
+            recess.mesh=dark_disc
+            recess.rotation.z=PI*.5
+            recess.position=Vector3(side*.907,.40,wheel_z)
+            recess.material_override=ink
+            chassis.add_child(recess)
+            var lip=MeshInstance3D.new()
+            var tor=TorusMesh.new()
+            tor.inner_radius=.405
+            tor.outer_radius=.465
+            tor.rings=7
+            tor.ring_segments=28
+            lip.mesh=tor
+            lip.rotation.z=PI*.5
+            lip.position=Vector3(side*.977,.40,wheel_z)
+            lip.material_override=shade
+            chassis.add_child(lip)
+    # True roof surface with a slim contrasting graphic and aerodynamic rails.
+    cube(chassis,Vector3(0,1.635,.44),Vector3(.90,.022,.75),ink)
+    for side in [-1.0,1.0]:
+        cube(chassis,Vector3(side*.67,1.632,.43),Vector3(.055,.045,1.26),shade)
+    # Hood racing-number card and clear contrasting side numbers.
+    cube(chassis,Vector3(0,1.022,-1.44),Vector3(.66,.018,.36),dark)
+    for side in [-1.0,1.0]:
+        cube(chassis,Vector3(side*.947,.94,.04),Vector3(.022,.21,.34),ink)
+
     # Actual tyres, forged spokes and wheel centres with independent rotation.
     for sign in [-1.0,1.0]:
         for z in [-1.27,1.27]:
             var hub = Node3D.new()
             hub.name = "WheelSpinningAndSuspending"
-            hub.position=Vector3(sign*.96,.44,z)
+            hub.position=Vector3(sign*.95,.40,z)
             car.add_child(hub)
             wheels.append(hub)
             var tire = MeshInstance3D.new()
             var cyl = CylinderMesh.new()
-            cyl.top_radius = .41
-            cyl.bottom_radius = .41
+            cyl.top_radius = .36
+            cyl.bottom_radius = .36
             cyl.height = .26
             cyl.radial_segments = 20
             tire.mesh = cyl
             tire.rotation.z = PI*.5
             tire.material_override=dark
             hub.add_child(tire)
-            for rr in [0.25,0.315]:
+            for rr in [0.23,0.29]:
                 var t = MeshInstance3D.new()
                 var ring = TorusMesh.new()
                 ring.inner_radius = rr-0.028
@@ -318,7 +389,7 @@ func create_rally_car() -> void:
                 hub.add_child(t)
             for k in range(9):
                 var a=TAU*float(k)/9.0
-                var spoke=cube(hub,Vector3(sign*.153,cos(a)*.20,sin(a)*.20),Vector3(.028,.28,.047),white)
+                var spoke=cube(hub,Vector3(sign*.153,cos(a)*.18,sin(a)*.18),Vector3(.028,.235,.041),white)
                 spoke.rotation.x=a
             var cap=MeshInstance3D.new()
             var cm=SphereMesh.new()
@@ -338,12 +409,12 @@ func create_rally_car() -> void:
         var plume=MeshInstance3D.new()
         var cone=CylinderMesh.new()
         cone.top_radius=.015
-        cone.bottom_radius=.17-float(q)*.040
-        cone.height=1.45-float(q)*.25
+        cone.bottom_radius=.115-float(q)*.028
+        cone.height=.84-float(q)*.16
         cone.radial_segments=8
         plume.mesh=cone
         plume.rotation.x=PI*.5
-        plume.position.z=.48-float(q)*.15
+        plume.position.z=.32-float(q)*.12
         var col="#ff6d20" if q==0 else ("#ffc652" if q==1 else "#fff3c9")
         var fire=color_material(col,true)
         fire.emission_enabled=true
@@ -400,44 +471,52 @@ func _process(delta: float) -> void:
     tick += delta
     update_film(min(tick,SECONDS))
 
+
 func update_film(t: float) -> void:
-    var z=137.0-SPEED*t
-    car.position=Vector3(path_x(z),.010+.017*sin(t*12.7),z)
+    var z = 137.0-SPEED*t
+    car.position = Vector3(path_x(z),.016+.014*sin(t*10.6),z)
     car.rotation.y=atan((path_x(z+1.0)-path_x(z-1.0))*.5)
-    chassis.rotation.z=.019*sin(t*4.3)+.026*cos(t*.7)
-    chassis.rotation.x=.011*sin(t*6.5)
-    chassis.position.y=.020*sin(t*12.0)
+    chassis.rotation.z=.010*sin(t*3.9)+.014*cos(t*.7)
+    chassis.rotation.x=.007*sin(t*6.3)
+    chassis.position.y=.013*sin(t*10.0)
     for i in range(wheels.size()):
         var w: Node3D=wheels[i]
-        w.rotation.x=t*SPEED/.41
-        w.position.y=.44+.030*sin(t*7.5+float(i)*1.4)
-    var burst=(t>.25 and t<1.54) or (t>7.15 and t<8.4) or (t>12.52 and t<13.85)
+        w.rotation.x=t*SPEED/.36
+        w.position.y=.40+.016*sin(t*7.5+float(i)*1.4)
+    var burst=(t>.24 and t<1.47) or (t>7.28 and t<8.32) or (t>12.61 and t<13.66)
     flame.visible=burst
     if burst:
-        flame.scale=Vector3(1,1,.83+.22*sin(t*49.0))
+        flame.scale=Vector3(1.0+.07*sin(t*42.0),1.0+.10*sin(t*54.0),.68+.13*sin(t*47.0))
     if t<2.0:
-        caption.text="WHY DO RALLY CARS\nSHOOT FLAMES?"
+        caption.text="WHY DO RALLY CARS\\nSHOOT FLAMES?"
     elif t<5.0:
-        caption.text="HOT EXHAUST...\nAND UNBURNED FUEL"
+        caption.text="THE EXHAUST IS\\nINCREDIBLY HOT"
     elif t<10.0:
-        caption.text="FUEL + OXYGEN\n+ IGNITION HEAT"
+        caption.text="UNBURNED FUEL\\nCAN IGNITE"
     elif t<12.0:
-        caption.text="ANTI-LAG CAN MAKE\nFLAMES MORE LIKELY"
+        caption.text="ANTI-LAG CAN\\nMAKE IT LOUDER"
     else:
-        caption.text="RALLY FIRE.\nEXPLAINED."
-    var pos=Vector3(3.0,2.3,6.6)
-    var look=Vector3(0,1.0,.2)
-    if t>=2.0 and t<5.0:
-        pos=Vector3(7.0,2.0,.85)
-    elif t>=5.0 and t<7.1:
-        pos=Vector3(-3.65,1.67,-6.1)
-    elif t>=7.1 and t<10.0:
-        pos=Vector3(1.15,.80,3.5)
-        look=Vector3(.44,.44,2.30)
-    elif t>=10.0 and t<12.0:
-        pos=Vector3(4.9,2.4,5.6)
-    elif t>=12.0:
-        pos=Vector3(-3.2,1.9,-6.1+float(t-12.0)*.7)
+        caption.text="FIRE ON THE\\nOVER-RUN."
+    var pos=Vector3(3.3,2.0,6.3)
+    var look=Vector3(0,1.05,.35)
+    if t<2.0:
+        pos=Vector3(3.15,1.95,6.15)
+        look=Vector3(.08,.96,.55)
+    elif t<5.0:
+        pos=Vector3(7.0,1.95,1.9)
+        look=Vector3(.0,.98,.05)
+    elif t<7.35:
+        pos=Vector3(-3.9,1.82,-6.85)
+        look=Vector3(0,1.02,-.42)
+    elif t<9.40:
+        pos=Vector3(2.45,1.14,5.7)
+        look=Vector3(.38,.62,2.16)
+    elif t<11.55:
+        pos=Vector3(-5.3,2.12,3.8)
+        look=Vector3(-.05,.95,.4)
+    else:
+        pos=Vector3(3.1,2.25,6.8+.45*(t-11.55))
+        look=Vector3(0,1.01,.46)
     cam.global_position=car.to_global(pos)
     cam.look_at(car.to_global(look),Vector3.UP)
-    cam.fov=42.0 if t>=7.1 and t<10.0 else 49.0
+    cam.fov=41.0 if t>=7.35 and t<9.4 else 44.0
