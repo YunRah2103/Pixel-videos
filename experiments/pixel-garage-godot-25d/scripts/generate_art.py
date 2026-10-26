@@ -64,6 +64,15 @@ def rear(i=0):
  poly(d,[(105,78),(128,45),(158,34),(194,39),(217,69),(215,81),(167,91)],C)
  poly(d,[(132,47),(159,36),(183,39),(201,71),(170,79),(119,72)],B)
  poly(d,[(174,39),(192,44),(211,71),(201,70)],H)
+ # Three separate, believable cabin glass planes and thick hatchback pillars.
+ line(d,(148,40,139,71),C,3)
+ line(d,(184,42,193,76),C,4)
+ line(d,(117,72,195,76),C,2)
+ poly(d,[(198,49),(209,57),(220,76),(215,83),(204,74)],"#314d5d")
+ poly(d,[(201,51),(207,56),(212,66),(205,62)],H)
+ rect(d,(140,83,160,85),I)
+ rect(d,(160,80,179,81),W)
+
  poly(d,[(200,47),(218,69),(232,95),(222,104),(204,83)],I)
  poly(d,[(204,50),(215,70),(227,90),(219,91)],B)
  poly(d,[(80,88),(149,79),(184,95),(196,121),(81,112)],C)
@@ -109,8 +118,8 @@ def mountains(near=False):
 def gravel():
  r=random.Random(4301);a=Image.new("RGBA",(96,96),"#8f7e67");d=ImageDraw.Draw(a)
  for k in range(940):
-  x=r.randrange(96);y=r.randrange(96);n=r.choice([1,2,2,3,4])
-  rect(d,(x,y,x+n,y+r.choice([1,1,2])),r.choice(["#716956","#bba482","#9b8b71","#a89b7e","#615d54","#cdb58b"]))
+  x=r.randrange(96);y=r.randrange(96);n=r.choice([1,1,2,2,3])
+  rect(d,(x,y,x+n,y+r.choice([1,2,2,3])),r.choice(["#716956","#bba482","#9b8b71","#a89b7e","#615d54","#cdb58b"]))
  return a
 def flame():
  a=img(74,46);d=ImageDraw.Draw(a)
