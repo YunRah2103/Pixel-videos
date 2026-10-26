@@ -157,7 +157,7 @@ func build_car() -> void:
             frames.append(tex("car_%s_%d.png"%[a,i]))
         car_textures[a]=frames
     main_sprite=sprite("car_rear3q_0.png",car,Vector3(0,1.04,0),.015)
-    flame=sprite("flame.png",car,Vector3(2.16,.70,.85),.017)
+    flame=sprite("flame.png",car,Vector3(2.82,1.35,.30),.014)
     flame.no_depth_test=true
     flame.visible=false
     dust=sprite("dust.png",car,Vector3(-1.65,.25,.28),.014)
