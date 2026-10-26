@@ -1,0 +1,43 @@
+name: Pixel Garage isolated Godot 2.5D pixel-art film
+on:
+  push:
+    branches: [experiment/pixel-garage-godot-25d-oct26]
+    paths:
+      - '.github/workflows/pixel-garage-godot-25d.yml'
+      - 'experiments/pixel-garage-godot-25d/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install free software rendering and image tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb ffmpeg libgl1-mesa-dri mesa-utils python3-pip
+          python3 -m pip install --break-system-packages numpy Pillow
+      - name: Install original official Godot 4.4.1
+        run: |
+          curl -fL --retry 4 -o /tmp/godot.zip 'https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip'
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x /tmp/Godot_v4.4.1-stable_linux.x86_64
+          /tmp/Godot_v4.4.1-stable_linux.x86_64 --version
+      - name: Render real Godot sprite-depth film and audible TikTok
+        env:
+          GODOT_BIN: /tmp/Godot_v4.4.1-stable_linux.x86_64
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: bash experiments/pixel-garage-godot-25d/render/render.sh
+      - name: Archive Godot scene, sprite showcase, final MP4, screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-garage-real-godot-25d-video
+          if-no-files-found: warn
+          path: |
+            experiments/pixel-garage-godot-25d/render/output/pixel-garage-25d-tiktok.mp4
+            experiments/pixel-garage-godot-25d/render/output/proof-*.png
+            experiments/pixel-garage-godot-25d/render/output/verification.json
+            experiments/pixel-garage-godot-25d/assets/sprite_showcase.png
