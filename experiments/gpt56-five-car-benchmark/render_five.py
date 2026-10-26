@@ -15,7 +15,10 @@ def ease(t):
     return t*t*(3-2*t)
 
 def rect(d, box, fill):
-    d.rectangle(tuple(int(x) for x in box), fill=fill)
+    x0,y0,x1,y1=(int(x) for x in box)
+    if x1 < x0: x0,x1=x1,x0
+    if y1 < y0: y0,y1=y1,y0
+    d.rectangle((x0,y0,x1,y1), fill=fill)
 
 def poly(d, pts, fill):
     d.polygon([(int(x),int(y)) for x,y in pts], fill=fill)
