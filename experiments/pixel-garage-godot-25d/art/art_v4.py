@@ -100,7 +100,83 @@ def label(t):
  except OSError:f=ImageFont.load_default()
  d.text((5,10),t,font=f,fill="#f8e6c8",stroke_width=2,stroke_fill="#172833")
  return im
+def wrc_rear(angle=0):
+ """Original five-door rally widebody, consistently redrawn for each wheel phase."""
+ im=Image.new("RGBA",(246,160));d=ImageDraw.Draw(im)
+ C={"ink":"#172735","near":"#192f3b","dark":"#244653","body":"#ede7d8","white":"#fff0d6","mid":"#c0ced0","glass":"#244b5e","highglass":"#66949a","aqua":"#327977","orange":"#ef7053","amber":"#f3c47b","wheel":"#151f2d","rubber":"#222d35","rim":"#a7b7b1","lit":"#faf4dc","shadow":"#273b45"}
+ def P(p,c):d.polygon(p,fill=C.get(c,c))
+ def L(p,c,w=1):d.line(p,fill=C.get(c,c),width=w)
+ def B(a,c):d.rectangle(a,fill=C.get(c,c))
+ def E(a,c):d.ellipse(a,fill=C.get(c,c))
+ E((15,120,230,147),"#10232f77")
+ P([(18,81),(30,66),(46,59),(59,48),(83,34),(112,30),(147,33),(164,42),(185,61),(221,72),(237,83),(240,106),(221,119),(202,125),(50,124),(18,111)],"ink")
+ P([(22,85),(40,65),(64,59),(105,54),(158,58),(219,79),(232,87),(233,108),(206,117),(48,116),(23,107)],"dark")
+ P([(27,85),(42,70),(67,61),(110,55),(152,58),(213,79),(230,88),(231,106),(205,112),(46,111),(26,105)],"body")
+ P([(111,89),(150,74),(207,84),(223,94),(210,111),(140,115),(97,109)],"mid")
+ P([(45,68),(52,49),(76,31),(108,23),(146,27),(176,49),(170,64),(98,75)],"ink")
+ P([(51,65),(59,49),(80,35),(110,28),(144,31),(167,50),(162,61),(100,70)],"mid")
+ P([(55,44),(38,39),(37,33),(118,20),(170,27),(182,36),(111,29)],"ink")
+ P([(47,39),(118,25),(168,31)],"amber")
+ P([(116,21),(137,21),(145,28),(122,29)],"ink")
+ B((122,23,137,25),"aqua")
+ P([(39,74),(58,48),(81,40),(97,68),(67,78)],"ink")
+ P([(45,72),(61,50),(79,44),(91,67),(65,74)],"glass")
+ L([(59,52),(79,45)],"highglass",2)
+ L([(47,70),(63,53)],"highglass",1)
+ P([(97,40),(108,33),(140,34),(159,50),(151,63),(112,67)],"ink")
+ P([(103,42),(113,37),(138,38),(153,51),(147,60),(115,63)],"glass")
+ L([(111,39),(137,40)],"highglass",2)
+ P([(95,41),(101,40),(117,66),(109,68)],"ink")
+ P([(23,82),(39,70),(79,73),(95,85),(95,110),(46,114),(23,106)],"ink")
+ P([(29,82),(41,75),(76,77),(88,86),(89,100),(44,104),(30,101)],"glass")
+ L([(42,78),(76,80)],"highglass",2)
+ P([(23,85),(30,82),(34,101),(24,104)],"orange")
+ P([(88,88),(96,90),(97,106),(89,105)],"orange")
+ B((25,91,29,97),"amber")
+ B((89,93,92,100),"amber")
+ P([(30,106),(95,109),(98,116),(38,119)],"near")
+ B((52,107,79,113),"white")
+ B((57,109,76,112),"ink")
+ P([(108,77),(137,70),(173,71),(206,81),(229,91),(194,98),(152,91)],"aqua")
+ P([(137,78),(174,72),(211,83),(204,95),(164,92)],"amber")
+ P([(168,76),(187,77),(201,85),(190,94),(174,88)],"orange")
+ P([(106,99),(149,94),(205,104),(225,102),(204,112),(105,115)],"aqua")
+ L([(112,73),(149,66),(189,73),(224,86)],"white",2)
+ L([(107,97),(123,104),(122,113)],"shadow")
+ L([(160,80),(162,109)],"shadow")
+ L([(102,114),(206,114)],"near",3)
+ B((151,91,162,93),"ink")
+ B((152,90,161,90),"white")
+ P([(172,65),(179,58),(186,60),(187,66)],"ink")
+ for x,y,rad in [(68,121,22),(178,124,18)]:
+  E((x-rad-6,y-rad-6,x+rad+6,y+rad+5),"ink")
+  E((x-rad-2,y-rad-2,x+rad+2,y+rad+2),"rubber")
+  E((x-rad+5,y-rad+5,x+rad-5,y+rad-5),"rim")
+  E((x-rad+8,y-rad+8,x+rad-8,y+rad-8),"shadow")
+  for a in range(0,360,45):
+   theta=math.radians(a+angle);r=rad-6
+   xx=int(r*math.cos(theta));yy=int(r*math.sin(theta))
+   L([(x-xx,y-yy),(x+xx,y+yy)],"rim",2)
+  E((x-5,y-5,x+5,y+5),"ink")
+  E((x-2,y-2,x+2,y+2),"white")
+ P([(38,115),(49,117),(48,140),(36,136)],"orange")
+ P([(203,120),(211,118),(213,139),(201,136)],"near")
+ B((27,116,41,121),"ink")
+ B((32,118,41,121),"rim")
+ B((19,108,25,113),"amber")
+ return im
+
+def recolor_car(im):
+ pixels=im.load()
+ replacements={(211,244,107):(238,189,111),(93,148,125):(46,119,122),(237,105,87):(238,101,75),(231,245,232):(231,224,205),(244,233,208):(252,239,215)}
+ for y in range(im.height):
+  for x in range(im.width):
+   p=pixels[x,y]
+   if len(p)>3 and p[3]>0 and p[:3] in replacements:pixels[x,y]=(*replacements[p[:3]],p[3])
+ return im
+
 def refine(im,angle):
+ im=recolor_car(im)
  d=ImageDraw.Draw(im)
  if angle=="side":
   d.line([(35,75),(78,69)],fill="#fcf1d8",width=2)
@@ -122,9 +198,9 @@ def refine(im,angle):
  return im
 def upgrade(out,side,quarter,face):
  for p in range(4):
-  for n,im,angle in [("car_side",side(p*22.5),"side"),("car_rear_34",quarter(True,p*22.5),"rear"),("car_front_34",quarter(False,p*22.5),"front")]:
+  for n,im,angle in [("car_side",side(p*22.5),"side"),("car_rear_34",wrc_rear(p*22.5),"rear"),("car_front_34",quarter(False,p*22.5),"front")]:
    refine(im,angle).save(out/f"{n}_{p}.png")
- for n,im,angle in [("car_side",side(),"side"),("car_rear_34",quarter(True),"rear"),("car_front_34",quarter(False),"front")]:
+ for n,im,angle in [("car_side",side(),"side"),("car_rear_34",wrc_rear(),"rear"),("car_front_34",quarter(False),"front")]:
   refine(im,angle).save(out/f"{n}.png")
  for i in range(9):pine(i).save(out/f"pine_{i}.png")
  for i in range(7):shrub(i,"bush").save(out/f"bush_{i}.png")
