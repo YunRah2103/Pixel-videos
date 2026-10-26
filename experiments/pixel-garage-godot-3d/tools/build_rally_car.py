@@ -194,5 +194,11 @@ rounded_box("40_HoodAirExtraction",(0,.99,-1.25),(.43,.019,.18),black,.01)
 rounded_box("41_ExhaustTailpipeOuter",(.50,.37,2.225),(.18,.135,.20),light,.025)
 rounded_box("42_ExhaustOpening",(.50,.37,2.336),(.116,.09,.01),black,.007)
 # Final hand-edged smooth shading preserved; no photoreal textures, all geometry.
+# Convert our Godot Y-up coordinates through Blender Z-up into glTF Y-up.
+# R_x(+90) in Blender is the inverse of Blender->glTF (x,z,-y).
+from mathutils import Matrix
+axis_fix=Matrix.Rotation(pi/2,4,"X")
+for ob in list(bpy.context.scene.objects):
+    ob.matrix_world = axis_fix @ ob.matrix_world
 bpy.ops.export_scene.gltf(filepath=OUT,export_format="GLB",use_selection=False,export_apply=True)
 print("PIXEL_GARAGE_NEW_REAL_3D_BODY:",OUT,os.path.getsize(OUT),"bytes")
