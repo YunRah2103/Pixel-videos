@@ -21,7 +21,7 @@ test -s "$OUT/godot-actual-3d.avi"
 RAW_SIZE="$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "$OUT/godot-actual-3d.avi")"
 test "$RAW_SIZE" = "270x480" || (echo "Unexpected Godot dimensions $RAW_SIZE"; exit 4)
 python3 render/make_audio.py
-ffmpeg -hide_banner -loglevel warning -y -i "$OUT/godot-actual-3d.avi" -i "$OUT/original-engine-audio.wav" -vf 'scale=1080:1920:flags=neighbor,setsar=1' -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -r 30 -c:a aac -b:a 192k -ar 48000 -t 14.000 -shortest "$OUT/pixel-garage-godot-3d-tiktok.mp4"
+ffmpeg -hide_banner -loglevel warning -y -i "$OUT/godot-actual-3d.avi" -i "$OUT/original-engine-audio.wav" -map 0:v:0 -map 1:a:0 -vf 'scale=1080:1920:flags=neighbor,setsar=1' -c:v libx264 -preset medium -crf 17 -pix_fmt yuv420p -r 30 -c:a aac -b:a 192k -ar 48000 -t 14.000 -shortest "$OUT/pixel-garage-godot-3d-tiktok.mp4"
 for marker in '1.25 rear' '3.15 side' '6.05 front' '8.10 exhaust' '13.10 finale'; do
   read -r seconds name <<< "$marker"
   ffmpeg -hide_banner -loglevel error -y -ss "$seconds" -i "$OUT/pixel-garage-godot-3d-tiktok.mp4" -frames:v 1 "$OUT/proof-$name.png"
