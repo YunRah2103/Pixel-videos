@@ -56,6 +56,10 @@ func _ready() -> void:
     var world := WorldEnvironment.new()
     world.environment = env
     add_child(world)
+    # Huge *2D illustrated* mountain billboard at the farthest depth,
+    # placed on the optical axis instead of overlaying the rendered forest.
+    var far_sky := sprite_at("sky", 0.0, -390.0, 460.0)
+    far_sky.position.y = -51.0
     floor_plane(220.0, 440.0, -0.12, "grass", 34.0, 76.0)
     floor_plane(8.3, 440.0, -0.085, "gravel", 1.0, 106.0)
     var rng := RandomNumberGenerator.new()
@@ -75,8 +79,8 @@ func _ready() -> void:
     for i in range(4):
         flame_sheets.append(tex("flame_%d" % i))
         dust_sheets.append(tex("dust_%d" % i))
-    car = sprite_at("rally_0", 0, -7.5, 3.25)
-    flame = sprite_at("flame_0", -1.33, -7.39, .60)
+    car = sprite_at("rally_0", 0, -7.5, 3.65)
+    flame = sprite_at("flame_0", -1.12, -7.39, .60)
     dust = sprite_at("dust_0", -.6, -5.7, .6)
     cam = Camera3D.new()
     cam.fov = 47
@@ -96,9 +100,9 @@ func update_scene(t: float) -> void:
     var travel: float = SPEED * t
     var lean: float = .22 * sin(t * .7)
     var bounce: float = .026 * sin(t * 19) + .014 * sin(t * 31)
-    car.position = Vector3(lean, 1.6 + bounce, -7.5 - travel)
+    car.position = Vector3(lean, 1.22 + bounce, -7.5 - travel)
     car.texture = car_sheets[int(floor(travel * 4.3)) % 8]
-    flame.position = Vector3(lean - 1.33, .83 + bounce, -7.39 - travel)
+    flame.position = Vector3(lean - 1.12, .46 + bounce, -7.39 - travel)
     flame.texture = flame_sheets[int(floor(t * 23)) % 4]
     flame.visible = (t > .55 and t < .83) or (t > 4.7 and t < 4.98) or (t > 7.07 and t < 7.3)
     dust.position = Vector3(lean - .6, .38, -5.7 - travel)
