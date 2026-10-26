@@ -253,3 +253,23 @@ for k in range(4):
     im.putalpha(im.getchannel("A").point(lambda a:min(95,a)))
     save(im,"dust_"+str(k))
 print("Original 3/4 sprite, trees, grass, rock, dust, sky and gravel for V2 complete")
+
+
+# FINAL hand-illustrated perspective refinement. Compress the receding nose
+# of every same-source sprite, not the 3D engine's output.
+for k in range(8):
+    pth=os.path.join(OUT,"rally_%d.png" % k)
+    src=Image.open(pth).convert("RGBA")
+    dest=Image.new("RGBA",src.size,(0,0,0,0))
+    inp=src.load();out=dest.load()
+    for y in range(src.height):
+        for x in range(src.width):
+            color=inp[x,y]
+            if color[3]==0:continue
+            if x<120:
+                xx=x+19; yy=y
+            else:
+                xx=139+round((x-120)*.64)
+                yy=y-round((x-120)*.28)
+            if 0<=xx<src.width and 0<=yy<src.height:out[xx,yy]=color
+    dest.save(pth)
