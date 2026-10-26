@@ -10,7 +10,7 @@ python3 build_art.py
 python3 build_audio.py
 godot --headless --path . --editor --import --quit
 godot --headless --path . --write-movie godot_movie.avi --fixed-fps 30 --quit-after 450
-ffmpeg -y -i godot_movie.avi -i original_audio.wav -vf "scale=1080:1920:flags=neighbor" -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest pixel-garage-godot.mp4
+ffmpeg -y -i godot_movie.avi -i original_audio.wav -map 0:v:0 -map 1:a:0 -vf "scale=1080:1920:flags=neighbor" -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest pixel-garage-godot.mp4
 ```
 
 Or use the isolated workflow `.github/workflows/pixel-garage-godot-25d.yml` to build and retrieve a Godot-generated MP4 artifact.
