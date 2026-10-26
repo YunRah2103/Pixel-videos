@@ -1,0 +1,50 @@
+name: Pixel Garage — Godot pixel parallax render
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/pixel-garage-handdrawn-parallax
+    paths:
+      - 'experiments/pixel-garage-godot-25d/**'
+      - '.github/workflows/pixel-garage-godot-25d.yml'
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Godot and dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg unzip xvfb libgl1 python3-pil python3-numpy
+          wget -q https://github.com/godotengine/godot/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -O /tmp/godot.zip
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.5.2-stable_linux.x86_64
+          /tmp/godot/Godot_v4.5.2-stable_linux.x86_64 --version
+      - name: Generate original editable artwork and audio
+        run: |
+          cd experiments/pixel-garage-godot-25d
+          /usr/bin/python3 build_art.py
+          /usr/bin/python3 build_audio.py
+      - name: Godot import and real movie maker render
+        run: |
+          cd experiments/pixel-garage-godot-25d
+          /tmp/godot/Godot_v4.5.2-stable_linux.x86_64 --headless --path . --editor --import --quit
+          /tmp/godot/Godot_v4.5.2-stable_linux.x86_64 --headless --path . --write-movie godot_movie.avi --fixed-fps 30 --quit-after 450
+      - name: MP4, visual samples and verification
+        run: |
+          cd experiments/pixel-garage-godot-25d
+          ffmpeg -hide_banner -loglevel error -y -i godot_movie.avi -i original_audio.wav -vf 'scale=1080:1920:flags=neighbor' -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest pixel-garage-godot.mp4
+          ffprobe -v error -show_entries format=duration:stream=width,height,nb_frames,r_frame_rate,codec_name -of json pixel-garage-godot.mp4 > godot_render_probe.json
+          ffmpeg -hide_banner -loglevel error -y -ss 0.9 -i pixel-garage-godot.mp4 -frames:v 1 godot-frame-01.png
+          ffmpeg -hide_banner -loglevel error -y -ss 7.0 -i pixel-garage-godot.mp4 -frames:v 1 godot-frame-02.png
+          ffmpeg -hide_banner -loglevel error -y -ss 13.4 -i pixel-garage-godot.mp4 -frames:v 1 godot-frame-03.png
+          test "$(ffprobe -v error -select_streams v -show_entries stream=width -of csv=p=0 pixel-garage-godot.mp4)" = 1080
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixel-garage-actual-godot-video
+          path: |
+            experiments/pixel-garage-godot-25d/pixel-garage-godot.mp4
+            experiments/pixel-garage-godot-25d/godot_render_probe.json
+            experiments/pixel-garage-godot-25d/godot-frame-*.png
+          retention-days: 15
