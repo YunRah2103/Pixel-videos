@@ -7,10 +7,10 @@ run/main_scene="res://scenes/film.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 
 [display]
-window/size/viewport_width=360
-window/size/viewport_height=640
-window/size/window_width_override=720
-window/size/window_height_override=1280
+window/size/viewport_width=270
+window/size/viewport_height=480
+window/size/window_width_override=540
+window/size/window_height_override=960
 window/stretch/mode="viewport"
 
 [rendering]
