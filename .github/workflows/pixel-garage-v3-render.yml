@@ -1,0 +1,44 @@
+name: Pixel Garage V3 original-art 10s render
+on:
+  push:
+    branches:
+      - exp/nightfall-run-v3-full-art-redesign-20261026
+  workflow_dispatch:
+jobs:
+  render-actual-mp4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install original-art renderer dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install Pillow
+      - name: Generate editable scene and final coupe source sprites
+        run: |
+          python studio/experiments/nightfall-run-v3/src/v3_art.py
+          python studio/experiments/nightfall-run-v3/src/v3_overhang.py
+          python studio/experiments/nightfall-run-v3/src/v3_car.py
+      - name: Render complete film from source
+        run: |
+          python studio/experiments/nightfall-run-v3/src/v3_render.py --output nightfall_run_v3_10s.mp4
+      - name: Assert format, 300 frames and full successful decode
+        run: |
+          set -euxo pipefail
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=nb_frames -of default=noprint_wrappers=1:nokey=1 nightfall_run_v3_10s.mp4)" = 300
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width -of default=noprint_wrappers=1:nokey=1 nightfall_run_v3_10s.mp4)" = 1080
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=height -of default=noprint_wrappers=1:nokey=1 nightfall_run_v3_10s.mp4)" = 1920
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate -of default=noprint_wrappers=1:nokey=1 nightfall_run_v3_10s.mp4)" = 30/1
+          ffmpeg -v error -i nightfall_run_v3_10s.mp4 -f null -
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pixel-garage-nightfall-v3-mp4-and-native-assets
+          retention-days: 30
+          path: |
+            nightfall_run_v3_10s.mp4
+            studio/experiments/nightfall-run-v3/src/v3_assets/*.png
+            studio/experiments/nightfall-run-v3/v3_stills/*.png
+          if-no-files-found: error
