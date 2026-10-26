@@ -1,0 +1,19 @@
+config_version=5
+[application]
+config/name="PIXEL GARAGE / Real Depth 2.5D"
+run/main_scene="res://scenes/film.tscn"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+[display]
+window/size/viewport_width=360
+window/size/viewport_height=640
+window/size/window_width_override=360
+window/size/window_height_override=640
+window/stretch/mode="viewport"
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+anti_aliasing/quality/msaa_3d=0
+anti_aliasing/quality/use_taa=false
+anti_aliasing/quality/screen_space_aa=0
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.35,0.55,0.60,1)
