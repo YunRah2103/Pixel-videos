@@ -1,0 +1,497 @@
+{
+  "schema": 1,
+  "last_reviewed": "2026-10-26",
+  "policy": "Free-to-access catalog; entries are integrations/documented options, NOT claims of local installation. Confirm current terms and asset-level licensing.",
+  "tools": [
+    {
+      "id": "pixelorama",
+      "name": "Pixelorama",
+      "stage": "sprites",
+      "interface": "cli",
+      "probe": "Pixelorama",
+      "source": "https://github.com/Orama-Interactive/Pixelorama",
+      "setup": "Official releases; existing scripts/install_tools.py --pixelorama",
+      "purpose": "Layered car sprites, frame cels and CLI sprite-sheet export"
+    },
+    {
+      "id": "libresprite",
+      "name": "LibreSprite",
+      "stage": "sprites",
+      "interface": "cli",
+      "probe": "libresprite",
+      "source": "https://github.com/LibreSprite/LibreSprite",
+      "setup": "Official releases or apt install libresprite where available",
+      "purpose": "Aseprite-compatible sprite frames and CLI sheets"
+    },
+    {
+      "id": "besprited",
+      "name": "Besprited",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "besprited",
+      "source": "https://github.com/veritaware/Besprited",
+      "setup": "Official releases",
+      "purpose": "Frame animation with JS scripting; verify script compatibility per release"
+    },
+    {
+      "id": "piskel",
+      "name": "Piskel",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "piskel",
+      "source": "https://github.com/piskelapp/piskel",
+      "setup": "Browser at piskelapp.com; optional desktop",
+      "purpose": "Fast hand-editable 2D sprite cels"
+    },
+    {
+      "id": "grafx2",
+      "name": "GrafX2",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "grafx2",
+      "source": "https://github.com/GrafX2/grafX2",
+      "setup": "apt install grafx2",
+      "purpose": "Indexed palettes and clustered retro art"
+    },
+    {
+      "id": "pixieditor",
+      "name": "PixiEditor",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "PixiEditor",
+      "source": "https://github.com/PixiEditor/PixiEditor",
+      "setup": "Official releases",
+      "purpose": "Vector and pixel asset editing"
+    },
+    {
+      "id": "krita",
+      "name": "Krita",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "krita",
+      "source": "https://krita.org",
+      "setup": "apt install krita",
+      "purpose": "Environment painting and editable layered art"
+    },
+    {
+      "id": "gimp",
+      "name": "GIMP",
+      "stage": "sprites",
+      "interface": "cli",
+      "probe": "gimp",
+      "source": "https://www.gimp.org",
+      "setup": "apt install gimp",
+      "purpose": "Palette adjustment, transparency and compositing"
+    },
+    {
+      "id": "mtpaint",
+      "name": "mtPaint",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "mtpaint",
+      "source": "https://github.com/wjaguar/mtPaint",
+      "setup": "apt install mtpaint",
+      "purpose": "Precision indexed bitmap editing"
+    },
+    {
+      "id": "pinta",
+      "name": "Pinta",
+      "stage": "sprites",
+      "interface": "gui",
+      "probe": "pinta",
+      "source": "https://www.pinta-project.com",
+      "setup": "apt install pinta",
+      "purpose": "Lightweight image and sprite touchups"
+    },
+    {
+      "id": "pixa-pics",
+      "name": "Pixa.Pics",
+      "stage": "sprites",
+      "interface": "web",
+      "probe": "",
+      "source": "https://github.com/pixa-pics/pixa-pics.github.io",
+      "setup": "Web app; no machine installation",
+      "purpose": "Browser pixel editing and reference drafts"
+    },
+    {
+      "id": "pixelcraft",
+      "name": "PixelCraft",
+      "stage": "sprites",
+      "interface": "web",
+      "probe": "",
+      "source": "https://github.com/rgab1508/PixelCraft",
+      "setup": "Web build; no machine installation",
+      "purpose": "Browser editor for small pixel assets"
+    },
+    {
+      "id": "tiled",
+      "name": "Tiled",
+      "stage": "levels",
+      "interface": "cli",
+      "probe": "tiled",
+      "source": "https://github.com/mapeditor/tiled",
+      "setup": "apt install tiled xvfb",
+      "purpose": "Editable scrolling countryside maps; CLI TMX-to-JSON"
+    },
+    {
+      "id": "ldtk",
+      "name": "LDtk",
+      "stage": "levels",
+      "interface": "gui",
+      "probe": "ldtk",
+      "source": "https://github.com/deepnight/ldtk",
+      "setup": "Official releases",
+      "purpose": "Level layers, entities and palette rules"
+    },
+    {
+      "id": "ogmo",
+      "name": "Ogmo Editor Community",
+      "stage": "levels",
+      "interface": "gui",
+      "probe": "OgmoEditor3",
+      "source": "https://github.com/Ogmo-Editor-3/OgmoEditor3-CE",
+      "setup": "Official releases",
+      "purpose": "Precise objects, scene stages and collision masks"
+    },
+    {
+      "id": "pytmx",
+      "name": "PyTMX",
+      "stage": "levels",
+      "interface": "python",
+      "probe": "pytmx",
+      "source": "https://github.com/bitcraft/pytmx",
+      "setup": "python3 -m pip install pytmx",
+      "purpose": "Load original Tiled TMX maps in Python"
+    },
+    {
+      "id": "pytiled-parser",
+      "name": "pytiled-parser",
+      "stage": "levels",
+      "interface": "python",
+      "probe": "pytiled_parser",
+      "source": "https://github.com/python-tiled/pytiled_parser",
+      "setup": "python3 -m pip install pytiled-parser",
+      "purpose": "Parse Tiled JSON/TMX with type-aware Python"
+    },
+    {
+      "id": "godot",
+      "name": "Godot 4",
+      "stage": "motion",
+      "interface": "cli",
+      "probe": "godot",
+      "source": "https://github.com/godotengine/godot",
+      "setup": "Official Godot 4 releases; existing scripts/install_tools.py --godot",
+      "purpose": "Pixel-locked 2D/2.5D scene animation and Movie Maker"
+    },
+    {
+      "id": "blender",
+      "name": "Blender",
+      "stage": "motion",
+      "interface": "cli",
+      "probe": "blender",
+      "source": "https://www.blender.org",
+      "setup": "apt install blender",
+      "purpose": "2.5D layouts and camera planning; not an automatic pixel-art filter"
+    },
+    {
+      "id": "pencil2d",
+      "name": "Pencil2D",
+      "stage": "motion",
+      "interface": "gui",
+      "probe": "pencil2d",
+      "source": "https://github.com/pencil2d/pencil",
+      "setup": "Official releases or apt install pencil2d",
+      "purpose": "Simple 2D keyframes and overlays"
+    },
+    {
+      "id": "opentoonz",
+      "name": "OpenToonz",
+      "stage": "motion",
+      "interface": "gui",
+      "probe": "opentoonz",
+      "source": "https://github.com/opentoonz/opentoonz",
+      "setup": "Official releases",
+      "purpose": "Layered traditional animation workflow"
+    },
+    {
+      "id": "synfig",
+      "name": "Synfig Studio",
+      "stage": "motion",
+      "interface": "gui",
+      "probe": "synfigstudio",
+      "source": "https://github.com/synfig/synfig",
+      "setup": "Official releases",
+      "purpose": "Character cutout and controlled tweening"
+    },
+    {
+      "id": "love2d",
+      "name": "LÖVE",
+      "stage": "motion",
+      "interface": "cli",
+      "probe": "love",
+      "source": "https://love2d.org",
+      "setup": "apt install love",
+      "purpose": "Code-driven sprite animation loops"
+    },
+    {
+      "id": "pyxel",
+      "name": "Pyxel",
+      "stage": "motion",
+      "interface": "python",
+      "probe": "pyxel",
+      "source": "https://github.com/kitao/pyxel",
+      "setup": "python3 -m pip install pyxel",
+      "purpose": "Limited-resolution retro runtime and palette rules"
+    },
+    {
+      "id": "pixijs",
+      "name": "PixiJS",
+      "stage": "motion",
+      "interface": "npm",
+      "probe": "pixi.js",
+      "source": "https://github.com/pixijs/pixijs",
+      "setup": "npm install (already declared in root package.json)",
+      "purpose": "Sprite/parallax WebGL renderer"
+    },
+    {
+      "id": "pixi-tilemap",
+      "name": "@pixi/tilemap",
+      "stage": "motion",
+      "interface": "npm",
+      "probe": "@pixi/tilemap",
+      "source": "https://github.com/pixijs-userland/tilemap",
+      "setup": "npm install @pixi/tilemap",
+      "purpose": "Fast tile layers; select version compatible with PixiJS 8"
+    },
+    {
+      "id": "pixi-viewport",
+      "name": "pixi-viewport",
+      "stage": "motion",
+      "interface": "npm",
+      "probe": "pixi-viewport",
+      "source": "https://github.com/pixijs-userland/pixi-viewport",
+      "setup": "npm install pixi-viewport",
+      "purpose": "Pixel-aware camera panning and zoom"
+    },
+    {
+      "id": "phaser",
+      "name": "Phaser",
+      "stage": "motion",
+      "interface": "npm",
+      "probe": "phaser",
+      "source": "https://github.com/phaserjs/phaser",
+      "setup": "npm install phaser",
+      "purpose": "Sprite timelines and deterministic 2D game scenes"
+    },
+    {
+      "id": "laigter",
+      "name": "Laigter",
+      "stage": "lighting",
+      "interface": "cli",
+      "probe": "laigter",
+      "source": "https://github.com/azagaya/laigter",
+      "setup": "Free official release",
+      "purpose": "Optional sprite normal/specular/occlusion maps; guard against smoothing"
+    },
+    {
+      "id": "material-maker",
+      "name": "Material Maker",
+      "stage": "lighting",
+      "interface": "gui",
+      "probe": "material_maker",
+      "source": "https://github.com/RodZill4/material-maker",
+      "setup": "Official releases",
+      "purpose": "Procedural material authoring for selective backgrounds"
+    },
+    {
+      "id": "pillow",
+      "name": "Pillow",
+      "stage": "processing",
+      "interface": "python",
+      "probe": "PIL",
+      "source": "https://github.com/python-pillow/Pillow",
+      "setup": "python3 -m pip install Pillow",
+      "purpose": "Deterministic native-pixel art, spritesheets and inspection"
+    },
+    {
+      "id": "sharp",
+      "name": "Sharp",
+      "stage": "processing",
+      "interface": "npm",
+      "probe": "sharp",
+      "source": "https://github.com/lovell/sharp",
+      "setup": "npm install sharp",
+      "purpose": "High-performance PNG/layer export and integer scaling"
+    },
+    {
+      "id": "imagemagick",
+      "name": "ImageMagick",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "magick",
+      "source": "https://imagemagick.org",
+      "setup": "apt install imagemagick (Linux may expose convert rather than magick)",
+      "purpose": "Pixel-preserving conversions and contact sheets"
+    },
+    {
+      "id": "graphicsmagick",
+      "name": "GraphicsMagick",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "gm",
+      "source": "https://www.graphicsmagick.org",
+      "setup": "apt install graphicsmagick",
+      "purpose": "Image batch transforms and palette conversions"
+    },
+    {
+      "id": "libvips",
+      "name": "libvips",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "vips",
+      "source": "https://github.com/libvips/libvips",
+      "setup": "apt install libvips-tools",
+      "purpose": "Large image and layer processing"
+    },
+    {
+      "id": "pngquant",
+      "name": "pngquant",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "pngquant",
+      "source": "https://pngquant.org",
+      "setup": "apt install pngquant",
+      "purpose": "Optional indexed PNG reduction; inspect dithering"
+    },
+    {
+      "id": "oxipng",
+      "name": "Oxipng",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "oxipng",
+      "source": "https://github.com/oxipng/oxipng",
+      "setup": "cargo install oxipng or official release",
+      "purpose": "Lossless PNG optimization"
+    },
+    {
+      "id": "gifsicle",
+      "name": "Gifsicle",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "gifsicle",
+      "source": "https://www.lcdf.org/gifsicle",
+      "setup": "apt install gifsicle",
+      "purpose": "Animated GIF frame inspection and repair"
+    },
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "ffmpeg",
+      "source": "https://ffmpeg.org",
+      "setup": "apt install ffmpeg",
+      "purpose": "Final frame-accurate H.264 encode and nearest-neighbour scale"
+    },
+    {
+      "id": "ffprobe",
+      "name": "FFprobe",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "ffprobe",
+      "source": "https://ffmpeg.org",
+      "setup": "apt install ffmpeg",
+      "purpose": "Decode metadata and verify fps/frame dimensions"
+    },
+    {
+      "id": "free-tex-packer-cli",
+      "name": "Free Texture Packer CLI",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "free-tex-packer-cli",
+      "source": "https://github.com/odrick/free-tex-packer-cli",
+      "setup": "npm install -g free-tex-packer-cli",
+      "purpose": "Atlas JSON for PixiJS/Phaser; supply .ftpp project"
+    },
+    {
+      "id": "apngasm",
+      "name": "APNG Assembler",
+      "stage": "processing",
+      "interface": "cli",
+      "probe": "apngasm",
+      "source": "https://github.com/apngasm/apngasm",
+      "setup": "Official releases/build from source",
+      "purpose": "Frame-accurate animated PNG assets"
+    },
+    {
+      "id": "audacity",
+      "name": "Audacity",
+      "stage": "audio",
+      "interface": "gui",
+      "probe": "audacity",
+      "source": "https://github.com/audacity/audacity",
+      "setup": "apt install audacity",
+      "purpose": "Manual sound editing and VO cleanup"
+    },
+    {
+      "id": "lmms",
+      "name": "LMMS",
+      "stage": "audio",
+      "interface": "gui",
+      "probe": "lmms",
+      "source": "https://github.com/LMMS/lmms",
+      "setup": "apt install lmms",
+      "purpose": "Free original background music loops"
+    },
+    {
+      "id": "bosca-ceoil",
+      "name": "Bosca Ceoil",
+      "stage": "audio",
+      "interface": "gui",
+      "probe": "bosca-ceoil",
+      "source": "https://github.com/terrycavanagh/boscaceoil",
+      "setup": "Official free distribution",
+      "purpose": "Simple chiptune music and melody prototypes"
+    },
+    {
+      "id": "sfxr",
+      "name": "sfxr",
+      "stage": "audio",
+      "interface": "gui",
+      "probe": "sfxr",
+      "source": "https://www.drpetter.se/project_sfxr.html",
+      "setup": "Free standalone tool",
+      "purpose": "Short retro engine/impact SFX"
+    },
+    {
+      "id": "lospec",
+      "name": "Lospec palette lists",
+      "stage": "reference",
+      "interface": "web",
+      "probe": "",
+      "source": "https://lospec.com/palette-list",
+      "setup": "Free website; review palette-specific use terms",
+      "purpose": "Consistent limited-color palette selection"
+    },
+    {
+      "id": "kenney",
+      "name": "Kenney free assets",
+      "stage": "reference",
+      "interface": "web",
+      "probe": "",
+      "source": "https://kenney.nl/assets",
+      "setup": "Free asset collections; verify per-pack licenses",
+      "purpose": "Temporary 2D reference assets; never fake original artwork"
+    },
+    {
+      "id": "opengameart",
+      "name": "OpenGameArt",
+      "stage": "reference",
+      "interface": "web",
+      "probe": "",
+      "source": "https://opengameart.org",
+      "setup": "Free collection with asset-specific licenses",
+      "purpose": "Reference and licensed sample sprites/audio"
+    }
+  ]
+}

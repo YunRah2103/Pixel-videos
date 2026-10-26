@@ -1,5 +1,21 @@
 # Pixel Videos — Cinematic Pixel-Art Animation Studio
 
+## New: 49-tool free Pixel Toolbox (agent-friendly)
+
+The [Pixel Toolbox catalog](studio/toolbox/catalog.json) lists **49 free/free-to-use choices** for sprites, backgrounds, tilemaps, 2.5D, lighting, image processing, audio and quality checks. It is deliberately honest about what is locally installed.
+
+Start here:
+```bash
+python3 scripts/pixel_toolbox.py doctor
+python3 scripts/pixel_toolbox.py recommend sprites --headless
+python3 scripts/pixel_toolbox.py recommend motion --headless
+bash scripts/setup_pixel_toolbox.sh --show
+```
+
+See **[2026 Free Toolbox instructions](docs/PIXEL_TOOLBOX_2026.md)**. A separate [pixel-toolbox GitHub Action](.github/workflows/pixel-toolbox-ci.yml) produces source sprites, spritesheet JSON, nearest-neighbour QA and a real FFmpeg test video. **No existing film, mainline scene, or historical branch is overwritten.** The 49 options are not 49 pre-installed apps.
+
+---
+
 ![Sunset Harbor demo still](examples/sunset-harbor-poster.png)
 
 **Agent-friendly, code-driven 2D / 2.5D / 3D pixel-art filmmaking.**
