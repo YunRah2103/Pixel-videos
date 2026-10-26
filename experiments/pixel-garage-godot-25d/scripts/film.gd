@@ -76,7 +76,7 @@ func build_road() -> void:
     m.albedo_texture=tex("gravel.png")
     m.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST
     m.cull_mode=BaseMaterial3D.CULL_DISABLED
-    m.uv1_scale=Vector3(3,28,1)
+    m.uv1_scale=Vector3(6,55,1)
     m.albedo_color=Color("#e6d1b4")
     m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
     var verts=PackedVector3Array()
@@ -157,7 +157,8 @@ func build_car() -> void:
             frames.append(tex("car_%s_%d.png"%[a,i]))
         car_textures[a]=frames
     main_sprite=sprite("car_rear3q_0.png",car,Vector3(0,1.04,0),.015)
-    flame=sprite("flame.png",car,Vector3(.98,.68,.06),.009)
+    flame=sprite("flame.png",car,Vector3(2.16,.70,.85),.017)
+    flame.no_depth_test=true
     flame.visible=false
     dust=sprite("dust.png",car,Vector3(-1.65,.25,.28),.014)
     dust.modulate=Color(1.,1.,1.,.64)
@@ -222,7 +223,7 @@ func animate_scene(t:float) -> void:
     var firing=(t>.31 and t<1.20) or (t>7.23 and t<8.) or (t>13.16 and t<13.78)
     flame.visible=firing and shot=="rear3q"
     if firing:
-        flame.scale=Vector3(.94+.12*sin(t*37),.94,.93+.18*sin(t*39))
+        flame.scale=Vector3(1.1+.12*sin(t*37),.9+.06*sin(t*43),1.05+.18*sin(t*39))
     dust.visible=(t>=3. and t<=6.) or (t>10.2 and t<12.)
     camera.global_position=car.to_global(cam_pos)
     camera.look_at(car.to_global(focal),Vector3.UP)
