@@ -126,11 +126,26 @@ def dust():
   x=r.randrange(146);y=r.randrange(29,72)
   rect(d,(x,y,x+r.randrange(1,5),y+r.randrange(1,3)),r.choice(["#baa388","#8e826f","#70665d"]))
  return a
+
+def grass():
+ r=random.Random(91704)
+ a=Image.new("RGBA",(128,128),"#315c4f")
+ d=ImageDraw.Draw(a)
+ for k in range(1250):
+  x=r.randrange(128);y=r.randrange(128)
+  tone=r.choice(["#2b554b","#376d55","#42775b","#254b45","#648468","#2e6051","#567861"])
+  n=r.choice([1,1,2,3,4])
+  rect(d,(x,y,x+n,y+r.choice([0,1,1,2])),tone)
+ for k in range(35):
+  x=r.randrange(128);y=r.randrange(128)
+  line(d,(x,y,x+2,y-3),r.choice(["#6e8e68","#8da075","#759377"]))
+ return a
+
 if __name__=="__main__":
  for name,fn in (("side",side),("rear3q",rear),("front3q",front)):
   for j in range(8):fn(j).save(A/("car_%s_%d.png"%(name,j)))
  for j in range(7):tree(j).save(A/("pine_%d.png"%j))
- for name,im in (("mountains_far",mountains()),("mountains_near",mountains(True)),("gravel",gravel()),("flame",flame()),("dust",dust())):im.save(A/(name+".png"))
+ for name,im in (("mountains_far",mountains()),("mountains_near",mountains(True)),("gravel",gravel()),("grass",grass()),("flame",flame()),("dust",dust())):im.save(A/(name+".png"))
  sheet=Image.new("RGB",(840,450),"#172d3a")
  for j,(name,fn) in enumerate((("side",side),("rear3q",rear),("front3q",front),("other side",lambda i:side(i).transpose(Image.Transpose.FLIP_LEFT_RIGHT)))):
   x=j%2*420+55;y=j//2*210+22
