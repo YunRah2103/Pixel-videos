@@ -244,189 +244,99 @@ func create_mountains() -> void:
                 Vector3(x-12,-.2,z+22)
             ],colors[max(0,layer-1)])
 
+
 func create_rally_car() -> void:
-    var white = color_material("#e6dcc4")
-    var shade = color_material("#aebfb8")
-    var ink = color_material("#1b2930")
-    var dark = color_material("#101a22")
-    var glass = color_material("#203d4a")
-    var shine = color_material("#5ca5a8")
-    var teal = color_material("#0dd0c2")
-    var red = color_material("#f16438")
-    var amber = color_material("#ffba67")
-    car = Node3D.new()
-    car.name = "PROCEDURAL_TRUE_3D_WRC_HATCHBACK"
+    var ivory=color_material("#e6dcc4")
+    var rubber=color_material("#121f25")
+    var alloy=color_material("#a8b5a4")
+    var shiny=color_material("#e2dac1")
+    var teal=color_material("#0dc4aa")
+    car=Node3D.new()
+    car.name="BLENDER_MODELED_TRUE_3D_PIXEL_RALLY_HATCHBACK"
     add_child(car)
-    chassis = Node3D.new()
-    chassis.name = "SuspensionAnimatedBody"
+    chassis=Node3D.new()
+    chassis.name="CoordinatedBodySuspension"
     car.add_child(chassis)
-    # A section-based connected polygonal shell: shaped nose, long wheelbase, upright hatch.
-    var stations = [
-        [-2.20,0.59,0.60],[-2.05,0.75,0.74],[-1.65,0.86,0.92],
-        [-1.05,0.92,1.01],[-0.40,0.91,1.04],[0.45,0.91,1.04],
-        [1.27,0.90,1.02],[1.79,0.85,0.97],[2.10,0.75,0.79]]
-    for i in range(stations.size()-1):
-        var a = stations[i]
-        var b = stations[i+1]
-        for side in [-1.0,1.0]:
-            var x0 = side*float(a[1])
-            var x1 = side*float(b[1])
-            polygon(chassis,[Vector3(x0,0.47,float(a[0])),Vector3(x1,0.47,float(b[0])),Vector3(x1,float(b[2]),float(b[0])),Vector3(x0,float(a[2]),float(a[0]))],white)
-        polygon(chassis,[Vector3(-float(a[1]),float(a[2]),float(a[0])),Vector3(float(a[1]),float(a[2]),float(a[0])),Vector3(float(b[1]),float(b[2]),float(b[0])),Vector3(-float(b[1]),float(b[2]),float(b[0]))],white)
-    cube(chassis,Vector3(0,0.44,0),Vector3(1.54,0.26,4.12),ink)
-    cube(chassis,Vector3(0,0.69,-2.15),Vector3(1.40,0.24,0.13),shade)
-    cube(chassis,Vector3(0,0.37,-2.24),Vector3(1.32,0.10,0.18),dark)
-    cube(chassis,Vector3(0,0.60,2.13),Vector3(1.48,0.27,0.15),shade)
-    cube(chassis,Vector3(0,0.42,2.24),Vector3(1.33,0.13,0.09),ink)
-    # Cabin: explicitly sloped windshield, tall roof and near-upright rear hatch.
-    var front_low = -0.92
-    var front_high = -0.16
-    var rear_high = 1.02
-    var rear_low = 1.78
-    var roof_y = 1.62
-    polygon(chassis,[Vector3(-.78,1.10,front_low),Vector3(.78,1.10,front_low),Vector3(.69,roof_y,front_high),Vector3(-.69,roof_y,front_high)],glass)
-    polygon(chassis,[Vector3(-.69,roof_y,rear_high),Vector3(.69,roof_y,rear_high),Vector3(.78,1.07,rear_low),Vector3(-.78,1.07,rear_low)],glass)
-    polygon(chassis,[Vector3(-.69,roof_y,front_high),Vector3(.69,roof_y,front_high),Vector3(.69,roof_y,rear_high),Vector3(-.69,roof_y,rear_high)],white)
-    for side in [-1.0,1.0]:
-        var x=side
-        polygon(chassis,[Vector3(x*.815,1.13,-.81),Vector3(x*.695,1.59,-.34),Vector3(x*.695,1.735,.36),Vector3(x*.815,1.13,.32)],glass)
-        polygon(chassis,[Vector3(x*.817,1.13,.38),Vector3(x*.697,1.735,.43),Vector3(x*.697,1.735,1.26),Vector3(x*.803,1.13,1.60)],glass)
-        polygon(chassis,[Vector3(x*.818,1.51,-.38),Vector3(x*.744,1.60,-.15),Vector3(x*.742,1.46,.25),Vector3(x*.818,1.51,.18)],shine)
-        cube(chassis,Vector3(x*.817,1.27,.38),Vector3(.045,.72,.045),white)
-        cube(chassis,Vector3(x*.81,1.12,-.65),Vector3(.28,.07,.24),ink)
-        cube(chassis,Vector3(x*1.0,1.17,-.65),Vector3(.26,.11,.25),white)
-        for door in [-.52,.43,1.49]:
-            cube(chassis,Vector3(x*.924,.81,door),Vector3(.013,.36,.012),ink)
-        for handle_z in [-.28,.86]:
-            cube(chassis,Vector3(x*.926,1.02,handle_z),Vector3(.04,.04,.20),dark)
-        # Hand-authored clustered livery is literal 3D raised geometry.
-        for row in range(4):
-            for col in range(8):
-                if (row+2*col)%5 != 0:
-                    var z = -.54+float(col)*.135
-                    var y = .53+float(row)*.095
-                    cube(chassis,Vector3(x*.941,y,z),Vector3(.013,.068,.102),teal if col<5 else red)
-        polygon(chassis,[Vector3(x*.933,.70,-.58),Vector3(x*.934,.80,-.40),Vector3(x*.934,.57,.69),Vector3(x*.932,.50,.41)],red)
-        cube(chassis,Vector3(x*.84,1.49,1.63),Vector3(.12,.33,.10),dark)
-        cube(chassis,Vector3(x*.64,.89,-2.226),Vector3(.34,.13,.05),shine)
-        cube(chassis,Vector3(x*.68,.89,2.219),Vector3(.32,.15,.05),red)
-        cube(chassis,Vector3(x*.77,.91,2.25),Vector3(.09,.07,.06),amber)
-    # Signature roof scoop and rally wing—separate 3D volumes.
-    cube(chassis,Vector3(0,1.69,0.0),Vector3(.58,.16,.43),white)
-    cube(chassis,Vector3(0,1.70,-.23),Vector3(.49,.07,.042),dark)
-    cube(chassis,Vector3(0,1.82,1.69),Vector3(1.67,.10,.31),white)
-    cube(chassis,Vector3(0,1.86,1.88),Vector3(1.72,.035,.05),red)
-    for side in [-1.0,1.0]:
-        cube(chassis,Vector3(side*.80,1.81,1.72),Vector3(.07,.19,.37),dark)
-    cube(chassis,Vector3(0,.71,-2.245),Vector3(.93,.22,.035),dark)
-    for k in range(9):
-        cube(chassis,Vector3(-.4+float(k)*.1,.70,-2.27),Vector3(.035,.17,.029),ink)
-    cube(chassis,Vector3(0,.73,2.248),Vector3(.41,.10,.03),ink)
-
-    # Recessed wheel wells and arched fender accents, all modeled as physical 3D rings.
-    for side in [-1.0,1.0]:
-        for wheel_z in [-1.27,1.27]:
-            var recess=MeshInstance3D.new()
-            var dark_disc=CylinderMesh.new()
-            dark_disc.top_radius=.444
-            dark_disc.bottom_radius=.444
-            dark_disc.height=.028
-            dark_disc.radial_segments=28
-            recess.mesh=dark_disc
-            recess.rotation.z=PI*.5
-            recess.position=Vector3(side*.907,.40,wheel_z)
-            recess.material_override=ink
-            chassis.add_child(recess)
-            var lip=MeshInstance3D.new()
-            var tor=TorusMesh.new()
-            tor.inner_radius=.405
-            tor.outer_radius=.465
-            tor.rings=7
-            tor.ring_segments=28
-            lip.mesh=tor
-            lip.rotation.z=PI*.5
-            lip.position=Vector3(side*.977,.40,wheel_z)
-            lip.material_override=shade
-            chassis.add_child(lip)
-    # True roof surface with a slim contrasting graphic and aerodynamic rails.
-    cube(chassis,Vector3(0,1.635,.44),Vector3(.90,.022,.75),ink)
-    for side in [-1.0,1.0]:
-        cube(chassis,Vector3(side*.67,1.632,.43),Vector3(.055,.045,1.26),shade)
-    # Hood racing-number card and clear contrasting side numbers.
-    cube(chassis,Vector3(0,1.022,-1.44),Vector3(.66,.018,.36),dark)
-    for side in [-1.0,1.0]:
-        cube(chassis,Vector3(side*.947,.94,.04),Vector3(.022,.21,.34),ink)
-
-    # Actual tyres, forged spokes and wheel centres with independent rotation.
+    var body_scene=load("res://assets/rally_car_body.glb") as PackedScene
+    if body_scene == null:
+        push_error("Missing actual Blender GLB! Refusing to substitute coloured cubes.")
+        get_tree().quit(3)
+        return
+    var body_node=body_scene.instantiate()
+    body_node.name="Real3DConnectedPanelHatchback"
+    chassis.add_child(body_node)
+    # Four independently spinning and suspending rally wheels in actual cut-out arches.
     for sign in [-1.0,1.0]:
-        for z in [-1.27,1.27]:
-            var hub = Node3D.new()
-            hub.name = "WheelSpinningAndSuspending"
-            hub.position=Vector3(sign*.95,.40,z)
+        for z in [-1.26,1.24]:
+            var hub=Node3D.new()
+            hub.name="RotatingWheel_3D"
+            hub.position=Vector3(sign*.95,.38,z)
             car.add_child(hub)
             wheels.append(hub)
-            var tire = MeshInstance3D.new()
-            var cyl = CylinderMesh.new()
-            cyl.top_radius = .36
-            cyl.bottom_radius = .36
-            cyl.height = .26
-            cyl.radial_segments = 20
-            tire.mesh = cyl
-            tire.rotation.z = PI*.5
-            tire.material_override=dark
+            var tire=MeshInstance3D.new()
+            var cyl=CylinderMesh.new()
+            cyl.top_radius=.386
+            cyl.bottom_radius=.386
+            cyl.height=.245
+            cyl.radial_segments=30
+            tire.mesh=cyl
+            tire.rotation.z=PI*.5
+            tire.material_override=rubber
             hub.add_child(tire)
-            for rr in [0.23,0.29]:
-                var t = MeshInstance3D.new()
-                var ring = TorusMesh.new()
-                ring.inner_radius = rr-0.028
-                ring.outer_radius = rr+0.028
-                ring.rings = 9
-                ring.ring_segments = 24
-                t.mesh=ring
-                t.rotation.z=PI*.5
-                t.position.x=sign*.142
-                t.material_override=shade
-                hub.add_child(t)
-            for k in range(9):
-                var a=TAU*float(k)/9.0
-                var spoke=cube(hub,Vector3(sign*.153,cos(a)*.18,sin(a)*.18),Vector3(.028,.235,.041),white)
+            var face=MeshInstance3D.new()
+            var disc=CylinderMesh.new()
+            disc.top_radius=.255
+            disc.bottom_radius=.255
+            disc.height=.012
+            disc.radial_segments=26
+            face.mesh=disc
+            face.rotation.z=PI*.5
+            face.position.x=sign*.136
+            face.material_override=alloy
+            hub.add_child(face)
+            var wheel_dark=MeshInstance3D.new()
+            var mid=CylinderMesh.new()
+            mid.top_radius=.216
+            mid.bottom_radius=.216
+            mid.height=.016
+            mid.radial_segments=24
+            wheel_dark.mesh=mid
+            wheel_dark.rotation.z=PI*.5
+            wheel_dark.position.x=sign*.150
+            wheel_dark.material_override=rubber
+            hub.add_child(wheel_dark)
+            for k in range(8):
+                var a=TAU*float(k)/8.0
+                var spoke=cube(hub,Vector3(sign*.161,cos(a)*.14,sin(a)*.14),Vector3(.023,.255,.048),shiny)
                 spoke.rotation.x=a
-            var cap=MeshInstance3D.new()
-            var cm=SphereMesh.new()
-            cm.radius=.09
-            cm.height=.08
-            cap.mesh=cm
-            cap.position.x=sign*.156
-            cap.material_override=teal
-            hub.add_child(cap)
-    # Exhaust origin attached to real rear 3D geometry.
-    cube(chassis,Vector3(.45,.43,2.23),Vector3(.18,.16,.30),shade)
+            ball(hub,Vector3(sign*.183,0,0),Vector3(.033,.071,.071),teal,12)
+    # Small, realistic flame attached to actual physical exhaust pipe: no giant spike.
     flame=Node3D.new()
-    flame.name="ACTUAL_3D_EXHAUST_COMBUSTION"
-    flame.position=Vector3(.45,.44,2.39)
+    flame.name="CompactTailpipeCombustion"
+    flame.position=Vector3(.50,.37,2.38)
     chassis.add_child(flame)
-    for q in range(3):
+    var palette=["#ff6e20","#ffc053","#f6f2b0"]
+    for k in range(3):
         var plume=MeshInstance3D.new()
-        var cone=CylinderMesh.new()
-        cone.top_radius=.015
-        cone.bottom_radius=.115-float(q)*.028
-        cone.height=.84-float(q)*.16
-        cone.radial_segments=8
-        plume.mesh=cone
-        plume.rotation.x=PI*.5
-        plume.position.z=.32-float(q)*.12
-        var col="#ff6d20" if q==0 else ("#ffc652" if q==1 else "#fff3c9")
-        var fire=color_material(col,true)
-        fire.emission_enabled=true
-        fire.emission=Color(col)
-        fire.emission_energy_multiplier=2.4
-        plume.material_override=fire
+        var shape=SphereMesh.new()
+        shape.radius=1.0
+        shape.height=2.0
+        shape.radial_segments=9
+        shape.rings=5
+        plume.mesh=shape
+        plume.scale=Vector3(.093-float(k)*.019,.071-float(k)*.014,.35-float(k)*.070)
+        plume.position.z=.30-float(k)*.10
+        var material=color_material(palette[k],true)
+        material.emission_enabled=true
+        material.emission=Color(palette[k])
+        material.emission_energy_multiplier=1.45
+        plume.material_override=material
         flame.add_child(plume)
-    var burst_light=OmniLight3D.new()
-    burst_light.light_color=Color("#ff853b")
-    burst_light.omni_range=2.3
-    burst_light.light_energy=2.2
-    flame.add_child(burst_light)
+    var glow=OmniLight3D.new()
+    glow.light_color=Color("#ff8546")
+    glow.omni_range=1.2
+    glow.light_energy=.85
+    flame.add_child(glow)
 
 func create_pixel_pass() -> void:
     var layer=CanvasLayer.new()
@@ -446,14 +356,14 @@ func create_caption() -> void:
     layer.layer=2
     add_child(layer)
     var settings=LabelSettings.new()
-    settings.font_size=21
+    settings.font_size=17
     settings.font_color=Color("#fff0d2")
     settings.outline_color=Color("#172b32")
-    settings.outline_size=4
+    settings.outline_size=3
     caption=Label.new()
     caption.label_settings=settings
-    caption.position=Vector2(18,51)
-    caption.size=Vector2(327,95)
+    caption.position=Vector2(18,46)
+    caption.size=Vector2(324,91)
     caption.autowrap_mode=TextServer.AUTOWRAP_WORD_SMART
     layer.add_child(caption)
     var brand=Label.new()
@@ -472,51 +382,52 @@ func _process(delta: float) -> void:
     update_film(min(tick,SECONDS))
 
 
+
 func update_film(t: float) -> void:
-    var z = 137.0-SPEED*t
-    car.position = Vector3(path_x(z),.016+.014*sin(t*10.6),z)
+    var z=137.0-SPEED*t
+    car.position=Vector3(path_x(z),.016+.012*sin(t*10.6),z)
     car.rotation.y=atan((path_x(z+1.0)-path_x(z-1.0))*.5)
-    chassis.rotation.z=.010*sin(t*3.9)+.014*cos(t*.7)
-    chassis.rotation.x=.007*sin(t*6.3)
-    chassis.position.y=.013*sin(t*10.0)
+    chassis.rotation.z=.009*sin(t*3.8)+.013*cos(t*.7)
+    chassis.rotation.x=.008*sin(t*6.0)
+    chassis.position.y=.012*sin(t*10.0)
     for i in range(wheels.size()):
         var w: Node3D=wheels[i]
-        w.rotation.x=t*SPEED/.36
-        w.position.y=.40+.016*sin(t*7.5+float(i)*1.4)
-    var burst=(t>.24 and t<1.47) or (t>7.28 and t<8.32) or (t>12.61 and t<13.66)
+        w.rotation.x=t*SPEED/.386
+        w.position.y=.38+.014*sin(t*7.5+float(i)*1.4)
+    var burst=(t>.26 and t<1.40) or (t>7.37 and t<8.35) or (t>12.64 and t<13.63)
     flame.visible=burst
     if burst:
-        flame.scale=Vector3(1.0+.07*sin(t*42.0),1.0+.10*sin(t*54.0),.68+.13*sin(t*47.0))
+        flame.scale=Vector3(1.0+.09*sin(t*49.0),1.0+.08*sin(t*47.0),.78+.16*sin(t*53.0))
     if t<2.0:
-        caption.text="WHY DO RALLY CARS\\nSHOOT FLAMES?"
+        caption.text="WHY DO RALLY CARS\nSHOOT FLAMES?"
     elif t<5.0:
-        caption.text="THE EXHAUST IS\\nINCREDIBLY HOT"
+        caption.text="THE EXHAUST GETS\nINCREDIBLY HOT"
     elif t<10.0:
-        caption.text="UNBURNED FUEL\\nCAN IGNITE"
+        caption.text="UNBURNED FUEL\nCAN IGNITE"
     elif t<12.0:
-        caption.text="ANTI-LAG CAN\\nMAKE IT LOUDER"
+        caption.text="ANTI-LAG KEEPS\nTHE TURBO SPINNING"
     else:
-        caption.text="FIRE ON THE\\nOVER-RUN."
-    var pos=Vector3(3.3,2.0,6.3)
-    var look=Vector3(0,1.05,.35)
+        caption.text="THAT'S HOW\nFLAMES APPEAR."
+    var pos=Vector3(3.3,2.0,8.2)
+    var look=Vector3(0.0,.93,.22)
     if t<2.0:
-        pos=Vector3(3.15,1.95,6.15)
-        look=Vector3(.08,.96,.55)
+        pos=Vector3(3.15,1.98,8.35)
+        look=Vector3(.05,.90,.42)
     elif t<5.0:
-        pos=Vector3(7.0,1.95,1.9)
-        look=Vector3(.0,.98,.05)
+        pos=Vector3(10.7,2.14,1.30)
+        look=Vector3(0.0,.90,.03)
     elif t<7.35:
-        pos=Vector3(-3.9,1.82,-6.85)
-        look=Vector3(0,1.02,-.42)
+        pos=Vector3(-4.0,1.90,-8.2)
+        look=Vector3(0.0,.91,-.27)
     elif t<9.40:
-        pos=Vector3(2.45,1.14,5.7)
-        look=Vector3(.38,.62,2.16)
+        pos=Vector3(2.9,1.18,6.35)
+        look=Vector3(.31,.72,1.40)
     elif t<11.55:
-        pos=Vector3(-5.3,2.12,3.8)
-        look=Vector3(-.05,.95,.4)
+        pos=Vector3(-4.8,2.28,7.3)
+        look=Vector3(0.0,.95,.10)
     else:
-        pos=Vector3(3.1,2.25,6.8+.45*(t-11.55))
-        look=Vector3(0,1.01,.46)
+        pos=Vector3(3.9,2.26,8.1+.35*(t-11.55))
+        look=Vector3(0.0,.90,.19)
     cam.global_position=car.to_global(pos)
     cam.look_at(car.to_global(look),Vector3.UP)
-    cam.fov=41.0 if t>=7.35 and t<9.4 else 44.0
+    cam.fov=44.0
