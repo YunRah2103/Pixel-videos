@@ -14,9 +14,9 @@ def L(d,pts,c,w=1):d.line(pts,fill=rgb(c),width=w,joint='curve')
 def E(d,bb,c,w=1):d.ellipse(bb,fill=rgb(c),width=w)
 def rect(d,bb,c):d.rectangle(bb,fill=rgb(c))
 def save(im, n):im.save(OUT/n)
-def spoke_wheel(d,x,y,r=19):
+def spoke_wheel(d,x,y,r=19,phase=0):
  E(d,(x-r-2,y-r-2,x+r+2,y+r+2),'outline');E(d,(x-r,y-r,x+r,y+r),'wheel')
- for a in [0,45,90,135]:
+ for a in [phase,45+phase,90+phase,135+phase]:
   th=math.radians(a); dx=int((r-4)*math.cos(th));dy=int((r-4)*math.sin(th))
   L(d,[(x-dx,y-dy),(x+dx,y+dy)],'rim',3)
  E(d,(x-r+5,y-r+5,x+r-5,y+r-5),'tire');E(d,(x-7,y-7,x+7,y+7),'rim');E(d,(x-3,y-3,x+3,y+3),'deep')
@@ -26,7 +26,7 @@ def spoke_wheel(d,x,y,r=19):
 def accents(d,pts):
  P(d,pts,'red')
 
-def side():
+def side(phase=0):
  im=Image.new('RGBA',(238,136));d=ImageDraw.Draw(im)
  E(d,(20,109,221,128),'#111c2955')
  # Roof, hatch, bonnet, bumpers; asymmetrical crafted silhouette
@@ -55,7 +55,7 @@ def side():
  P(d,[(93,58),(83,54),(79,61),(90,67)],'outline');P(d,[(85,57),(79,59),(87,62)],'green')
  # wheel arches lower body, wheels on top
  for x in (67,182):
-  E(d,(x-26,76,x+26,125),'outline');E(d,(x-22,81,x+22,126),'deep');spoke_wheel(d,x,105,18)
+  E(d,(x-26,76,x+26,125),'outline');E(d,(x-22,81,x+22,126),'deep');spoke_wheel(d,x,105,18,phase)
  # fenders and body chrome
  L(d,[(18,86),(32,83)],'red',4);rect(d,(209,79,221,86),'shine')
  P(d,[(22,95),(41,100),(44,105),(22,103)],'deep');P(d,[(207,100),(222,95),(220,104),(204,106)],'deep')
@@ -65,7 +65,7 @@ def side():
  rect(d,(150,83,161,85),'white');rect(d,(47,88,55,89),'gold')
  return im
 
-def quarter(rear=True):
+def quarter(rear=True,phase=0):
  im=Image.new('RGBA',(228,154));d=ImageDraw.Draw(im)
  # rear near left, narrowing in perspective toward distant nose at right
  E(d,(21,121,213,139),'#111c29')
@@ -97,7 +97,7 @@ def quarter(rear=True):
   P(d,[(156,64),(159,56),(167,59),(170,66)],'deep')
   # wheels perspective
   E(d,(36,97,90,141),'outline');E(d,(134,105,176,141),'outline')
-  spoke_wheel(d,65,119,18);spoke_wheel(d,155,120,15)
+  spoke_wheel(d,65,119,18,phase);spoke_wheel(d,155,120,15,phase)
   P(d,[(26,109),(104,115),(107,121),(31,117)],'deep')
   rect(d,(36,107,45,112),'red');rect(d,(96,108,110,112),'gold')
   rect(d,(28,110,43,116),'outline');rect(d,(37,113,49,117),'deep') # exhaust
@@ -120,7 +120,7 @@ def quarter(rear=True):
   P(d,[(139,30),(153,30),(160,35),(145,35)],'outline')
   P(d,[(151,45),(180,45),(196,52),(184,56)],'outline')
   for x,y,r in [(62,119,18),(167,119,15)]:
-   E(d,(x-r-7,y-r-18,x+r+7,y+r+4),'outline');spoke_wheel(d,x,y,r)
+   E(d,(x-r-7,y-r-18,x+r+7,y+r+4),'outline');spoke_wheel(d,x,y,r,phase)
   rect(d,(31,106,93,111),'deep');rect(d,(100,80,113,85),'outline')
   rect(d,(157,92,170,95),'outline')
  return im
@@ -231,6 +231,11 @@ def title_text(txt):
 
 def main():
  for n,f in [('car_side.png',side()),('car_rear_34.png',quarter(True)),('car_front_34.png',quarter(False)),('car_rear.png',face(True)),('car_front.png',face(False))]:save(f,n)
+ for phase in range(4):
+  spin=phase*22.5
+  save(side(spin),f'car_side_{phase}.png')
+  save(quarter(True,spin),f'car_rear_34_{phase}.png')
+  save(quarter(False,spin),f'car_front_34_{phase}.png')
  for i in range(6):save(draw_tree(i),f'pine_{i}.png')
  for i in range(5):save(bush(700+i),f'bush_{i}.png')
  for name,obj in [('mountains.png',mountains()),('road.png',road()),('flame.png',flame()),('ground.png',terrain()),('caption_flame.png',title_text('UNBURNED FUEL + HOT EXHAUST + OXYGEN')),('caption_antilag.png',title_text('ANTI-LAG CAN ADD MORE FUEL'))]:save(obj,name)
