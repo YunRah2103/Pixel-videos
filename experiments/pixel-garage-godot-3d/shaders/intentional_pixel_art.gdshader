@@ -1,8 +1,8 @@
 shader_type canvas_item;
 render_mode unshaded;
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
-uniform float palette_steps : hint_range(4.0, 16.0, 1.0) = 9.0;
-uniform float dither_amount : hint_range(0.0, 1.0, 0.01) = 0.44;
+uniform float palette_steps : hint_range(4.0, 16.0, 1.0) = 7.0;
+uniform float dither_amount : hint_range(0.0, 1.0, 0.01) = 0.11;
 uniform float ink_amount : hint_range(0.0, 0.5, 0.01) = 0.16;
 uniform float contrast : hint_range(0.8, 1.4, 0.01) = 1.09;
 float bayer4(ivec2 p) {
