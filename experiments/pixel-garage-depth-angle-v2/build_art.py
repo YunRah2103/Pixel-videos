@@ -326,3 +326,25 @@ for j in range(60):
     rect(d,(x,y,x+rng.randrange(2,5),y+rng.randrange(1,3)),rng.choice(["#b7b493","#a39d76","#6c8c6e"]))
 save(im,"sky")
 print("V2 distinct autumn countryside and blue angled sprite assets built")
+
+
+# Correct exact generated car palette values from this branch (distinct from
+# the local exploratory draft), so the final film actually has blue bodywork.
+exact_colours = {
+    (244,237,213):(119,186,215),
+    (255,245,217):(189,224,226),
+    (215,212,183):(77,139,163),
+    (40,120,131):(38,70,115),
+    (49,91,98):(35,71,103),
+    (90,163,147):(58,122,163),
+    (246,155,94):(246,192,74),
+}
+for k in range(8):
+    path=os.path.join(OUT,"rally_%d.png" % k)
+    im=Image.open(path).convert("RGBA");pixels=im.load()
+    for yy in range(im.height):
+        for xx in range(im.width):
+            r,g,b,a=pixels[xx,yy]
+            new_rgb=exact_colours.get((r,g,b))
+            if new_rgb is not None:pixels[xx,yy]=(*new_rgb,a)
+    im.save(path)
