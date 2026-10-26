@@ -75,7 +75,9 @@ func build_road() -> void:
     var m=StandardMaterial3D.new()
     m.albedo_texture=tex("gravel.png")
     m.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST
-    m.uv1_scale=Vector3(5,50,1)
+    m.cull_mode=BaseMaterial3D.CULL_DISABLED
+    m.uv1_scale=Vector3(3,28,1)
+    m.albedo_color=Color("#e6d1b4")
     m.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
     var verts=PackedVector3Array()
     var uvs=PackedVector2Array()
@@ -105,31 +107,43 @@ func build_road() -> void:
     surface.mesh=built
     surface.material_override=m
     add_child(surface)
+    # Slightly wider colored banks remain visible from tracking cameras.
+    var bank=MeshInstance3D.new()
+    bank.mesh=built
+    bank.scale.x=1.31
+    bank.position.y=-.014
+    bank.material_override=plain("#69846c")
+    add_child(bank)
     var ground=MeshInstance3D.new()
     var mesh=PlaneMesh.new()
     mesh.size=Vector2(650,650)
     ground.mesh=mesh
     ground.position.y=-.022
-    ground.material_override=plain("#31594e")
+    var grassmat=StandardMaterial3D.new()
+    grassmat.albedo_texture=tex("grass.png")
+    grassmat.texture_filter=BaseMaterial3D.TEXTURE_FILTER_NEAREST
+    grassmat.uv1_scale=Vector3(130,130,1)
+    grassmat.shading_mode=BaseMaterial3D.SHADING_MODE_UNSHADED
+    ground.material_override=grassmat
     add_child(ground)
 
 func build_forest() -> void:
-    for k in range(260):
+    for k in range(510):
         var z=rng.randf_range(-285.,310.)
         var side=-1. if k%2==0 else 1.
-        var x=track_x(z)+side*rng.randf_range(5.6,43.)
-        var scale=rng.randf_range(.73,1.50)
-        sprite("pine_%d.png"%(k%7),self,Vector3(x,1.40*scale,z),.014*scale)
+        var x=track_x(z)+side*rng.randf_range(4.65,35.)
+        var scale=rng.randf_range(1.27,2.38)
+        sprite("pine_%d.png"%(k%7),self,Vector3(x,1.35*scale,z),.015*scale)
     # Real depth-separated mountain planes; not 2D screen translations.
     for layer in range(3):
         var z=-205.-float(layer)*33.
         var mountain=sprite("mountains_far.png" if layer!=1 else "mountains_near.png",
             self,Vector3(0,19.+float(layer)*3.,z),.27+float(layer)*.07)
         mountain.billboard=BaseMaterial3D.BILLBOARD_FIXED_Y
-    for j in range(165):
+    for j in range(315):
         var z=rng.randf_range(-280.,298.)
         var side=-1. if j%2==0 else 1.
-        var x=track_x(z)+side*rng.randf_range(3.85,6.2)
+        var x=track_x(z)+side*rng.randf_range(3.96,6.8)
         var b=sprite("dust.png",self,Vector3(x,.26,z),.008*rng.randf_range(.6,.95))
         b.modulate=Color("#377461")
 
@@ -185,24 +199,24 @@ func animate_scene(t:float) -> void:
     main_sprite.position.y=1.04+.024*sin(t*9.1)
     main_sprite.rotation.z=.009*sin(t*4.7)
     var shot="rear3q"
-    var cam_pos=Vector3(5.9,2.45,10.5)
-    var focal=Vector3(0,1.05,0)
+    var cam_pos=Vector3(3.7,4.25,7.9)
+    var focal=Vector3(0,.85,-.4)
     if t<3.:
         captions.text="WHY DO RALLY CARS\nSHOOT FLAMES?"
     elif t<6.:
         shot="side"
-        cam_pos=Vector3(11.1,2.65,1.7)
+        cam_pos=Vector3(9.15,4.3,3.1)
         captions.text="THE EXHAUST GETS\nSERIOUSLY HOT"
     elif t<10.:
-        cam_pos=Vector3(3.15,1.61,5.3)
-        focal=Vector3(.55,.68,.1)
+        cam_pos=Vector3(3.2,3.35,5.1)
+        focal=Vector3(.55,.67,.1)
         captions.text="UNBURNED FUEL\nCAN IGNITE"
     elif t<13.:
         shot="front3q"
-        cam_pos=Vector3(-4.2,2.15,-7.3)
+        cam_pos=Vector3(-4.0,4.5,-6.8)
         captions.text="ANTI-LAG CAN\nADD THE FIRE"
     else:
-        cam_pos=Vector3(4.8,2.2,11.2)
+        cam_pos=Vector3(3.7,4.1,8.0)
         captions.text="RALLY FLAMES.\nEXPLAINED."
     main_sprite.texture=car_textures[shot][int(t*11.7)%8]
     var firing=(t>.31 and t<1.20) or (t>7.23 and t<8.) or (t>13.16 and t<13.78)
@@ -212,4 +226,4 @@ func animate_scene(t:float) -> void:
     dust.visible=(t>=3. and t<=6.) or (t>10.2 and t<12.)
     camera.global_position=car.to_global(cam_pos)
     camera.look_at(car.to_global(focal),Vector3.UP)
-    camera.fov=45. if t>=6. and t<10. else 48.
+    camera.fov=48. if t>=6. and t<10. else 49.
