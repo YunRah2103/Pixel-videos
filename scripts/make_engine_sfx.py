@@ -99,8 +99,11 @@ def main():
 
     # shot 1: scan + dive
     put(bed, whoosh(1.6, 400, 1800, 2500, 9000), 4.65, 0.55)
-    put(bed, noise(0.9, 120, 3000) * np.linspace(0, 1, int(SR * 0.9)) ** 2, 6.1, 0.5)
-    put(hits, thump(120, 40, 0.8, 6), 7.0, 0.8)
+    for t0, g in ((6.0, 0.7), (6.25, 0.9)):                               # punch-in cuts
+        put(hits, thump(140, 50, 0.4, 9), t0, g)
+        put(hits, pop(900, 0.05), t0, 0.35)
+    put(bed, whoosh(0.6, 200, 3000, 2000, 9000, 0.7), 6.45, 0.6)         # iris opens
+    put(hits, thump(120, 40, 0.8, 6), 7.05, 0.8)
     for t0 in (7.95, 8.9, 9.75, 10.45):                                   # part labels
         put(hits, pop(1500 if t0 < 9 else 1100), t0, 0.28)
     # strokes
@@ -131,6 +134,8 @@ def main():
     # rev-up to 3000 rpm (~100 firing pulses a second) and hold
     put(bed, engine_tone(2.0, 32.0, 100.0, 0.4) * np.linspace(0, 1, int(SR * 2.0)), 32.5, 0.7)
     put(bed, engine_tone(3.0, 100.0, 112.0, 0.4) * np.minimum(1, np.linspace(1, 0, int(SR * 3.0)) * 8), 34.5, 0.7)
+    put(bed, whoosh(0.22, 3000, 300, 9000, 2000, 0.5), 37.5, 0.5)         # iris closes, then opens
+    put(bed, whoosh(0.26, 300, 3000, 2000, 9000, 0.5), 37.72, 0.55)
     # outro words, launch
     for t0, fr in ((37.91, 520), (38.51, 660)):
         put(hits, pop(fr, 0.09), t0, 0.5)

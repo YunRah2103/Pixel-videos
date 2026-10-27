@@ -142,8 +142,9 @@ def text(im, s, y, scale=1, color='#ffffff', x=None, outline='#07060d'):
 # ---------------------------------------------------------------- voiceover timing (seconds)
 T_HOOK_END = 4.65                           # hook text off, "LOOK INSIDE" on
 T_SCAN = (4.7, 6.2)                         # x-ray sweep across the car
-T_ZOOM = (5.9, 7.0)                         # dive into the engine bay
-T_ENG = 6.95                                # street -> engine pixel dissolve starts (0.25s)
+T_PUNCH = (6.0, 6.25)                       # two integer punch-ins on the x-ray engine
+T_IRIS = (6.45, 7.05)                       # cyan iris opens onto the engine cutaway
+T_ENG = 7.05
 T_REV, T_BANK, T_OUT = 32.5, 34.45, 37.5    # rev-up begins, four-cylinder bank, outro street
 T_SPARK, T_BOOM = (23.25, 23.55), 24.25     # spark flicker; flame bursts out of its hold
 T_BANG = 39.36                              # "bang": the car launches
@@ -223,7 +224,7 @@ def captions(im, t, y):
 
 
 # ---------------------------------------------------------------- street: rainy neon night
-X0, GY = 28, 284                     # car rear x, ground contact y
+X0, GY = 20, 284                     # car rear x, ground contact y
 SKY = np.zeros((H, W, 3), np.float32)
 grad_box(SKY, 0, 0, W, 241, [(0, '#06051a'), (0.45, '#150e38'), (0.8, '#2e1656'), (1, '#4e1e62')])
 glow(SKY, 40, 236, 130, '#7a1e6a', 0.35)
@@ -232,11 +233,27 @@ NEON = ['#ff3ea5', '#3ef0ff', '#ffd23e', '#9a5bff', '#ff6a3e']
 _r = random.Random(9)
 RAIN = [(_r.uniform(0, W), _r.uniform(0, H), _r.uniform(5, 8)) for _ in range(70)]
 
-BODY = [(0, -6), (0, -12), (3, -17), (14, -19), (26, -22), (40, -31), (58, -33), (66, -32), (82, -21), (98, -17),
-        (110, -14), (118, -11), (119, -7), (116, -5), (10, -4)]
-WIN_R = [(32, -23), (41, -30), (49, -31), (49, -23)]
-WIN_F = [(52, -31), (63, -30), (78, -23), (52, -23)]
-WHEELS = (24, 94)
+def spline(pts, n=7):
+    """Catmull-Rom through pts (clamped ends): smooth supercar curves without anti-aliasing."""
+    p = [pts[0]] + list(pts) + [pts[-1]]
+    out = []
+    for i in range(1, len(p) - 2):
+        p0, p1, p2, p3 = p[i - 1], p[i], p[i + 1], p[i + 2]
+        for k in range(n):
+            u = k / n
+            out.append(tuple(0.5 * (2 * p1[j] + (-p0[j] + p2[j]) * u + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * u * u
+                                    + (-p0[j] + 3 * p1[j] - 3 * p2[j] + p3[j]) * u ** 3) for j in (0, 1)))
+    out.append(pts[-1])
+    return out
+
+
+# low, long, mid-engine wedge (x forward, y up is negative, ground at 0)
+TOP = spline([(0, -9), (1, -14), (7, -18), (22, -21), (38, -23), (50, -27), (62, -29), (74, -29), (84, -27),
+              (98, -21), (110, -17), (121, -13), (127, -10), (128, -7)])
+BODY = TOP + [(127, -5), (118, -4), (108, -4), (14, -4), (5, -5), (1, -7)]
+CANOPY = spline([(54, -21), (54, -24), (62, -27), (74, -27), (83, -25), (96, -20)], 5) + [(96, -20), (54, -20)]
+WHEELS = (26, 100)
+WHEEL_R = 8
 
 
 def cp(x0, gy, pts):
@@ -281,76 +298,96 @@ def render_car(f, dist, x0, gy):
     mask = Image.new('L', (W, H), 0)
     ImageDraw.Draw(mask).polygon(cp(x0, gy, BODY), fill=255)
     g = np.zeros((H, W, 3), np.float32)
-    grad_box(g, 0, gy - 34, W, gy - 3, [(0, '#ff6270'), (0.22, '#e8203e'), (0.6, '#a40c2a'), (1, '#3c0616')])
+    grad_box(g, 0, gy - 30, W, gy - 3, [(0, '#ff6c78'), (0.18, '#f02844'), (0.5, '#b60e2e'), (0.8, '#640a24'),
+                                         (1, '#2a0414')])
     body = to_im(g)
-    gx = x0 + ((f * 2.6) % 300) - 70                                   # paint glint sweeping along the car
+    gx = x0 + ((f * 2.6) % 330) - 80                                   # paint glint sweeping along the car
     band = Image.new('L', (W, H), 0)
-    ImageDraw.Draw(band).polygon([(gx, gy - 36), (gx + 7, gy - 36), (gx - 3, gy), (gx - 10, gy)], fill=255)
-    glint = ImageChops.multiply(mask, band).point(lambda v: int(v * 0.6))
+    ImageDraw.Draw(band).polygon([(gx, gy - 32), (gx + 8, gy - 32), (gx - 3, gy), (gx - 11, gy)], fill=255)
+    glint = ImageChops.multiply(mask, band).point(lambda v: int(v * 0.42))
     body = Image.composite(Image.new('RGB', (W, H), (255, 255, 255)), body, glint)
     car = Image.new('RGBA', (W, H), (0, 0, 0, 0))
     car.paste(body, mask=mask)
     d = ImageDraw.Draw(car)
     P = lambda pts: cp(x0, gy, pts)
-    d.polygon(P([(8, -8), (112, -8), (116, -5), (10, -4)]), fill='#2a0410')                  # skirt
-    d.line(P([(3, -17), (14, -19), (26, -22), (40, -31), (58, -33), (66, -32), (82, -21), (98, -17), (110, -14),
-              (118, -11)]), fill='#ffb4bc')                                                    # top highlight
-    d.line(P([(6, -12), (112, -10)]), fill='#3ef0ff')                                          # neon beltline
-    d.polygon(P(WIN_R), fill='#0a1224')
-    d.polygon(P(WIN_F), fill='#0a1224')
-    d.line(P([(35, -24), (42, -29)]), fill='#6a8ad0')
-    d.line(P([(58, -30), (72, -24)]), fill='#6a8ad0')
-    d.line(P([(53, -23), (55, -7)]), fill='#6a0a1e')                                           # door seam
-    d.line(P([(45, -17), (48, -17)]), fill='#ffb4bc')
-    d.rectangle(P([(28, -15), (38, -11)])[0] + P([(28, -15), (38, -11)])[1], fill='#1a0208')    # side vent
-    for k in range(3):
-        d.line(P([(29 + k * 3, -15), (29 + k * 3, -11)]), fill='#4a1020')
-    d.rectangle((x0 + 63, gy - 28, x0 + 67, gy - 26), fill='#c8142e')                          # mirror
-    d.polygon(P([(0, -25), (20, -23), (20, -21), (1, -23)]), fill='#240812')                   # wing
-    d.line(P([(0, -25), (20, -23)]), fill='#ff9aa4')
-    d.rectangle((x0 + 5, gy - 22, x0 + 6, gy - 19), fill='#1a0a14')
-    d.rectangle((x0 + 14, gy - 21, x0 + 15, gy - 19), fill='#1a0a14')
-    d.polygon(P([(104, -16), (116, -13), (117, -11), (106, -12)]), fill='#fff8de')             # headlight
-    d.line(P([(96, -16), (108, -14)]), fill='#9af4ff')
-    d.rectangle((x0, gy - 16, x0 + 3, gy - 12), fill='#ff2a4a')                                # tail LED
-    d.line(P([(3, -15), (9, -15)]), fill='#ff5a6a')
-    d.line(P([(112, -5), (119, -6)]), fill='#1a0208')
-    d.rectangle((x0 - 2, gy - 8, x0, gy - 6), fill='#8a96a2')                                  # exhaust tip
+    # wheel arches: dark cut-outs clipped to the body
+    arch = Image.new('L', (W, H), 0)
+    ad = ImageDraw.Draw(arch)
     for wx in WHEELS:
-        cx, cy = x0 + wx, gy - 9
-        d.ellipse((cx - 12, cy - 12, cx + 12, cy + 12), fill='#12040a')
-        d.ellipse((cx - 10, cy - 10, cx + 10, cy + 10), fill='#08080c')
-        d.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), fill='#3c4856')
-        d.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill='#9aa8b8')
-        d.ellipse((cx - 5, cy - 5, cx + 5, cy + 5), fill='#161c24')
-        d.rectangle((cx + 3, cy - 5, cx + 4, cy - 1), fill='#ff2a4a')                          # caliper
-        for j in range(6):
-            a = dist / 6 + j * math.pi / 3
-            d.line((cx, cy, cx + math.cos(a) * 6, cy + math.sin(a) * 6), fill='#eef4fa')
-        d.ellipse((cx - 2, cy - 2, cx + 2, cy + 2), fill='#3ef0ff')
+        ad.ellipse((x0 + wx - 10, gy - 8 - 10, x0 + wx + 10, gy - 8 + 10), fill=255)
+    arch = ImageChops.multiply(arch, mask)
+    car.paste(Image.new('RGB', (W, H), (14, 2, 8)), mask=arch)
+    d.polygon(P([(10, -8), (118, -8), (126, -5), (118, -4), (14, -4)]), fill='#2a0410')        # sill / skirt
+    d.polygon(P([(0, -9), (9, -8), (9, -4), (3, -5), (1, -7)]), fill='#1a0208')                 # diffuser
+    for k in range(3):
+        d.line(P([(2 + k * 2, -8), (3 + k * 2, -5)]), fill='#4a1020')
+    d.line(P(spline([(7, -18), (22, -21), (38, -23), (50, -27), (62, -29), (74, -29), (84, -27)], 5)), fill='#ffc0c8')
+    d.line(P(spline([(84, -27), (98, -21), (110, -17), (121, -13), (127, -10)], 5)), fill='#ff98a4')   # edge light
+    d.line(P(spline([(10, -16), (24, -19), (42, -21)], 5)), fill='#ff8794')                      # haunch highlight
+    d.polygon(P(CANOPY), fill='#0a1224')                                                         # glass canopy
+    d.line(P([(60, -26), (68, -22)]), fill='#5a7ac0')
+    d.line(P([(73, -26), (82, -22)]), fill='#5a7ac0')
+    d.line(P([(54, -20), (96, -20)]), fill='#ff98a4')                                            # beltline
+    d.line(P([(55, -20), (53, -7)]), fill='#6a0a1e')                                             # door cut
+    d.line(P([(94, -20), (98, -8)]), fill='#6a0a1e')
+    d.line(P([(53, -7), (98, -8)]), fill='#6a0a1e')
+    d.line(P([(84, -15), (88, -15)]), fill='#ffc0c8')                                            # handle
+    d.polygon(P([(33, -20), (51, -21), (51, -9), (39, -9)]), fill='#16030a')                    # mid-engine intake
+    for k in range(4):
+        d.line(P([(36 + k * 4, -19), (40 + k * 4, -10)]), fill='#5a1226')
+    d.rectangle(P([(101, -19), (109, -17)])[0] + P([(101, -19), (109, -17)])[1], fill='#2a0410')  # hood vent
+    d.line(P([(102, -18), (108, -18)]), fill='#8a1a34')
+    d.line(P([(8, -7), (121, -7)]), fill='#3ef0ff')                                              # neon sill line
+    d.polygon(P([(-5, -29), (24, -26), (24, -24), (-4, -27)]), fill='#240812')                   # wing
+    d.line(P([(-5, -29), (24, -26)]), fill='#ff98a4')
+    d.polygon(P([(19, -29), (25, -28), (25, -22), (19, -22)]), fill='#c8142e')                   # end plate
+    d.rectangle((x0 + 7, gy - 25, x0 + 8, gy - 19), fill='#1a0a14')                              # wing posts
+    d.rectangle((x0 + 14, gy - 25, x0 + 15, gy - 19), fill='#1a0a14')
+    d.polygon(P([(111, -17), (126, -12), (127, -10), (113, -13)]), fill='#fff8de')               # headlight
+    d.line(P([(100, -18), (111, -17)]), fill='#9af4ff')
+    d.polygon(P([(110, -4), (130, -5), (129, -7), (116, -6)]), fill='#12040a')                   # splitter
+    d.line(P([(0, -13), (6, -17)]), fill='#ff2a4a', width=2)                                     # LED tail bar
+    d.line(P([(0, -11), (3, -13)]), fill='#ff2a4a')
+    d.rectangle((x0 - 2, gy - 8, x0, gy - 7), fill='#9aa6b2')                                    # twin exhaust tips
+    d.rectangle((x0 - 2, gy - 6, x0, gy - 5), fill='#9aa6b2')
+    for wx in WHEELS:
+        cx, cy = x0 + wx, gy - 8
+        d.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), fill='#07070b')                              # tyre
+        d.ellipse((cx - 6, cy - 6, cx + 6, cy + 6), fill='#2c3644')
+        d.ellipse((cx - 5, cy - 5, cx + 5, cy + 5), fill='#c2ccd8')                              # rim
+        d.ellipse((cx - 4, cy - 4, cx + 4, cy + 4), fill='#161c24')
+        d.arc((cx - 6, cy - 6, cx + 6, cy + 6), 200, 330, fill='#3ef0ff')                        # glowing rim ring
+        d.rectangle((cx + 2, cy - 4, cx + 3, cy - 1), fill='#ff2a4a')                            # brake caliper
+        for j in range(5):
+            a = dist / 6 + j * 2 * math.pi / 5
+            d.line((cx, cy, cx + math.cos(a) * 4.6, cy + math.sin(a) * 4.6), fill='#eef4fa')
+        d.ellipse((cx - 1, cy - 1, cx + 1, cy + 1), fill='#3ef0ff')
     return car
 
 
 def draw_xray(d, x0, gy, dist, f):
     d.polygon(cp(x0, gy, BODY), fill=(8, 32, 58, 235), outline='#6ef0ff')
-    d.polygon(cp(x0, gy, WIN_R), outline='#3aa8d0')
-    d.polygon(cp(x0, gy, WIN_F), outline='#3aa8d0')
-    d.line((x0 + 92, gy - 9, x0 + 24, gy - 9), fill='#2a7aa0')                              # drive shaft
-    d.rectangle((x0 + 38, gy - 21, x0 + 46, gy - 12), outline='#2a7aa0')                    # seat
+    d.polygon(cp(x0, gy, CANOPY), outline='#3aa8d0')
+    d.line((x0 + 8, gy - 6, x0 + 120, gy - 6), fill='#1e6a90')                                  # chassis rail
+    d.line((x0 + 56, gy - 6, x0 + 56, gy - 20), fill='#1e6a90')
+    d.line((x0 + 96, gy - 6, x0 + 96, gy - 20), fill='#1e6a90')
+    d.rectangle((x0 + 62, gy - 20, x0 + 70, gy - 11), outline='#2a7aa0')                       # seat
+    d.line((x0 + 78, gy - 22, x0 + 82, gy - 17), fill='#2a7aa0')                                # steering wheel
+    d.line((x0 + 48, gy - 12, x0 + 28, gy - 9), fill='#2a7aa0')                                 # drivetrain
     for wx in WHEELS:
-        cx, cy = x0 + wx, gy - 9
-        d.ellipse((cx - 9, cy - 9, cx + 9, cy + 9), fill=(4, 16, 30, 255), outline='#6ef0ff')
-        for j in range(6):
-            a = dist / 6 + j * math.pi / 3
-            d.line((cx, cy, cx + math.cos(a) * 7, cy + math.sin(a) * 7), fill='#3aa8d0')
-    ex, ey = x0 + 82, gy - 22                                                               # glowing inline-4
-    d.rectangle((ex, ey, ex + 24, ey + 12), fill='#0e3a5c', outline='#a0f6ff')
+        cx, cy = x0 + wx, gy - 8
+        d.ellipse((cx - 8, cy - 8, cx + 8, cy + 8), fill=(4, 16, 30, 255), outline='#6ef0ff')
+        for j in range(5):
+            a = dist / 6 + j * 2 * math.pi / 5
+            d.line((cx, cy, cx + math.cos(a) * 6, cy + math.sin(a) * 6), fill='#3aa8d0')
+    ex, ey = x0 + 34, gy - 20                                                                    # glowing inline-4
+    d.rectangle((ex, ey, ex + 20, ey + 11), fill='#0e3a5c', outline='#a0f6ff')
     for i in range(4):
         s = math.sin(f * 1.5 + (0, math.pi, math.pi, 0)[i])
-        px0, off = ex + 3 + i * 5, round(2 * s)
+        px0, off = ex + 2 + i * 5, round(2 * s)
         if s < -0.7 and (f // 4 + i) % 2 == 0:
             d.rectangle((px0 - 1, ey + 1, px0 + 3, ey + 3), fill='#ffb040')
-        d.rectangle((px0, ey + 6 + off, px0 + 2, ey + 9 + off), fill='#d8faff')
+        d.rectangle((px0, ey + 5 + off, px0 + 2, ey + 7 + off), fill='#d8faff')
 
 
 def street_scene(f, dist, scan=None, speed=1.0, x0=X0, nitro=0.0, backfire=0.0):
@@ -377,8 +414,8 @@ def street_scene(f, dist, scan=None, speed=1.0, x0=X0, nitro=0.0, backfire=0.0):
         sh = int(round(1.6 * math.sin(t * 5 + k * 0.8)))
         arr[241 + k] += np.roll(src[k], sh, axis=0) * 0.36 * (1 - k / n)
     by = GY + round(math.sin(f * 0.6) * 0.6)
-    glow(arr, x0 + 60, by + 1, 62, '#20e0ff', 0.7, sy=4.2)                    # underglow on the asphalt
-    glow(arr, x0 + 60, by + 1, 36, '#ff3ea5', 0.25, sy=4.2)
+    glow(arr, x0 + 64, by + 1, 70, '#20e0ff', 0.7, sy=4.2)                    # underglow on the asphalt
+    glow(arr, x0 + 64, by + 1, 40, '#ff3ea5', 0.25, sy=4.2)
     im = to_im(arr)
     d = ImageDraw.Draw(im)
     for i in range(6):
@@ -402,7 +439,7 @@ def street_scene(f, dist, scan=None, speed=1.0, x0=X0, nitro=0.0, backfire=0.0):
     fl = max(backfire, 0.0)
     if fl > 0 or nitro > 0:                                                    # exhaust flame
         ln = max(22 * fl, nitro)
-        ex, ey = x0 - 2, by - 7
+        ex, ey = x0 - 2, by - 6
         d.polygon([(ex, ey - 2), (ex - ln, ey - 4 * fl - 2), (ex - ln * 0.55, ey), (ex - ln, ey + 4 * fl + 1),
                    (ex, ey + 2)], fill='#ff8a2a')
         d.polygon([(ex, ey - 1), (ex - ln * 0.6, ey), (ex, ey + 1)], fill='#fff4b0')
@@ -422,7 +459,7 @@ def street_scene(f, dist, scan=None, speed=1.0, x0=X0, nitro=0.0, backfire=0.0):
         d.point((x - 1, y - 1), fill='#6a76b0')
         d.point((x + 1, y - 1), fill='#6a76b0')
     arr = to_arr(im)
-    hx, hy = x0 + 112, by - 14                                                 # headlight + beam + lens flare
+    hx, hy = x0 + 125, by - 12                                                 # headlight + beam + lens flare
     glow(arr, hx, hy, 20, '#fff0c0', 0.85)
     dx, dy = XX[:, hx:] - hx, YY[:, hx:] - hy
     a = np.clip(0.3 * (1 - dx / 90), 0, 1) * (np.abs(dy) < dx * 0.22 + 1)
@@ -432,13 +469,13 @@ def street_scene(f, dist, scan=None, speed=1.0, x0=X0, nitro=0.0, backfire=0.0):
         if hi > lo:
             ramp = np.clip(1 - np.abs(np.arange(lo, hi) - hx) / 26, 0, 1) ** 2
             arr[hy, lo:hi] += ramp[:, None] * np.array(hexc('#bff8ff'), np.float32) * 0.9
-    glow(arr, x0 + 1, by - 14, 16, '#ff2040', 0.75)
-    glow(arr, x0 + 60, by - 11, 34, '#20e0ff', 0.14)                          # beltline glow on the paint
+    glow(arr, x0 + 2, by - 14, 16, '#ff2040', 0.75)
+    glow(arr, x0 + 64, by - 8, 40, '#20e0ff', 0.14, sy=2.0)                  # sill neon spill on the paint
     if fl > 0 or nitro > 0:
-        glow(arr, x0 - 8, by - 7, 26 + nitro * 0.5, '#ff8a2a', 0.8)
-    if scan is not None and scan > x0 + 76:
-        glow(arr, x0 + 94, by - 17, 18, '#ff8a2a', 0.35 + 0.35 * (f % 4 < 2))
-        glow(arr, x0 + 62, by - 14, 52, '#1a9ad0', 0.18)
+        glow(arr, x0 - 8, by - 6, 26 + nitro * 0.5, '#ff8a2a', 0.8)
+    if scan is not None and scan > x0 + 56:
+        glow(arr, x0 + 44, by - 15, 20, '#ff8a2a', 0.35 + 0.35 * (f % 4 < 2))
+        glow(arr, x0 + 52, by - 12, 54, '#1a9ad0', 0.2)
     if scan is not None and 0 < scan < W:                                      # scan beam with trailing glow
         xs = int(scan)
         lo = max(xs - 14, 0)
@@ -723,14 +760,23 @@ def phase_at(t):
     return 'intro' if t < 11.3 else ('slow' if t < T_REV else 'rev')
 
 
-def zoom(img, u, x0=X0):
-    z = 1 + 4 * u * u
-    bw, bh = W / z, H / z
-    tx, ty = x0 + 92, GY - 14
-    x1 = min(max(tx - bw / 2, 0), W - bw)
-    y1 = min(max(ty - bh / 2, 0), H - bh)
-    crop = Image.fromarray(img).crop((round(x1), round(y1), round(x1 + bw), round(y1 + bh)))
-    return np.asarray(crop.resize((W, H), Image.NEAREST))
+def punch(img, z, x0=X0):
+    """Integer punch-in on the x-ray engine (crisp 2x/4x pixels, no resampling smear)."""
+    bw, bh = W // z, H // z
+    tx, ty = x0 + 45, GY - 14
+    x1 = int(min(max(tx - bw / 2, 0), W - bw))
+    y1 = int(min(max(ty - bh / 2, 0), H - bh))
+    return np.repeat(np.repeat(img[y1:y1 + bh, x1:x1 + bw], z, axis=0), z, axis=1)
+
+
+def iris_mix(a, b, r, cx, cy):
+    """b inside a circle of radius r, a outside, with a glowing cyan rim."""
+    d = np.hypot(XX - cx, YY - cy)
+    out = np.where((d < r + (BAY - 0.5) * 3)[..., None], b, a).astype(np.float32)
+    out[np.abs(d - r) <= 2.2] = (170, 250, 255)
+    halo = (d > r + 2.2) & (d < r + 9)
+    out[halo] = out[halo] * 0.62 + np.array([14, 80, 110], np.float32) * (1 - (d[halo] - r - 2.2) / 7)[:, None]
+    return np.clip(out, 0, 255).astype(np.uint8)
 
 
 def street_frame(t):
@@ -738,8 +784,12 @@ def street_frame(t):
     scan = W * smooth((t - T_SCAN[0]) / (T_SCAN[1] - T_SCAN[0])) if t >= T_SCAN[0] else None
     bf = (1 - (f % 27) / 5) if (f % 27) < 5 and t < T_SCAN[0] else 0.0          # backfire pops
     img = post(street_scene(f, 1.8 * f, scan, 1.0, X0, backfire=bf), f)
-    if t >= T_ZOOM[0]:
-        return zoom(img, smooth((t - T_ZOOM[0]) / (T_ZOOM[1] - T_ZOOM[0])))
+    if t >= T_PUNCH[0]:
+        img = punch(img, 4 if t >= T_PUNCH[1] else 2)
+        for t0 in T_PUNCH:                                             # white-cyan flash on each cut
+            if t0 <= t < t0 + 0.12:
+                img = np.clip(img.astype(np.float32) + np.array([110, 150, 160]) * (1 - (t - t0) / 0.12), 0, 255).astype(np.uint8)
+        return img
     im = Image.fromarray(img)
     if t < T_HOOK_END:
         text(im, '100 EXPLOSIONS', 14, 2, '#ffffff' if 2.4 <= t < 2.6 else '#ff8a3a')
@@ -830,16 +880,20 @@ def outro_frame(t):
 
 def frame(fi, cache):
     t = fi / FPS
-    if t < T_ENG:
+    if t < T_IRIS[0]:
         img = street_frame(t)
-    elif t < T_ENG + 0.25:
-        if 'zoom' not in cache:
-            cache['zoom'] = street_frame(T_ENG - 1 / FPS)
-        img = dissolve(cache['zoom'], engine_frame(t), (t - T_ENG) / 0.25)
+    elif t < T_ENG:                                                    # iris opens from the x-ray engine
+        k = smooth((t - T_IRIS[0]) / (T_ENG - T_IRIS[0]))
+        img = iris_mix(street_frame(t), engine_frame(t), 270 * k, 92, 160)
     elif t < T_OUT:
         img = engine_frame(t)
-    elif t < T_OUT + 0.3:
-        img = dissolve(engine_frame(t), outro_frame(t), (t - T_OUT) / 0.3)
+    elif t < T_OUT + 0.45:                                             # iris closes on the engine, opens on the street
+        u = (t - T_OUT) / 0.45
+        black = np.zeros((H, W, 3), np.uint8)
+        if u < 0.45:
+            img = iris_mix(black, engine_frame(t), 270 * (1 - smooth(u / 0.45)), 90, 160)
+        else:
+            img = iris_mix(black, outro_frame(t), 270 * smooth((u - 0.45) / 0.55), 90, 160)
     else:
         img = outro_frame(t)
         if t >= TOTAL_S - 0.4:                                         # loop back to the hook
@@ -847,8 +901,8 @@ def frame(fi, cache):
                 cache['first'] = street_frame(0)
             img = dissolve(img, cache['first'], (t - (TOTAL_S - 0.4)) / 0.4)
     im = Image.fromarray(np.ascontiguousarray(img))
-    if t < T_OUT + 0.35:                                               # captions sit clear of the hero car
-        captions(im, t, 70 if (t < T_ENG + 0.12) else 256)
+    if t < T_OUT + 0.1:                                                # captions sit clear of the hero car
+        captions(im, t, 70 if t < T_ENG else 256)
     return np.asarray(im)
 
 
