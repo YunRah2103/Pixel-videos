@@ -358,11 +358,11 @@ def draw_car(img, f, theta, speed):
 
 # ---------------------------------------------------------------- UI
 def draw_labels(d, t):
-    items = [(1.1, 'SPARK PLUG', 226, 86, 184, 90, '#ffd35a'),
-             (1.5, 'VALVES', 14, 106, 152, 142, '#6fe0ff'),
-             (1.9, 'PISTON', 16, 214, 152, 222, '#e8eff4'),
-             (2.3, 'CYLINDER', 262, 196, 240, 200, '#6a8fae'),
-             (2.7, 'CRANKSHAFT', 252, 308, 214, 294, '#f0a040')]
+    items = [(0.15, 'SPARK PLUG', 226, 86, 184, 90, '#ffd35a'),
+             (0.45, 'VALVES', 14, 106, 152, 142, '#6fe0ff'),
+             (0.75, 'PISTON', 16, 214, 152, 222, '#e8eff4'),
+             (1.05, 'CYLINDER', 262, 196, 240, 200, '#6a8fae'),
+             (1.35, 'CRANKSHAFT', 252, 308, 214, 294, '#f0a040')]
     for t0, s, x, y, lx, ly, c in items:
         if t > t0:
             tx = x if x < 180 else x
@@ -375,7 +375,7 @@ def draw_labels(d, t):
 def draw_ui(img, f, t, th, ph, rs):
     d = ImageDraw.Draw(img)
     # title
-    if t < 3.2:
+    if t < ENGINE_INTRO:
         text(d, 'HOW AN ENGINE', 0, 14, 3, '#ffd35a', center=True)
         text(d, 'WORKS', 0, 40, 3, '#ffd35a', center=True)
         text(d, '4-STROKE CYCLE', 0, 66, 1, '#6fe0ff', center=True)
@@ -393,26 +393,28 @@ def draw_ui(img, f, t, th, ph, rs):
         draw_arrow(d, int(th // 180) % 2 == 1, '#ffffff')
     # bottom panel
     if ph == 'intro':
-        text(d, 'ENGINE OFF', 0, 404, 3, '#8fb0cc', center=True)
+        text(d, 'MEET THE PARTS', 0, 404, 3, '#8fb0cc', center=True)
         for i, ln in enumerate(['A CYLINDER, A PISTON,', 'TWO VALVES, A SPARK PLUG', 'AND A CRANKSHAFT']):
             text(d, ln, 0, 440 + i * 18, 2, '#cfe3f3', center=True)
     elif slow:
         text(d, name, 0, 404, 3, col, center=True)
         for i, ln in enumerate(lines):
             text(d, ln, 0, 440 + i * 18, 2, '#e8f2fb', center=True)
+        if 360 <= th < 430:
+            text(d, 'BANG!', 248, 196, 3, '#ffd35a')
     elif ph == 'ramp1':
         text(d, 'SPEED IT UP', 0, 404, 3, '#ffd35a', center=True)
         for i, ln in enumerate(['SAME 4 STROKES', 'AGAIN AND AGAIN', 'FASTER AND FASTER']):
             text(d, ln, 0, 440 + i * 18, 2, '#e8f2fb', center=True)
     elif ph == 'ramp2':
-        text(d, 'EVERY MINUTE', 0, 404, 3, '#ff7a45', center=True)
-        for i, ln in enumerate(['THE CRANKSHAFT SPINS', '1,000 TO 6,000 TIMES', 'FROM TINY BLASTS']):
+        text(d, '100 PER SECOND', 0, 404, 3, '#ff7a45', center=True)
+        for i, ln in enumerate(['4 CYLINDERS AT 3,000 RPM', '= 100 BANGS A SECOND', 'THAT IS YOUR ENGINE']):
             text(d, ln, 0, 440 + i * 18, 2, '#e8f2fb', center=True)
     else:
         text(d, 'SUCK SQUEEZE', 0, 398, 3, '#6fe0ff', center=True)
         text(d, 'BANG BLOW', 0, 424, 3, '#ff7a45', center=True)
-        text(d, 'ONE POWER BURST', 0, 456, 2, '#e8f2fb', center=True)
-        text(d, 'EVERY 4 STROKES', 0, 474, 2, '#e8f2fb', center=True)
+        text(d, 'ONE BANG EVERY 4 STROKES', 0, 456, 2, '#e8f2fb', center=True)
+        text(d, 'FOLLOW FOR PART 2', 0, 476, 2, '#ffd35a', center=True)
     # progress pips
     for i in range(4):
         x0 = 30 + i * 75
@@ -433,25 +435,29 @@ def draw_ui(img, f, t, th, ph, rs):
 
 
 # ---------------------------------------------------------------- timeline
+ENGINE_INTRO = 1.8           # seconds of part labels before the crank turns
+SLOW_W = 48.0                # deg/s for the explained cycle: 3.75s per stroke
+
+
 def build_timeline():
     thetas, phases = [], []
     th, f, rs = 0.0, 0, None
     while True:
         t = f / FPS
         if rs is None:
-            w = 36 * smooth((t - 3.2) / 0.5) if t >= 3.2 else 0.0
-            ph = 'intro' if t < 3.2 else 'slow'
+            w = SLOW_W * smooth((t - ENGINE_INTRO) / 0.4) if t >= ENGINE_INTRO else 0.0
+            ph = 'intro' if t < ENGINE_INTRO else 'slow'
             if th >= 720:
                 rs = t
         if rs is not None:
             u = t - rs
-            if u < 6.5:
-                w = 36 + (900 - 36) * smooth(u / 4.0)
-                ph = 'ramp1' if u < 3.2 else 'ramp2'
+            if u < 5.0:
+                w = SLOW_W + (900 - SLOW_W) * smooth(u / 3.0)
+                ph = 'ramp1' if u < 2.4 else 'ramp2'
             else:
-                w = 900 - 750 * smooth((u - 6.5) / 2.5)
+                w = 900 - 750 * smooth((u - 5.0) / 2.5)
                 ph = 'end'
-            if u > 10.2:
+            if u > 8.0:
                 break
         thetas.append(th); phases.append(ph)
         th += w / FPS; f += 1
@@ -473,16 +479,20 @@ def render(f, thetas, phases, rs):
         if k > 0.35:
             region = img.crop((0, 60, W, 380))
             img.paste(region, (dx, 60 + dy))
-    elif ph == 'slow' and 361 <= th % 720 < 369:
-        region = img.crop((0, 60, W, 380)); img.paste(region, (0, 61))
+    elif ph == 'slow' and 361 <= th % 720 < 380:                    # ignition kick
+        region = img.crop((0, 60, W, 380)); img.paste(region, ((f % 2) * 4 - 2, 60 + f % 3 - 1))
     draw_ui(img, f, t, th, ph, rs)
+    if ph == 'slow' and 360 <= th < 372:                              # ignition flash
+        img = Image.blend(img, Image.new('RGB', (W, H), (255, 240, 200)), 0.55 * (1 - (th - 360) / 12))
     return img
 
 
 # ---------------------------------------------------------------- night drive intro
-INTRO_S = 8
-N_INTRO = INTRO_S * FPS
-CUT_F = 15                                   # frames of pixel dissolve into the engine
+INTRO_S = 3.6
+N_INTRO = int(INTRO_S * FPS)
+CUT_F = 8                                    # frames of pixel dissolve (into the engine, and back for the loop)
+SCAN = (0.5, 2.0)                            # x-ray sweep across the car (s)
+ZOOM_START = 2.6                             # dive into the engine bay
 SKY_STOPS = [(0, '#120c2e'), (170, '#2c1f55'), (290, '#6a2f6e'), (360, '#c2505e'), (400, '#f0884a')]
 SKY_IMG = Image.new('RGB', (W, H), hexrgb(SKY_STOPS[0][1]))
 _sky = ImageDraw.Draw(SKY_IMG)
@@ -554,17 +564,17 @@ def hero_car(d, cx, cy, f):
         d.ellipse((wx - 2, cy - 11, wx + 2, cy - 7), fill='#b7c4d0')
 
 
-def drive(f):
+def drive_scene(f):
     t = f / FPS
     img = SKY_IMG.copy()
     d = ImageDraw.Draw(img)
     for x, y, ph in DRIVE_STARS:
         if math.sin(t * 3 + ph) > -0.3:
             d.point((x, y), fill='#e6e0ff')
-    d.ellipse((266, 70, 318, 122), fill='#2a2a55')                    # moon + glow
-    d.ellipse((274, 78, 310, 114), fill='#f3ecd0')
-    d.ellipse((284, 86, 292, 94), fill='#e0d8b8')
-    d.ellipse((296, 98, 302, 104), fill='#e0d8b8')
+    d.ellipse((40, 150, 92, 202), fill='#2a2a55')                     # moon + glow
+    d.ellipse((48, 158, 84, 194), fill='#f3ecd0')
+    d.ellipse((58, 166, 66, 174), fill='#e0d8b8')
+    d.ellipse((70, 178, 76, 184), fill='#e0d8b8')
     dist = f * 2.4                                                     # constant cruising speed
     mountains(d, dist)
     city(d, dist * 0.5, 392, 14, 26, 70, '#1f1c45', ['#ffd27a', '#7fe0ff'], 0.12, 1)
@@ -583,23 +593,72 @@ def drive(f):
         rect(d, x, y, x + 14 + (i * 13) % 30, y, '#3a3360')
     hero_car(d, 121, 548, f)
     d.polygon([(239, 532), (W, 504), (W, 560)], fill='#3a3050')        # headlight beam
-    if t >= 0.6:
-        text(d, 'NIGHT DRIVE', 0, 24, 2, '#ffd35a', center=True)
-    if t >= 3.4:
-        text(d, 'WHAT IS UNDER THE HOOD?', 0, 56, 1, '#e8f2fb', center=True)
-    fade = min(1.0, t / 0.5)
-    if fade < 1:
-        img = Image.eval(img, lambda v: int(v * fade))
+    if t >= SCAN[0]:                                                   # x-ray sweep reveals the engine
+        sx = int(W * smooth((t - SCAN[0]) / (SCAN[1] - SCAN[0])))
+        if sx > 0:
+            xr = img.copy()
+            hero_car_xray(ImageDraw.Draw(xr), 121, 548, f)
+            img.paste(xr.crop((0, 0, sx, H)), (0, 0))
+        if sx < W:
+            rect(d, sx - 3, 470, sx - 2, 575, '#3a8acc'); rect(d, sx, 470, sx + 1, 575, '#c8f8ff')
     return img
 
 
+def hero_car_xray(d, cx, cy, f):
+    cy += round(math.sin(f * 0.7))
+    line, fill = '#7fe8ff', '#0b2440'
+    d.polygon([(cx + 22, cy - 22), (cx + 36, cy - 38), (cx + 82, cy - 38), (cx + 100, cy - 22)], fill=fill, outline=line)
+    d.rectangle((cx, cy - 22, cx + 118, cy - 6), fill=fill, outline=line)
+    for x0, x1 in ((cx + 32, cx + 58), (cx + 62, cx + 88)):
+        d.line((x0, cy - 24, x1, cy - 24), fill='#2a5a80')
+    for wx in (cx + 24, cx + 94):
+        d.ellipse((wx - 11, cy - 20, wx + 11, cy + 2), fill='#06121f', outline=line)
+        for j in range(4):
+            ang = f * 0.5 + j * math.pi / 2
+            d.line((wx, cy - 9, wx + math.cos(ang) * 8, cy - 9 + math.sin(ang) * 8), fill=line)
+    ex, ey = cx + 86, cy - 36                                          # glowing 4-cylinder engine in the hood
+    d.rectangle((ex - 3, ey - 3, ex + 31, ey + 23), outline='#2a6a9a')
+    d.rectangle((ex, ey, ex + 28, ey + 20), fill='#123a5c', outline=line)
+    for i in range(4):
+        s = math.sin(f * 1.6 + (0, math.pi, math.pi, 0)[i])
+        px0, off = ex + 3 + i * 6, round(3 * s)
+        if s < -0.7 and (f // 4 + i) % 2 == 0:
+            rect(d, px0 - 1, ey + 2, px0 + 4, ey + 6, '#ffb040')
+        rect(d, px0, ey + 8 + off, px0 + 3, ey + 13 + off, '#c8f4ff')
+
+
+def drive(f):
+    t = f / FPS
+    img = drive_scene(f)
+    if t >= ZOOM_START:                                                # nearest-neighbour dive into the engine bay
+        u = smooth((t - ZOOM_START) / (INTRO_S - ZOOM_START))
+        z = 1 + 5 * u * u
+        tx, ty = 221, 522                                              # engine bay of the x-rayed car
+        bw, bh = W / z, H / z
+        x0 = min(max(tx - bw / 2, 0), W - bw); y0 = min(max(ty - bh / 2, 0), H - bh)
+        return img.crop((round(x0), round(y0), round(x0 + bw), round(y0 + bh))).resize((W, H), Image.NEAREST)
+    d = ImageDraw.Draw(img)                                            # hook: on screen from frame 0
+    text(d, '100 EXPLOSIONS', 0, 30, 3, '#ff7a45', center=True)
+    text(d, 'EVERY SECOND', 0, 58, 3, '#ffd35a', center=True)
+    text(d, 'INSIDE YOUR CAR', 0, 88, 2, '#e8f2fb', center=True)
+    if t > 1.0:
+        text(d, '4 CYLINDERS AT 3,000 RPM', 0, 112, 1, '#8fb0cc', center=True)
+    return img
+
+
+def dissolve(a, b, k):
+    """Bayer pixel dissolve from a to b, k in (0, 1]."""
+    return Image.composite(b, a, BAYER_TILE.point(lambda v: 255 if v < k * 256 else 0))
+
+
 def frame_at(f, thetas, phases, rs):
+    total = N_INTRO + len(thetas)
     if f < N_INTRO - CUT_F:
         return drive(f)
-    if f < N_INTRO:                                                    # pixel dissolve into the engine
-        k = (f - (N_INTRO - CUT_F) + 1) / (CUT_F + 1)
-        mask = BAYER_TILE.point(lambda v: 255 if v < k * 256 else 0)
-        return Image.composite(render(0, thetas, phases, rs), drive(f), mask)
+    if f < N_INTRO:                                                    # into the engine
+        return dissolve(drive(f), render(0, thetas, phases, rs), (f - (N_INTRO - CUT_F) + 1) / (CUT_F + 1))
+    if f >= total - CUT_F:                                             # back to frame 0 so the video loops
+        return dissolve(render(f - N_INTRO, thetas, phases, rs), drive(0), (f - (total - CUT_F) + 1) / (CUT_F + 1))
     return render(f - N_INTRO, thetas, phases, rs)
 
 
@@ -612,8 +671,7 @@ def main():
     thetas, phases, rs = build_timeline()
     total = N_INTRO + len(thetas)
     if args.sheet:
-        picks = [40, 120, 200, N_INTRO - 4, N_INTRO + 30, N_INTRO + 75, N_INTRO + 120, N_INTRO + 200, N_INTRO + 270,
-                 N_INTRO + 330, N_INTRO + 390, N_INTRO + 520, N_INTRO + 700, total - 15]
+        picks = [int(s * FPS) for s in (0, 1.0, 1.7, 2.4, 3.0, 3.4, 4.3, 5.2, 7.5, 11, 14.2, 18, 21.5, 25)] + [total - 4]
         picks = [p for p in picks if p < total]
         tiles = [frame_at(p, thetas, phases, rs) for p in picks]
         cols = 7
@@ -628,7 +686,7 @@ def main():
     if not shutil.which('ffmpeg'):
         raise SystemExit('FFmpeg not found. Install FFmpeg first.')
     dest = Path(args.out); dest.parent.mkdir(parents=True, exist_ok=True)
-    frame_at(int(4 * FPS), thetas, phases, rs).save(args.poster)
+    frame_at(int(1.5 * FPS), thetas, phases, rs).save(args.poster)
     cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-vcodec', 'rawvideo',
            '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-an',
            '-vf', 'scale=1080:1920:flags=neighbor,format=yuv420p', '-c:v', 'libx264', '-preset', 'medium',
