@@ -9,7 +9,9 @@
     "render:lowres": "remotion render src/index.ts SunsetHarbor out/sunset-harbor-lowres.mp4",
     "render": "node scripts/render.mjs",
     "demo:offline": "python3 scripts/render_demo.py --seconds 6 --out out/sunset-harbor-offline.mp4",
-    "check": "python3 scripts/check_tools.py"
+    "check": "python3 scripts/check_tools.py",
+    "render:night-drive": "node scripts/render_night_drive.mjs",
+    "extract:night-drive": "python3 tools/extract_night_drive.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",

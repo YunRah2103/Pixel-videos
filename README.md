@@ -48,6 +48,15 @@ npm run check
 
 **Note:** `--all` requires internet and downloads large binaries; Godot and Pixelorama are standalone programs, *not* npm packages. Rust/Cargo is necessary to compile pixelgen. The installer chooses supported release archives and reports unsupported platforms. It does not silently install operating-system dependencies.
 
+## NightDrive (recreated lyric clip)
+
+A 17.5 s, 180×320 → 1080×1920 pixel-art night drive: static street scene, two animated passengers and word-by-word lyric captions with a decaying wobble. The backdrop and passenger frames are traced from a reference clip into `src/scenes/nightDriveData.ts`; the 7×7 caption font lives in `src/scenes/pixelFont.ts`.
+
+```bash
+npm run render:night-drive -- --audio reference.mp4   # audio optional
+python3 tools/extract_night_drive.py reference.mp4    # regenerate the traced data
+```
+
 ## Rendering model
 
 The project renders actual frames at **360×640**, then scales to **1080×1920** using nearest-neighbour interpolation. This is cheaper for many 2D scenes than physically rendering every output pixel. Compression and 3D shader cost still matter. The default demo uses original procedural pixel art and true frame-by-frame motion.
