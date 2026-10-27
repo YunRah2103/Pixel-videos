@@ -57,7 +57,8 @@ The project renders actual frames at **360×640**, then scales to **1080×1920**
 - `src/scenes/SunsetHarbor.tsx` — original animated pixel-art film
 - `scripts/render.mjs` — Remotion render + FFmpeg integer upscale
 - `scripts/render_demo.py` — standalone preview generator
-- `scripts/render_engine_film.py` — silent cinematic 4-stroke engine short (rainy neon drive, x-ray reveal, lit engine cutaway, loop); `python3 scripts/render_engine_film.py --out out/engine-film.mp4` (needs numpy)
+- `scripts/render_engine_film.py` — cinematic engine short timed to a voiceover: neon drive, x-ray reveal, lit engine cutaway, four-cylinder rev, launch, loop, word-synced captions (needs numpy)
+- `scripts/make_engine_sfx.py` — mixes a voiceover with synthesized sound design (`--voice-only` for voice alone)
 - `scripts/install_tools.py` — optional tool downloader
 - `docs/AGENT_GUIDE.md` — assignment contract and QA
 - `docs/STYLE_GUIDE.md` — art direction
