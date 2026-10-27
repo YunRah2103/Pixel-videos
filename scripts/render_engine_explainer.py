@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Four-stroke engine explainer in pixel art (silent, voiceover-ready).
 
+Opens on an original night-drive scene that dissolves into the engine cutaway.
+
 Original procedural art: Pillow draws 360x640 frames, FFmpeg upscales them 3x with
 nearest-neighbour to 1080x1920. Everything is driven by the crank angle (theta) so
 pistons, valves, cams, gas, spark and wheels stay mechanically in sync. No audio track
@@ -474,10 +476,131 @@ def render(f, thetas, phases, rs):
     elif ph == 'slow' and 361 <= th % 720 < 369:
         region = img.crop((0, 60, W, 380)); img.paste(region, (0, 61))
     draw_ui(img, f, t, th, ph, rs)
-    fade = min(1.0, t / 0.4)
+    return img
+
+
+# ---------------------------------------------------------------- night drive intro
+INTRO_S = 8
+N_INTRO = INTRO_S * FPS
+CUT_F = 15                                   # frames of pixel dissolve into the engine
+SKY_STOPS = [(0, '#120c2e'), (170, '#2c1f55'), (290, '#6a2f6e'), (360, '#c2505e'), (400, '#f0884a')]
+SKY_IMG = Image.new('RGB', (W, H), hexrgb(SKY_STOPS[0][1]))
+_sky = ImageDraw.Draw(SKY_IMG)
+for _y in range(400):
+    for (_y0, _c0), (_y1, _c1) in zip(SKY_STOPS, SKY_STOPS[1:]):
+        if _y0 <= _y < _y1:
+            _sky.line((0, _y, W, _y), fill=lerp_c(_c0, _c1, (_y - _y0) / (_y1 - _y0)))
+BAYER_TILE = Image.new('L', (W, H))
+BAYER_TILE.putdata([BAYER[y % 4][x % 4] * 16 for y in range(H) for x in range(W)])
+_drng = random.Random(3)
+DRIVE_STARS = [(_drng.randrange(W), _drng.randrange(300), _drng.random() * 6) for _ in range(60)]
+
+
+def mountains(d, scroll):
+    pts = []
+    for x in range(-3, W + 4, 3):
+        s = x + scroll * 0.25
+        pts.append((x, 384 - 14 * abs(math.sin(s / 38.0)) - 8 * abs(math.sin(s / 17.0 + 1.3))))
+    d.polygon(pts + [(W + 3, 450), (-3, 450)], fill='#2a2357')
+
+
+def city(d, scroll, base, cell, hmin, hmax, color, lit_cols, lit, seed):
+    """Endless skyline: buildings are keyed by absolute index, so scrolling never reshuffles them."""
+    for n in range(int(scroll // cell), int(scroll // cell) + W // cell + 3):
+        r = random.Random(seed * 100003 + n)
+        bw = cell - r.randint(1, 4)
+        bh = r.randint(hmin, hmax)
+        x = n * cell - scroll
+        top = base - bh
+        rect(d, x, top, x + bw - 1, base, color)
+        if r.random() < 0.35:
+            rect(d, x + bw // 2, top - 6, x + bw // 2, top, color)
+        for wy in range(top + 4, base - 3, 5):
+            for wx in range(2, bw - 3, 4):
+                h = (n * 7919 + wy * 31 + wx * 17) % 100
+                if h < lit * 100:
+                    rect(d, x + wx, wy, x + wx + 1, wy + 2, lit_cols[h % len(lit_cols)])
+
+
+def lamps(d, scroll, cell=64):
+    for n in range(int(scroll // cell), int(scroll // cell) + W // cell + 3):
+        x = n * cell + 20 - scroll
+        rect(d, x, 436, x + 1, 500, '#2b2748')
+        rect(d, x - 4, 434, x + 5, 436, '#2b2748')
+        rect(d, x - 2, 437, x + 3, 438, '#ffe9a0')
+
+
+def hero_car(d, cx, cy, f):
+    cy += round(math.sin(f * 0.7))                       # suspension bob
+    body, shade, glass = '#3ad0c0', '#1d7f7a', '#c8f4ff'
+    rect(d, cx, cy - 22, cx + 118, cy - 6, body)
+    d.polygon([(cx + 22, cy - 22), (cx + 36, cy - 38), (cx + 82, cy - 38), (cx + 100, cy - 22)], fill=body)
+    d.polygon([(cx + 38, cy - 34), (cx + 58, cy - 34), (cx + 58, cy - 24), (cx + 28, cy - 24)], fill=glass)
+    d.polygon([(cx + 62, cy - 34), (cx + 80, cy - 34), (cx + 92, cy - 24), (cx + 62, cy - 24)], fill=glass)
+    rect(d, cx, cy - 10, cx + 118, cy - 6, shade)
+    rect(d, cx + 112, cy - 18, cx + 118, cy - 14, '#fff3a0')
+    rect(d, cx, cy - 18, cx + 3, cy - 14, '#ff5a6a')
+    for k in range(5):                                   # exhaust puffs drifting back
+        p = (f * 0.06 + k / 5) % 1
+        x, y, r = cx - 6 - p * 34, cy - 9 - p * 10, 1 + p * 3
+        d.ellipse((x - r, y - r, x + r, y + r), fill=lerp_c('#9a9ab8', '#1a1a2e', p))
+    for wx in (cx + 24, cx + 94):
+        d.ellipse((wx - 11, cy - 20, wx + 11, cy + 2), fill='#0a0a14')
+        d.ellipse((wx - 8, cy - 17, wx + 8, cy - 1), fill='#2a2a3e')
+        a = f * 0.5
+        for j in range(4):
+            ang = a + j * math.pi / 2
+            d.line((wx, cy - 9, wx + math.cos(ang) * 7, cy - 9 + math.sin(ang) * 7), fill='#b7c4d0')
+        d.ellipse((wx - 2, cy - 11, wx + 2, cy - 7), fill='#b7c4d0')
+
+
+def drive(f):
+    t = f / FPS
+    img = SKY_IMG.copy()
+    d = ImageDraw.Draw(img)
+    for x, y, ph in DRIVE_STARS:
+        if math.sin(t * 3 + ph) > -0.3:
+            d.point((x, y), fill='#e6e0ff')
+    d.ellipse((266, 70, 318, 122), fill='#2a2a55')                    # moon + glow
+    d.ellipse((274, 78, 310, 114), fill='#f3ecd0')
+    d.ellipse((284, 86, 292, 94), fill='#e0d8b8')
+    d.ellipse((296, 98, 302, 104), fill='#e0d8b8')
+    dist = f * 2.4                                                     # constant cruising speed
+    mountains(d, dist)
+    city(d, dist * 0.5, 392, 14, 26, 70, '#1f1c45', ['#ffd27a', '#7fe0ff'], 0.12, 1)
+    city(d, dist * 0.8, 432, 22, 40, 110, '#15133a', ['#ffb85a', '#ff7ad0', '#7fe0ff'], 0.2, 2)
+    rect(d, 0, 500, W, H, '#17132a')
+    rect(d, 0, 496, W, 503, '#2e2a4a')
+    for y in range(508, H, 9):
+        rect(d, 0, y, W, y, '#1d1834')
+    lamps(d, dist)
+    for k in range(10):
+        x = (k * 48 - dist) % (W + 48) - 24
+        rect(d, x, 600, x + 22, 601, '#f0d070')
+    for i in range(9):                                                 # speed streaks
+        x = (i * 97 - f * 9) % (W + 60) - 30
+        y = 512 + (i * 37) % 110
+        rect(d, x, y, x + 14 + (i * 13) % 30, y, '#3a3360')
+    hero_car(d, 121, 548, f)
+    d.polygon([(239, 532), (W, 504), (W, 560)], fill='#3a3050')        # headlight beam
+    if t >= 0.6:
+        text(d, 'NIGHT DRIVE', 0, 24, 2, '#ffd35a', center=True)
+    if t >= 3.4:
+        text(d, 'WHAT IS UNDER THE HOOD?', 0, 56, 1, '#e8f2fb', center=True)
+    fade = min(1.0, t / 0.5)
     if fade < 1:
         img = Image.eval(img, lambda v: int(v * fade))
     return img
+
+
+def frame_at(f, thetas, phases, rs):
+    if f < N_INTRO - CUT_F:
+        return drive(f)
+    if f < N_INTRO:                                                    # pixel dissolve into the engine
+        k = (f - (N_INTRO - CUT_F) + 1) / (CUT_F + 1)
+        mask = BAYER_TILE.point(lambda v: 255 if v < k * 256 else 0)
+        return Image.composite(render(0, thetas, phases, rs), drive(f), mask)
+    return render(f - N_INTRO, thetas, phases, rs)
 
 
 def main():
@@ -487,13 +610,13 @@ def main():
     ap.add_argument('--sheet', help='write a QA contact sheet and exit')
     args = ap.parse_args()
     thetas, phases, rs = build_timeline()
-    total = len(thetas)
+    total = N_INTRO + len(thetas)
     if args.sheet:
-        picks = [30, 75, 120, 200, 270, 330, 390, 450, 520, 600, 700, 850, int(rs * FPS) + 60, int(rs * FPS) + 150,
-                 total - 80, total - 15]
+        picks = [40, 120, 200, N_INTRO - 4, N_INTRO + 30, N_INTRO + 75, N_INTRO + 120, N_INTRO + 200, N_INTRO + 270,
+                 N_INTRO + 330, N_INTRO + 390, N_INTRO + 520, N_INTRO + 700, total - 15]
         picks = [p for p in picks if p < total]
-        tiles = [render(p, thetas, phases, rs) for p in picks]
-        cols = 8
+        tiles = [frame_at(p, thetas, phases, rs) for p in picks]
+        cols = 7
         rows = (len(tiles) + cols - 1) // cols
         sheet = Image.new('RGB', (cols * W // 2, rows * H // 2))
         for i, tl in enumerate(tiles):
@@ -505,7 +628,7 @@ def main():
     if not shutil.which('ffmpeg'):
         raise SystemExit('FFmpeg not found. Install FFmpeg first.')
     dest = Path(args.out); dest.parent.mkdir(parents=True, exist_ok=True)
-    render(int(2.6 * FPS), thetas, phases, rs).save(args.poster)
+    frame_at(int(4 * FPS), thetas, phases, rs).save(args.poster)
     cmd = ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-vcodec', 'rawvideo',
            '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-an',
            '-vf', 'scale=1080:1920:flags=neighbor,format=yuv420p', '-c:v', 'libx264', '-preset', 'medium',
@@ -514,7 +637,7 @@ def main():
         try:
             assert p.stdin
             for f in range(total):
-                p.stdin.write(render(f, thetas, phases, rs).tobytes())
+                p.stdin.write(frame_at(f, thetas, phases, rs).tobytes())
         finally:
             if p.stdin:
                 p.stdin.close()
