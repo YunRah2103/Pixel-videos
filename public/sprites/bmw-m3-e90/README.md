@@ -1,9 +1,9 @@
-# Blue BMW M3 E90 side-view sprite
+# Blue BMW M3 E90 explainer sprite
 
-![Blue BMW M3 E90 sprite](bmw-m3-e90-blue-side.png)
+![Blue BMW sedan sprite](bmw-m3-e90-blue-side.png)
 
-Single static, right-facing 2D side-view PNG with transparent background. Depicts the four-door E90 M3 sedan in blue with silver wheels.
+Left-facing static 2D side-view sprite, remade in the simple chunky pixel style of the user's supplied explainer video, 198163.mp4. Transparent RGBA PNG, 2048 x 768.
 
-Created with OpenAI image generation on 2026-10-27 for this repository; not extracted from a third-party game. BMW names and vehicle design belong to their respective owners; no affiliation or endorsement is implied.
+Generated with OpenAI image generation on 2026-10-27 using a contact sheet from the supplied video as a style reference. Stylised interpretation rather than an exact technical vehicle drawing. BMW names and design belong to their respective owners; no affiliation is implied.
 
-Use `/sprites/bmw-m3-e90/bmw-m3-e90-blue-side.png` with Remotion `staticFile()`. Preserve aspect ratio and use `imageRendering: 'pixelated'` when scaling. Wheels are part of this static image; separate layers are needed for wheel rotation.
+Use Remotion staticFile('sprites/bmw-m3-e90/bmw-m3-e90-blue-side.png'). Preserve aspect ratio. Wheels are baked into this static sprite and need separate layers for independent rotation.
