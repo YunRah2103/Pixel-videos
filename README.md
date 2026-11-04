@@ -63,6 +63,7 @@ The project renders actual frames at **360×640**, then scales to **1080×1920**
 - `src/scenes/NeonStreet.tsx` — Remotion port of the neon film (`npm run render:neon`; audio in `public/audio/`)
 - `scripts/render_neon_detail.py` — high-detail version: drawn at 360px, palette-locked to 32 colours with Bayer dithering on a 240px grid (`npm run demo:detail`; `NEON_NATIVE=360` for finer pixels)
 - `scripts/pixel_neon.py` — **hand-authored indexed pixel art** (180px grid, palette cycling, sprite frames, dithered halos; `npm run demo:pixel`). Sprites: `public/sprites/neon-street/sprites.png`
+- `scripts/pixel_street.py` — **living street**: 240px indexed pixel art, far/mid/near parallax, two rain depths, inhabitants (car, birds, cat, cook, diners, monorail, walkers) (`npm run demo:street`)
 - `docs/RECREATE_REFERENCE.md` — how to recreate a supplied reference video
 - `docs/AGENT_GUIDE.md` — assignment contract and QA
 - `docs/STYLE_GUIDE.md` — art direction
