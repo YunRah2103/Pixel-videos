@@ -16,7 +16,8 @@
     "render:neon": "remotion render src/index.ts NeonStreet out/neon-street-remotion.mp4 --codec h264 --crf 17",
     "demo:detail": "python3 scripts/render_neon_detail.py video out/neon-street-pixel.mp4",
     "demo:pixel": "python3 scripts/pixel_neon.py video out/neon-street-pixelart.mp4",
-    "demo:street": "python3 scripts/pixel_street.py video out/neon-street-living.mp4"
+    "demo:street": "python3 scripts/pixel_street.py video out/neon-street-living.mp4",
+    "demo:ramen": "python3 scripts/ramen_hero.py video out/ramen-hero.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",

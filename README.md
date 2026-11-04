@@ -64,6 +64,7 @@ The project renders actual frames at **360×640**, then scales to **1080×1920**
 - `scripts/render_neon_detail.py` — high-detail version: drawn at 360px, palette-locked to 32 colours with Bayer dithering on a 240px grid (`npm run demo:detail`; `NEON_NATIVE=360` for finer pixels)
 - `scripts/pixel_neon.py` — **hand-authored indexed pixel art** (180px grid, palette cycling, sprite frames, dithered halos; `npm run demo:pixel`). Sprites: `public/sprites/neon-street/sprites.png`
 - `scripts/pixel_street.py` — **living street**: 240px indexed pixel art, far/mid/near parallax, two rain depths, inhabitants (car, birds, cat, cook, diners, monorail, walkers) (`npm run demo:street`)
+- `scripts/ramen_hero.py` — one continuous 8.2 s ramen-shop shot: 180px grid x4, one fixed 32-colour palette, hero car + headlight sweep, 6% parallax push, blocky neon glow, payoff at 6.9 s (`npm run demo:ramen`; pass an MP4 as 2nd arg to reuse its audio)
 - `docs/RECREATE_REFERENCE.md` — how to recreate a supplied reference video
 - `docs/AGENT_GUIDE.md` — assignment contract and QA
 - `docs/STYLE_GUIDE.md` — art direction
