@@ -1,0 +1,17 @@
+{
+  "title": "The Blue Coupe",
+  "voice": "Enceladus",
+  "style": "Narrate as a young man looking back on his life, in a calm, warm, intimate, cinematic tone. Slow pace. Leave a natural pause between sentences. Do not rush.",
+  "segments": [
+    {"id": "s01_window",  "scene": "dealer_night", "text": "Every city has one window you can't stop looking at. Mine was on Fifth Street. And behind the glass, under the lights, sat a blue coupe I could never afford."},
+    {"id": "s02_poster",  "scene": "bedroom_kid",  "text": "I was nine when I first saw it. A poster, taped above my bed, corners curling from the damp. My dad said dreams like that were for other people. I believed him. For a while."},
+    {"id": "s03_ramen",   "scene": "kitchen",      "text": "At nineteen, I washed bowls in a ramen shop until two in the morning. Six nights a week. Every tip went into a jar. Every coin had a job. Every coin was a piece of that car."},
+    {"id": "s04_breakdown","scene": "storm_road",  "text": "My first car cost less than a phone. It leaked, it rattled, and it died on me in the middle of a storm, three miles from home. So I pushed it. The whole way. Soaked to the bone. Laughing, because what else could I do?"},
+    {"id": "s05_bank",    "scene": "bank",         "text": "I asked the bank for help, once. The man barely looked up. Declined. No history. No savings. No chance. I walked back out into the rain feeling about two inches tall."},
+    {"id": "s06_grind",   "scene": "bedroom_grind","text": "So I stopped asking. Extra shifts. Weekend deliveries. I sold my games. My guitar. Summer turned to winter, and winter turned to rain again. My friends went out. I stayed in, and counted."},
+    {"id": "s07_sold",    "scene": "dealer_sold",  "text": "Then one night, I walked past the window, and it was gone. Just a little red sign. Sold. Someone else was driving my dream. I stood there for a long time. I almost quit. I really did."},
+    {"id": "s08_garage",  "scene": "garage",       "text": "A week later, an old mechanic named Ito called me. He'd found one. Same model. Same blue. Tired, rusted, forgotten in a barn. It needs work, he said. So do you. We rebuilt it together. Every night, for eight months."},
+    {"id": "s09_drive",   "scene": "dawn_drive",   "text": "And then, one morning, the rain finally stopped. I turned the key, and the engine woke up like it had been waiting for me too. I drove down Fifth Street. Past the window. And I didn't even slow down."},
+    {"id": "s10_overlook","scene": "overlook",     "text": "People ask me if it was worth it. The car is just metal. But the guy who built it? He's the one I was really chasing. Whatever your blue coupe is. Keep going."}
+  ]
+}
