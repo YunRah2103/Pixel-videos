@@ -9,7 +9,10 @@
     "render:lowres": "remotion render src/index.ts SunsetHarbor out/sunset-harbor-lowres.mp4",
     "render": "node scripts/render.mjs",
     "demo:offline": "python3 scripts/render_demo.py --seconds 6 --out out/sunset-harbor-offline.mp4",
-    "check": "python3 scripts/check_tools.py"
+    "check": "python3 scripts/check_tools.py",
+    "analyze": "python3 scripts/analyze_reference.py",
+    "demo:neon": "python3 scripts/render_neon_offline.py video out/neon-street.mp4",
+    "test": "python3 -m unittest discover -s tests -q"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
