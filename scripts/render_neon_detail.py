@@ -63,6 +63,18 @@ def glyph_run(d, x, y, n, col, seed, h=9, w=6, gap=3, thick=1):
                 d.line([px, py, px, ny], fill=col, width=thick); py = ny
 
 
+def dith(d, x0, y0, x1, y1, col, density=4, phase=0):
+    """Hand-style ordered dither texture: density 2 = 50% checker, 4 = 25%, 8 = 12.5% sparse."""
+    for y in range(int(y0), int(y1) + 1):
+        for x in range(int(x0), int(x1) + 1):
+            if density == 2 and (x + y + phase) % 2 == 0:
+                d.point((x, y), fill=col)
+            elif density == 4 and y % 2 == phase % 2 and (x + (y // 2) * 2 + phase) % 4 == 0:
+                d.point((x, y), fill=col)
+            elif density == 8 and y % 4 == phase % 4 and (x + y) % 8 == 0:
+                d.point((x, y), fill=col)
+
+
 def flicker(t, seed, rate=9):
     return 1.0 if math.sin(t * rate + seed) * math.sin(t * 2.3 + seed * 2) > -0.6 else 0.55
 
@@ -173,6 +185,10 @@ def scene_roadside(t):
     # tower with lit/dark faces, ribs, red ring, lights
     d.polygon([(200, G), (236, 60), (300, 18), (410, 52), (460, G)], fill=hx("#082a40"))
     d.polygon([(330, 22), (410, 52), (460, G), (350, G)], fill=hx("#0e3d58"))
+    for k in range(10):                                                          # dithered terminator between faces
+        dith(d, 318 + k * 2.6, 26 + k * 18, 340 + k * 2.6, 44 + k * 18, hx("#0e3d58"), 2)
+    d.line([330, 22, 410, 52], fill=hx("#3a8eaa")); d.line([410, 52, 460, G], fill=hx("#2a6a88"))     # rim light
+    d.line([300, 18, 330, 22], fill=hx("#1f5a78"))
     for x in range(214, 456, 9):
         d.line([x, G, 236 + (x - 214) * .55, 70], fill=hx("#0b3550"))
     for i in range(160):
@@ -201,6 +217,8 @@ def scene_roadside(t):
         wire(d, 0, 104 + k * 7, 70, 120 + k * 8, pc, 8)
     # shop building
     R(d, 130, 168, 262, G, hx("#0b2733")); R(d, 126, 160, 266, 170, hx("#12384a"))
+    dith(d, 130, 170, 262, G, hx("#0f3240"), 4)
+    d.line([126, 160, 266, 160], fill=hx("#4ab3c4")); d.line([126, 170, 266, 170], fill=hx("#061c26"))
     for x in range(132, 262, 8):
         d.line([x, 171, x, G], fill=hx("#0d2e3b"))
     R(d, 150, 150, 166, 160, hx("#17475c")); d.line([152, 153, 164, 153], fill=hx("#2d6a82"))
@@ -213,11 +231,17 @@ def scene_roadside(t):
     R(d, 264, 190, 300, G, hx("#0f3445")); R(d, 270, 196, 286, G - 2, hx("#5fd0e0")); R(d, 272, 198, 284, 206, hx("#b8f4ff"))
     R(d, 292, 190, 296, G, hx("#17475c"))
     car(d, 22, G - 2, hx("#7fa5b5"), hx("#1a4a62"), hx("#ff4a4a"), hx("#07141c"))
+    d.line([40, G - 19, 70, G - 19], fill=hx("#d6eef4")); d.line([26, G - 13, 38, G - 17], fill=hx("#b6dbe6"))
+    dith(d, 24, G - 8, 94, G - 4, hx("#5d8597"), 2)
+    for x0 in (140, 168, 198, 228):
+        d.line([x0 - 2, 209, x0 + 22, 209], fill=hx("#3a8ea2"))
     d.line([0, 206, 128, 206], fill=hx("#0a2c3a"), width=2)
     for x in range(4, 128, 12):
         d.line([x, 206, x, G], fill=hx("#0a2c3a"))
     # ground
     R(d, 0, G, BIG, H, hx("#0a3a4e")); R(d, 0, G, BIG, G + 5, hx("#2a7a8c"))
+    dith(d, 0, G + 6, BIG, H, hx("#0d4358"), 8); d.line([0, G, BIG, G], fill=hx("#5fc0d0"))
+    d.line([0, 196, 60, 170], fill=hx("#14506a")); d.line([60, 170, 130, 184], fill=hx("#14506a"))
     for x in range(0, BIG, 36):
         R(d, x, 262, x + 18, 264, hx("#4ab3c4") if flicker(t, x) > 0 else hx("#2a7a8c"))
     d.line([196, 150, 200, G], fill=hx("#0a2430"), width=2); R(d, 190, 148, 204, 152, hx("#1a5a70"))      # lamp
@@ -248,6 +272,7 @@ def scene_izakaya(t):
                     R(d, x + rr.randint(1, w - 4), G - rr.randint(6, h), x + rr.randint(1, w - 4) + 2, G - rr.randint(6, h) + 3, hx("#3b3414"))
             x += w + 2
     R(d, 80, 0, 408, G, hx("#0a0f1f"))                                          # main building
+    d.line([80, 0, 80, G], fill=hx("#1a2444")); d.line([408, 0, 408, G], fill=hx("#05080f"))
     for y in range(0, G, 6):
         for x in range(80 + (y // 6 % 2) * 6, 408, 12):
             d.point((x, y), fill=hx("#0e1428"))
@@ -314,7 +339,14 @@ def scene_izakaya(t):
     for k in range(3):
         wire(d, 0, 60 + k * 6, 84, 92 + k * 6, hx("#0a1020"), 10); wire(d, 402, 92 + k * 6, BIG, 66 + k * 6, hx("#0a1020"), 10)
     img_pool = [(212, G + 24, 120, 26, (210, 190, 20), .7), (140, G + 20, 44, 14, (220, 30, 30), .6), (256, G + 28, 140, 22, (180, 40, 60), .3)]
+    dith(d, 96, 60, 196, 160, hx("#2a0810"), 4)                                    # red neon spill on the wall
+    dith(d, 100, 186, 324, 199, hx("#3a3410"), 2)                                  # warm spill above awning
+    d.line([52, 150, 244, 112], fill=hx("#2a3a6a")); d.line([244, 112, 436, 150], fill=hx("#2a3a6a"))  # roof ridge highlight
+    d.ellipse([117, 77, 189, 147], outline=hx("#3a0a10"))
+    for i in range(0, 224, 14):
+        d.line([100 + i, 214, 112 + i, 214], fill=hx("#6a5a10"))
     R(d, 0, G, BIG, H, hx("#03060f")); R(d, 0, G, BIG, G + 4, hx("#10172c"))
+    dith(d, 0, G + 5, BIG, H, hx("#070c1c"), 8, 1)
     for x in range(0, BIG, 48):
         R(d, x + 6, G + 40, x + 30, G + 42, hx("#10172c"))
     for gp in img_pool:
@@ -341,6 +373,8 @@ def scene_bridge(t):
                 d.point((x + w // 2, G - 22 - h), fill=hx("#ff3a4a"))
             x += w + rr.randint(1, 4)
     R(d, 282, 14, 414, 236, hx("#0c2a4e")); R(d, 300, 6, 396, 20, hx("#0e3158"))                  # tower
+    dith(d, 282, 14, 300, 236, hx("#103460"), 2); d.line([282, 14, 282, 236], fill=hx("#2a5a9a"))
+    d.line([300, 6, 396, 6], fill=hx("#2a5a9a")); dith(d, 396, 14, 414, 236, hx("#081e3c"), 2)
     d.line([348, 6, 348, -10], fill=hx("#1a4a7a"), width=2)
     if int(t * 1.6) % 2 == 0:
         d.ellipse([345, 0, 351, 6], fill=hx("#ff3a4a"))
@@ -370,6 +404,10 @@ def scene_bridge(t):
     # ground, truck, stalls
     R(d, 0, G, BIG, H, hx("#05122a")); R(d, 0, G, BIG, G + 4, hx("#0c2a52"))
     R(d, 150, 206, 258, G, hx("#0a1830")); R(d, 150, 206, 258, 211, hx("#10264a"))
+    for x in range(160, 258, 12):
+        d.line([x, 212, x, G - 6], fill=hx("#0d2040"))
+    d.line([150, 206, 258, 206], fill=hx("#3a6aa8")); d.rectangle([150, 206, 258, G], outline=hx("#050c1c"))
+    dith(d, 0, G + 5, BIG, H, hx("#081a38"), 8)
     d.ellipse([180, 214, 224, 244], outline=hx("#102a52"))                                                    # faint logo
     R(d, 258, 214, 286, G, hx("#cfd6df")); R(d, 262, 220, 280, 232, hx("#3a5a8a")); R(d, 280, 224, 286, 232, hx("#ff6a3c"))
     for wx in (176, 214, 272):
@@ -406,18 +444,68 @@ def bloom(img, thresh=100, radius=3.0, gain=.8):
     return Image.fromarray((a + glow * gain).clip(0, 255).astype(np.uint8))
 
 
-def frame(t):
-    s = 0 if t < CUTS[0] else 1 if t < CUTS[1] else 2
+PAL_SIZE = 32          # colours per scene: a limited palette is what makes it read as pixel art
+DITHER = 16.0          # ordered-dither spread in RGB units
+_PALETTES = {}
+
+
+def _scene_index(t):
+    return 0 if t < CUTS[0] else 1 if t < CUTS[1] else 2
+
+
+def raw_frame(t):
+    """Full-colour frame (before palette reduction) as float32 360x360x3."""
+    s = _scene_index(t)
     t0 = (0, *CUTS)[s]
     img = (scene_roadside, scene_izakaya, scene_bridge)[s](t)
     off = min(START[s] + int((t - t0) * 8), BIG - W)
-    img = bloom(img.crop((off, 0, off + W, H)))
-    a = np.asarray(img).astype(np.float32)
+    a = np.asarray(bloom(img.crop((off, 0, off + W, H)), radius=2.0, gain=.75)).astype(np.float32)
     yy, xx = np.mgrid[0:H, 0:W]
-    a *= (1 - .35 * (((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2) / 2)[..., None]
-    a[::2] *= .97
-    noise = np.random.default_rng(int(t * FPS)).normal(0, 1.6, a.shape[:2])[..., None]     # light film grain (deterministic)
-    return Image.fromarray((a + noise).clip(0, 255).astype(np.uint8)).resize((W * SCALE, H * SCALE), Image.NEAREST)
+    a *= (1 - .3 * (((xx - W / 2) / (W / 2)) ** 2 + ((yy - H / 2) / (H / 2)) ** 2) / 2)[..., None]
+    return a.clip(0, 255)
+
+
+def scene_palette(s):
+    """Deterministic k-means palette over unique colours (farthest-point init keeps small neon accents)."""
+    if s in _PALETTES:
+        return _PALETTES[s]
+    t0, t1 = ((0, *CUTS)[s], (*CUTS, DUR)[s])
+    px = np.concatenate([raw_frame(t0 + (t1 - t0) * k).reshape(-1, 3) for k in (.2, .5, .8)])
+    q, cnt = np.unique((px // 8).astype(np.int32), axis=0, return_counts=True)
+    cols, wts = q.astype(np.float32) * 8 + 4, np.sqrt(cnt).astype(np.float32)
+    cent = [cols[np.argmin(cols.sum(1))]]
+    dist = ((cols - cent[0]) ** 2).sum(1)
+    for _ in range(PAL_SIZE - 1):
+        cent.append(cols[np.argmax(dist * np.sqrt(wts))]); dist = np.minimum(dist, ((cols - cent[-1]) ** 2).sum(1))
+    cent = np.array(cent)
+    for _ in range(12):
+        lab = np.argmin(((cols[:, None] - cent[None]) ** 2).sum(2), 1)
+        for k in range(PAL_SIZE):
+            m = lab == k
+            if m.any():
+                cent[k] = (cols[m] * wts[m, None]).sum(0) / wts[m].sum()
+    _PALETTES[s] = cent.round().clip(0, 255).astype(np.float32)
+    return _PALETTES[s]
+
+
+def to_palette(a, pal):
+    """Map every pixel to the palette with 4x4 Bayer ordered dithering (no smooth gradients survive)."""
+    yy, xx = np.mgrid[0:a.shape[0], 0:a.shape[1]]
+    b = a + ((BAYER[yy % 4, xx % 4] - .47) * DITHER)[..., None]
+    flat = b.reshape(-1, 3)
+    idx = np.argmin(((flat[:, None, :] - pal[None]) ** 2).sum(2), 1)
+    return pal[idx].reshape(a.shape).astype(np.uint8)
+
+
+NATIVE = int(os.environ.get("NEON_NATIVE", "240"))   # final pixel grid; 720 / NATIVE must be an integer
+
+
+def frame(t):
+    a = raw_frame(t)
+    if NATIVE != W:   # area-reduce the 360 drawing to the chunkier grid, then palette-lock it
+        a = np.asarray(Image.fromarray(a.astype(np.uint8)).resize((NATIVE, NATIVE), Image.BOX)).astype(np.float32)
+    out = to_palette(a, scene_palette(_scene_index(t)))
+    return Image.fromarray(out).resize((720, 720), Image.NEAREST)
 
 
 def video(out):
