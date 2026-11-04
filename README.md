@@ -60,6 +60,7 @@ The project renders actual frames at **360×640**, then scales to **1080×1920**
 - `scripts/install_tools.py` — optional tool downloader
 - `scripts/analyze_reference.py` — reference clip → cuts/palette/motion spec + contact sheet
 - `scripts/render_neon_offline.py` — original rainy neon 3-scene film (`npm run demo:neon`)
+- `src/scenes/NeonStreet.tsx` — Remotion port of the neon film (`npm run render:neon`; audio in `public/audio/`)
 - `docs/RECREATE_REFERENCE.md` — how to recreate a supplied reference video
 - `docs/AGENT_GUIDE.md` — assignment contract and QA
 - `docs/STYLE_GUIDE.md` — art direction

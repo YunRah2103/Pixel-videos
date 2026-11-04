@@ -12,7 +12,8 @@
     "check": "python3 scripts/check_tools.py",
     "analyze": "python3 scripts/analyze_reference.py",
     "demo:neon": "python3 scripts/render_neon_offline.py video out/neon-street.mp4",
-    "test": "python3 -m unittest discover -s tests -q"
+    "test": "python3 -m unittest discover -s tests -q",
+    "render:neon": "remotion render src/index.ts NeonStreet out/neon-street-remotion.mp4 --codec h264 --crf 17"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
